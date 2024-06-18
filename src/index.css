@@ -1,0 +1,365 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+  }
+
+  
+  
+  input:focus {
+    outline: none;
+  }
+  
+
+}
+
+
+
+
+
+@layer components {
+
+
+
+
+  .myTextField .MuiOutlinedInput-input:focus{
+    /* border: 2px solid rgb(230, 13, 13); */
+    --tw-ring-color: 'transparent';
+    border-color: 'transparent';
+
+  }
+
+
+
+
+
+
+
+  .poetsen-one-regular {
+    font-family: "Poetsen One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .handlee-regular {
+    font-family: "Handlee", cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .kalam-light {
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+
+  .bg-scroll {
+    background-attachment: scroll;
+  }
+  
+  .kalam-light2 {
+    font-family: "Kalam", cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .shadows-into-light-regular {
+    font-family: "Shadows Into Light", cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .kalam-light {
+    font-family: "Kalam", cursive;
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  .edu-tas-beginner {
+    font-family: "Edu TAS Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  .vidaloka-regular {
+    font-family: "Vidaloka", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @media (min-width: 640px) {
+   
+.bg-small-screens2::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(/images//green_reduce_reuse.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(14px);
+
+}
+
+
+
+
+.bg-small-screens::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(/images//reduce_reuse_recycle.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(14px);
+
+  z-index: -1; 
+}
+}
+
+
+
+@media (min-width: 1280px) {
+ 
+  .bg-small-screens3::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(/images//reduce_reuse_recycle.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(14px);
+
+    z-index: -1; 
+  }
+}
+
+
+@media not all and (min-width: 640px) {
+ 
+
+  .bg-small-screens::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(/images//reduce_reuse_recycle.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(14px);
+
+    z-index: -1; 
+  }
+}
+
+@media not all and (min-width: 768px) {
+  
+.bg-small-screens::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(/images//reduce_reuse_recycle.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(14px);
+
+}
+ 
+.bg-small-screens2::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(/images//green_reduce_reuse.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(14px);
+
+  z-index: -1; 
+}
+}
+
+
+@media (min-width: 1280px) {
+  
+
+  .bg-small-screens::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(/images//reduce_reuse_recycle.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(20px);
+    z-index: -1; 
+  }
+
+
+
+
+.bg-small-screens2::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(/images//green_reduce_reuse.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(14px);
+
+}
+}
+
+
+
+@media not all and (min-width: 768px) {
+  .bg-small-screens2::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(/images//green_reduce_reuse.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+
+  }
+}
+
+
+
+@media (min-width: 1024px) {
+  .bg-small-screens2::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(/images//green_reduce_reuse.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+
+  }
+}
+
+.caveat {
+  font-family: "Caveat", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.leaflet-container{
+  height: 500px;
+}
+.inconsolata {
+  font-family: "Inconsolata", monospace;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+
+
+.text-stroke{
+  background-image: linear-gradient(90deg, teal, yellow );
+  background-clip: text;
+  -webkit-text-stroke-color: transparent;
+  -webkit-text-stroke-width: calc(1em / 16);
+  -webkit-background-clip: text;
+}
+
+input[type="email"]:focus {
+  width: '100%'
+}
+
+.bg2{
+  z-index: -1; 
+  filter: blur(8px);
+
+  content: '';
+ 
+  background-image: url(/images/banner-four-bg.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+
+
+/*   
+  .hero:hover {
+    animation-play-state: paused;
+  } */
+  
+
+
+
+
+  .kalam-regular {
+    font-family: "Kalam", cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .nanum-gothic-regular {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    font-size: 20px;
+  }
+  
+}
+
+
