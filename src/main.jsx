@@ -5,7 +5,6 @@ import './index.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ApplicationSettings from './settings/ApplicationSettings'
 
-
 const theme = createTheme({
   palette: {
   }
@@ -19,7 +18,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
     <App />
     </ThemeProvider >
+    
     </ApplicationSettings>
-
+    
   </React.StrictMode>,
 )

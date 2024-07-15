@@ -2,19 +2,23 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {Link} from 'react-router-dom'
 import MySettings from './MySettings'
+import SmsSettings from './SmsSettings'
+
 
 export const GeneralSettings = () => {
     const [tab, setTab] = useState('General')
 
   return (
     <div className=" py-20">
-      <SlideTabs />
+      <SlideTabs  setTab={setTab}/>
       {tab === 'General' &&  <MySettings />}
+      {tab === 'Sms' && <SmsSettings />}
     </div>
   );
 };
 
-const SlideTabs = () => {
+const SlideTabs = ({setTab}) => {
+  
   const [position, setPosition] = useState({
     left: 0,
     width: 0,
@@ -32,10 +36,19 @@ const SlideTabs = () => {
       }}
       className="relative mx-auto flex w-fit rounded-full border-2 max-sm:flex-wrap border-black bg-white p-1"
     >
-      <Tab setPosition={setPosition}><Link>General</Link></Tab>
+      <Tab setPosition={setPosition}><Link onClick={(e)=> {
+        e.preventDefault()
+setTab('General')
+
+      }}>General</Link></Tab>
       <Tab setPosition={setPosition}><Link>Payment</Link></Tab>
       <Tab setPosition={setPosition}><Link>Website</Link></Tab>
       <Tab setPosition={setPosition}><Link>Email</Link></Tab>
+      <Tab setPosition={setPosition}><Link onClick={(e)=> {
+        e.preventDefault()
+setTab('Sms')
+
+      }}>Sms</Link></Tab>
 
       <Cursor position={position} />
     </ul>

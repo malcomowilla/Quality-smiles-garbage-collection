@@ -7,7 +7,8 @@ import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import {Link} from 'react-router-dom'
 import { motion } from "framer-motion"
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
+import { FcSms } from "react-icons/fc";
 
 const Sidebar = () => {
    const variantUl = {
@@ -43,13 +44,14 @@ const Sidebar = () => {
     }
     
     
-   const {isSeen, setIsSeen, seeSidebar, setSeeSideBar } = useApplicationSettings()
+   const {isSeen, setIsSeen, seeSidebar, setSeeSideBar,seelocation, user, setUser,
+      canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting
+
+    } = useApplicationSettings()
 
 
-   // useEffect(() => {
-      
-     
-   // }, [setIsSeen]);
+   
+
   return (
 
 <>
@@ -156,9 +158,9 @@ hover:bg-opacity-25
 </a>
 </li>
 
-
+   <>
          <hr className='border-1 opacity-25'  />
-         <div className='mt-5 text-white text-2xl'>Location</div>
+         <div className='mt-5 text-white text-2xl'>{'Location'}</div>
 
          <li >
 
@@ -166,10 +168,15 @@ hover:bg-opacity-25
             hover:bg-opacity-25
               group">
              <img src="/images/logo/icons8-location-48.png" className='w-5 h-5' alt="" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/location'>Location</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/location'>{'Location'}</Link></span>
                
             </a>
          </li>
+
+         </>
+
+
+
 
          <li>
             <a href="#" className="flex items-center p-2  rounded-lg text-white  hover:bg-neutral-300
@@ -185,13 +192,22 @@ hover:bg-opacity-25
          <div className='mt-5 text-white text-2xl'>Store</div>
 
 
-
          <li>
             <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25
               group">
              <img src="/images/logo/icons8-store-64.png" alt="wallet" className='w-8 h-8' />
                <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/store'>Store</Link></span>
+            </a>
+         </li>
+
+
+         <li>
+            <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
+            hover:bg-opacity-25
+              group">
+             <img src="/images/logo/1376035_blond_insurer_manager_marketer_person_icon.png" alt="wallet" className='w-8 h-8' />
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/store-managers'>Store Manager</Link></span>
             </a>
          </li>
 
@@ -223,7 +239,7 @@ hover:bg-opacity-25
          </li>
          <li>
 
-         <hr className='border-1 opacity-25' />
+         {/* <hr className='border-1 opacity-25' />
          <div className='mt-5 text-white text-2xl'>Collections</div>
 
             <a  className="flex items-center mt-2 p-1 rounded-lg  group text-white
@@ -232,10 +248,12 @@ hover:bg-opacity-25
               <img src="/images/logo/icons8-garbage-bag-64.png" className=' w-8 h-8
                ' alt="collection-bag" />
                <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/customer-confirmation'>Customer Confirmation</Link></span>
-            </a>
+            </a> */}
+
+
          </li>
 
-         <li>
+         {/* <li>
             <a href="#" className="flex items-center p-1   group rounded-lg text-white
              hover:bg-neutral-300
              hover:bg-opacity-25">
@@ -243,10 +261,10 @@ hover:bg-opacity-25
                <span className="flex-1 ms-3 whitespace-nowrap text-lg">
                   <Link to='/admin/collection-confirm'> Provider Confirmation</Link></span>
             </a>
-         </li>
+         </li> */}
 
 
-
+{/* 
          <li>
             <a href="#" className="flex items-center p-1   group rounded-lg text-white
              hover:bg-neutral-300
@@ -265,7 +283,7 @@ hover:bg-opacity-25
             <img src="/images/logo/icons8-message-65.png" className='w-8 h-8'  alt="plastic-bag" />
                <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/collection-requests'>Garbage Requests</Link></span>
             </a>
-         </li>
+         </li> */}
 
          <hr className='border-1 opacity-25' />
          <div className='mt-5 text-white text-2xl'>Finances And Accounts</div>
@@ -301,7 +319,7 @@ hover:bg-opacity-25
          
        
          <hr className='border-1 opacity-25' />
-         <div className='mt-3 text-white text-2xl'>User Management</div>
+         <div className='mt-3 text-white text-2xl'>User Invitation</div>
          <li>
             <a className="flex items-center p-1  rounded-lg
              text-white hover:bg-neutral-300
@@ -311,14 +329,32 @@ hover:bg-opacity-25
             </a>
          </li>
 
+         <hr className='border-1 opacity-25' />
+         <div className='mt-3 text-white text-2xl'>SMS</div>
+         <li>
+            <a className="flex items-center p-1  rounded-lg
+             text-white hover:bg-neutral-300
+             hover:bg-opacity-25 group">
 
+               <div className='bg-white rounded-full p-3'>
+               <FcSms   className='w-5 h-5' />
+               </div>
+               
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/sms'>Manage SMS</Link></span>
+            </a>
+         </li>
 
-         <div className='translate-y-[10px] '>
+         
+      { user === 'super_administrator' || canreadSetting  === true  || canManageSetting == true ? (
+         <>
+
+<div className='translate-y-[10px] '>
 
          <hr className='border-1 opacity-25' />
 
             
-         <div className=' text-white text-2xl'>Settings</div>
+         
+            <div className='text-white text-2xl'>Settings</div> 
 
          <li >
             <a href="#" className="flex items-center p-1  rounded-lg text-white
@@ -331,6 +367,10 @@ hover:bg-opacity-25
          </li>
          </div>
 
+         </>
+      ): null
+         
+}
       </ul>
    </div>
 </motion.aside>

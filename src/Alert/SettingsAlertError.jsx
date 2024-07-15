@@ -11,11 +11,11 @@ import Alert from '@mui/material/Alert';
       <Snackbar open={openError} autoHideDuration={6000} onClose={handleCloseError}>
         <Alert
           onClose={handleCloseError}
-          severity="success"
+          severity="error"
           variant="filled"
           sx={{ width: '100%' }}
         >
-          Your Not Allowed To Change This Settings Please Login 
+          Your Not Allowed To Change This Settings
         </Alert>
       </Snackbar>
     </div>

@@ -3,8 +3,8 @@ import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
+import AccessDenied from '../access_denied/AccessDenied'
 
-// styles.js
 
 
 
@@ -90,15 +90,15 @@ const Payment = () => {
       columns={[
         { title: "Sublocation", field: "Sublocation" },
         { title: "Payment Code", field: "Payment Code", type: "numeric", align: 'left' },
-        { title: "Status", field: "Status", type: "numeric", align: 'left' },
+        { title: "Phone Number", field: "phone_number",  align: 'left' },
 
         {
           title: "Payment",
           field: "Payment",
         },
         {
-            title: "Paid",
-            field: "Paid",
+            title: "Amount Paid",
+            field: "amount_paid",
           },
           {
             title: "Total",

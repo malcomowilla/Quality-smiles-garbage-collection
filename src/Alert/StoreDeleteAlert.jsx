@@ -1,0 +1,26 @@
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
+ function StoreDeleteAlert({openDeleteAlert, handleCloseDeleteAlert}) {
+ 
+
+  return (
+    <div>
+      <Snackbar open={openDeleteAlert} autoHideDuration={6000} onClose={handleCloseDeleteAlert}>
+        <Alert
+          onClose={handleCloseDeleteAlert}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Store Deleted Successfully
+        </Alert>
+      </Snackbar>
+    </div>
+  );
+}
+
+
+export default StoreDeleteAlert

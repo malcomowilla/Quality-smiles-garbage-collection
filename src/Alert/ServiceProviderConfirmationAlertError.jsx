@@ -1,0 +1,30 @@
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
+
+
+ function ServiceProviderConfirmationAlertError ({openProviderConfirmationError , handleCloseProviderConfirmationError}) {
+ 
+
+  return (
+    <div>
+      <Snackbar open={openProviderConfirmationError} autoHideDuration={6000} onClose={handleCloseProviderConfirmationError}>
+        <Alert
+          onClose={handleCloseProviderConfirmationError}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+
+          confirmation not sent, please try again
+        </Alert>
+      </Snackbar>
+    </div>
+  );
+}
+
+export default ServiceProviderConfirmationAlertError
+
+

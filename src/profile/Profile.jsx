@@ -25,6 +25,7 @@ const navigate = useNavigate()
     if (response.ok) {
       // navigate('/signin')
       navigate('/signin')
+      localStorage.removeItem('acha umbwakni');
     
     } else {
       console.log('failed to logout')
@@ -42,8 +43,8 @@ const navigate = useNavigate()
         <img src="/images/logo/logo-small.png"  className='w-[50px] h-[50px] rounded-full' alt="profile-picture" />
 
         <div className='text-wrap xl:block max-sm:block md:max-sm:hidden max-md:block max-sm:text-sm '>
-        <p className='dark:text-black text-white font-bold '>Malcom Owilla</p>
-    <p>Admin</p>
+        <p className='dark:text-black text-white font-extrabold '>Malcom Owilla</p>
+    <p className='dark:text-black text-white'>Admin</p>
         </div>
 
       </div>

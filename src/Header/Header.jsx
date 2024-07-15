@@ -8,8 +8,14 @@ import {useState} from 'react'
 const Header = () => {
   const [open, setOpen] = useState(false);
 
-  const { seeSidebar, setSeeSideBar, handleThemeSwitch, theme, icon, setIcon } = useApplicationSettings()
+  const { seeSidebar, setSeeSideBar, handleThemeSwitch, theme, icon, setIcon, smsBalance, setSmsBalance } = useApplicationSettings()
 
+
+
+
+
+
+  
   return (
     <div className=' flex justify-between p-3 cursor-pointer'>
 
@@ -20,7 +26,7 @@ const Header = () => {
 <p className=' dark:text-black text-white'>Here’s what’s happening with your store today.
 </p>
       </div>
-
+       <p className='text-white playwrite-de-grund font-bold dark:text-black '> {smsBalance} </p>
       <div className='flex  gap-x-8 '>
       <DarkLight/>
       {/* <div        onClick={()=>{

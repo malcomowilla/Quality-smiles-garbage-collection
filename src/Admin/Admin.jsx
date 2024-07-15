@@ -4,10 +4,52 @@ import {useApplicationSettings} from '../settings/ApplicationSettings'
 import {Outlet} from 'react-router-dom'
 import CountDown from '../count_down/CountDown'
 import { motion } from "framer-motion"
+import openAccessDenied from '../access_denied/AccessDenied'
+import { useAuth } from '../settings/AuthSettings'; // Adjust path as needed
+import {useEffect, useCallback} from 'react'
 
 
 const Admin = () => {
-  const { seeSidebar, setSeeSideBar } = useApplicationSettings()
+const {setIsUserLoggedIn} = useAuth()
+const { seeSidebar, setSeeSideBar, setSmsBalance } = useApplicationSettings()
+
+
+
+
+const getSmsBalance  = useCallback(
+  async () => {
+     try {
+         const response = await fetch('/api/your_sms_balance')
+         const newData = await response.json()
+         if (response.ok) {
+             console.log(newData.message)
+             setSmsBalance(newData.message)
+         } else {
+             console.log('error')
+         }
+     } catch (error) {
+         console.log(error)
+     }
+  },
+   [],
+ )
+ 
+
+
+ useEffect(() => {
+  getSmsBalance() 
+    
+ }, [getSmsBalance]);
+
+
+
+
+
+
+
+
+
+
   const variantDiv = {
     hidden: {
      marginLeft: '0px'

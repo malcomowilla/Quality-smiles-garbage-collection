@@ -14,7 +14,7 @@ const ChooseRole = () => {
   <div className="carousel-item text-black flex-col flex caveat sm:text-4xl max-sm:text-3xl">
     <img src="/images/logo/2754575_man_avatar_male_icon.png" className='w-[300px] h-[300px]' alt="customer" />
    <div className='flex justify-center'>
-   <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/customer'>Customer</Link></p>
+   <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/customer_role'>Customer</Link></p>
     </div>
 
   </div> 
@@ -22,7 +22,7 @@ const ChooseRole = () => {
 
     <img src="/images/logo/trashcolector.jpg"  className='w-[300px] h-[300px]' alt="waste collector" />
     <div className='flex justify-center'>
-    <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/service-provider'>Service Provider</Link></p>
+    <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/service_provider_role'>Service Provider</Link></p>
 
     </div>
 
@@ -34,7 +34,7 @@ const ChooseRole = () => {
     <img src="/images/logo/store_recycle.jpg"  className='w-[300px] h-[300px]' alt="store" />
 
 <div className='flex justify-center'>
-<p className='hover:underline transition-all duration-500 ease-in-out'><Link>Store</Link></p>
+<p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/store_manager_role'>Store</Link></p>
 
 </div>
   </div>

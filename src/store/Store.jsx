@@ -3,83 +3,379 @@ import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
-
-// styles.js
-
-
-
-
-
+import AddIcon from '@mui/icons-material/Add';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import StoreForm from './StoreForm'
+import {useState, useEffect, useCallback} from 'react'
+import StoreAddAlert from '../Alert/StoreAddAlert'
+import StoreUpdateAlert from '../Alert/StoreUpdateAlert'
+import StoreAlertError from '../Alert/StoreAlertError'
+import DeleteStore  from './DeleteStore'
+import StoreDeleteAlert from '../Alert/StoreDeleteAlert'
+import AccessDenied from '../access_denied/AccessDenied'
 
 
 
 
 const Store = () => {
-    const {
-      
-        materialuitheme  } = useApplicationSettings()
+    const {materialuitheme, storeForm, setStoreForm,openAccessDenied3, setopenopenAccessDenied3} = useApplicationSettings()
+const [isOpen, setIsOpen] = useState(false)
+const [seeStoreNumber, setSeeStoreNumber] = useState(false)
+const [loading, setloading] = useState(false)
+const [store, setStore] = useState([])
+const [openAddStore, setopenAddStore] = useState(false)
+const [openUpdateStore, setopenUpdateStore] = useState(false)
+const [openAlertError, setopenAlertError]  = useState(false)
+const [isOpenDelete, setisOpenDelete] = useState(false)
+const [openDeleteAlert, setopenDeleteAlert] = useState(false)
+
+
+
+
+
+const handleCloseDeleteAlert = ()=> {
+  setopenDeleteAlert(false)
+}
+
+
+const handleCloseAlertError = ()=> {
+  setopenAlertError(false)
+}
+
+const handleCloseUpdateStore = () => {
+  setopenUpdateStore(false)
+}
+
+
+
+
+const  handleCloseAddStore =()=> {
+
+  setopenAddStore(false)
+}
+
+
+
+
+
+
+const handleRowAdd = (event, rowData)=> {
+  setStoreForm(rowData)
+}
+
+
+
+
+const controller = new AbortController();
+const id = setTimeout(() => controller.abort(), 9000)
+
+
+const getStore = 
+useCallback(
+  async() => {
+
+    try {
+      const response = await fetch('/api/stores', {
+        signal: controller.signal,  
+
+      })
+      clearTimeout(id);
+
+      const newData = await response.json()
+      if (response.status === 403) {
+        // setopenopenAccessDenied3(true)
+        
+      }
+      if (response.ok) {
+        setStore(newData)
+        console.log('customer data', newData)
+      } else {
+        console.log('error')
+        setopenAlertError(true)
+
+      }
+    } catch (error) {
+      console.log(error)
+      setopenAlertError(true)
+
+    }
+  },
+  [],
+)
+
+
+
+useEffect(() => {
+  getStore()
+}, [getStore]);
+
+
+
+
+
+
+const deleteStore = async (id)=> {
+
+  try {
+    setloading(true)
+    
+const response = await fetch(`/api/delete_store/${id}`, {
+  method: 'DELETE'
+  })
+  
+  if (response.ok) {
+    setStore(store.filter((place)=> place.id !==  id))
+    setopenDeleteAlert(false)
+    setloading(false)
+    setisOpenDelete(false)
+  } else {
+    console.log('failed to delete')
+    setopenAlertError(true)
+    setloading(false)
+    setisOpenDelete(false)
+  }
+  } catch (error) {
+    console.log(error)
+    setisOpenDelete(false)
+    setloading(false)
+    setopenAlertError(true)
+    setisOpenDelete(false)
+  }
+  
+}
+
+
+
+
+
+
+
+
+const handleAddStore = async (e)=> {
+e.preventDefault()
+
+try {
+setloading(true)
+  const url = storeForm.id ? `/api/update_store/${storeForm.id}` : '/api/create_store';
+      const method = storeForm.id ? 'PATCH' : 'POST';
+
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+  'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(storeForm),
+  
+        })
+  
+        const newData = await response.json()
+  if (response.ok) {
+    setSeeStoreNumber(true)
+    setIsOpen(false)
+
+    if (storeForm.id) {
+      setloading(false)
+      setIsOpen(false)
+      setStore(store.map(item => (item.id === storeForm.id ? newData : item)));
+
+      setopenUpdateStore(true)
+      setSeeStoreNumber(true)
+
+    } else {
+      setIsOpen(false)
+      // Add newly created package to tableData
+
+      setStore((prevData)=> (
+      [...prevData, newData]
+      ));
+setloading(false)
+      setopenAddStore(true)
+    }
+  } else {
+    console.log('error')
+    setloading(false)
+    setIsOpen(false)
+    setopenAlertError(true)
+
+  }
+} catch (error) {
+  console.log(error)
+  setloading(false)
+  setIsOpen(false)
+  setopenAlertError(true)
+
+
+}
+
+
+}
+
+
+
+
+const handleAddButton = ()=> {
+  setIsOpen(true)
+  setStoreForm('')
+  setSeeStoreNumber(false)
+
+}
+
+  const EditButton = ({rowData}) => (
+    <img src="/images/logo/1495216_article_circle_edit_paper_pencil_icon.png"  
+    className='w-8 h-8 cursor-pointer '  alt="edit"  onClick={()=> setIsOpen(true)}/>
+        )
+  
+  
+  
+        const DeleteButton = ({id}) => (
+          <img src="/images/logo/6217227_bin_fly_garbage_trash_icon.png" onClick={()=> setisOpenDelete(true)}  
+           className='w-8 h-8 cursor-pointer' alt="delete" />
+        )
+
+
+
   return (
+
+    <>
+    {/* {openAccessDenied3 && <AccessDenied/>} */}
+    {openAccessDenied3 ? (
+      <AccessDenied />
+    ) : <>
+    
+    <>
+      
+      <StoreAddAlert openAddStore={openAddStore} handleCloseAddStore={handleCloseAddStore}
+ />
+
+ <StoreUpdateAlert openUpdateStore={openUpdateStore}  handleCloseUpdateStore={handleCloseUpdateStore}
+ />
+
+ <StoreAlertError openAlertError={openAlertError} handleCloseAlertError={handleCloseAlertError}
+ />
+
+
+ <DeleteStore  deleteStore={deleteStore} id={storeForm.id} isOpenDelete={isOpenDelete} setisOpenDelete={setisOpenDelete}/>
     <ThemeProvider theme={materialuitheme }>
 
+    <StoreForm  loading={loading}  isOpen={isOpen} setIsOpen={setIsOpen} handleAddStore={handleAddStore} 
+    seeStoreNumber={seeStoreNumber}
+       />
 
-
+<StoreDeleteAlert  openDeleteAlert={openDeleteAlert} handleCloseDeleteAlert={handleCloseDeleteAlert}
+/>
 
     <div style={{ maxWidth: "100%" }}>
+     
     <MaterialTable
    
       columns={[
-        { title: "  Location", field: "Location" },
-        { title: "Sublocation Code", field: "Sublocation Code", type: "numeric", align: 'left' },
-        { title: "Created by", field: "Created by", type: "numeric", align: 'left' },
+        { title: "Location", field: "location" },
+        { title: "Management Number", field: "manager_number" },
 
-        {
-          title: "Category",
-          field: "Category",
-        },
+        { title: "Sub Location", field: "sub_location" },
+
         {
             title: "Amount Of Bags",
-            field: "Amount Of Bags",
+            field: "amount_of_bags",
           },
 
+        
+         
+
           {
-            title: "Status(full/empty)",
-            field: "Status",
-          },
-          {
-            title: "From Store",
-            field: "From Store",
+        
+            title: "Action",
+            field: "Action",
+            render: (rowData) => 
+
+              <>
+              <Box sx={{
+                display: 'flex',
+                gap: 2
+              }}>
+                              <EditButton   />
+
+              <DeleteButton   id={rowData.id}/>
+              </Box>
+            
+
+              
+              </>
+            
+            
           }
       ]}
-      data={[
-        {
-          name: "Mehmet",
-          surname: "Baran",
-          birthYear: 1987,
-          birthCity: 63,
-          
-        },
-      ]}
+
+      data={store}
+
+
       title="Store"
       
+onRowClick={handleRowAdd}
+      actions={[
+        {
+          icon: () => <div  onClick={handleAddButton}   className='bg-teal-700 p-2 w-14 rounded-lg'><AddIcon
+           style={{color: 'white'}}/></div>,
+          isFreeAction: true, // This makes the action always visible
+          tooltip: 'Add Store',
+        },
+        {
+          icon: () => <GetAppIcon />,
+          isFreeAction: true, // This makes the action always visible
+      
+          tooltip: 'Import',
+        },
+      ]}
 
-    //   options={{
-    //     rowStyle: {
-    //         background: 'transparent',
-            
-    //     },
-       
 
-    //     headerStyle:{
-    //         backgroundColor: 'black',
-    //     },
-    //     cellStyle: {
-    //         backgroundColor: 'transparent',
-    //         color: 'black'
-    //     }
-    //   }}
+      options={{
+        paging: true,
+       pageSizeOptions:[5, 10, 20, 25, 50, 100],
+       pageSize: 10,
+       search: false,
+  
+
+showSelectAllCheckbox: false,
+showTextRowsSelected: false,
+hover: true, 
+selection: true,
+paginationType: 'stepped',
+
+
+paginationPosition: 'bottom',
+exportButton: true,
+exportAllData: true,
+exportFileName: 'Customers',
+
+headerStyle:{
+fontFamily: 'bold',
+textTransform: 'uppercase'
+} ,
+
+
+fontFamily: 'mono'
+
+}}     
     />
   </div>
-  </ThemeProvider >
+  </ThemeProvider>
+      
+      
+      </>
+    
+    </>}
+     
+   
+</>
+
+
+
+
+
+
+
+
 
   )
 }

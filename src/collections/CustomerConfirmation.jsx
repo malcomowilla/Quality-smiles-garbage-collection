@@ -33,17 +33,11 @@ const  CustomerConfirmation = () => {
         field: "Customer Code/Phone Number" ,
 
          },
-        { title: "Role", field: "Role", align: 'left' },
+         { title: "Bag Confirmed", field: "bag_confirmed", type: "boolean" },
+
         
-        
-        {
-            title: "Status",
-            field: "Status",
-          },
-        {
-            title: "Date",
-            field: "Date",
-          },
+         { title: "Date", field: "created_at", type: "date" },
+
       ]}
       data={[
         {

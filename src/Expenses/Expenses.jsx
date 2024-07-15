@@ -1,12 +1,9 @@
-
-
-
 import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
+import AccessDenied from '../access_denied/AccessDenied'
 
-// styles.js
 
 
 
