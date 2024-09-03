@@ -7,23 +7,48 @@ import CustomerDeleteLoginAlert from '../Alert/CustomerDeleteLoginAlert'
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import CustomerConfirmationAlert from '../Alert/CustomerConfirmationAlert'
 import CustomerConfirmAlertError from '../Alert/CustomerConfirmAlertError'
+import { FaHandPointLeft } from "react-icons/fa6";
 
 import { BiLogOut } from "react-icons/bi";
+import { FaHandPointRight } from "react-icons/fa6";
+import StoreManagerErrorLogin from '../Alert/StoreManagerErrorLogin'
+import StoreManagerDelivered from '../Alert/StoreManagerDelivered'
+import StoreManagerDeliveredError from '../Alert/StoreManagerDeliveredError'
+
 
 
 const StoreManagerForm = () => {
 const navigate = useNavigate()
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
-        customerLatitude, customer, setCustomer, setCustomerLatitude} = useApplicationSettings()
+        customerLatitude, customer, setCustomer, setCustomerLatitude, storeManagerSet, setStoreManagerSet,
+        handleChangeStoreSet} = useApplicationSettings()
        
          
         const [open, setOpen] = useState(false);
         const [loading, setloading] = useState(false)
         const [openConfirmationAlert, setopenConfirmationAlert] = useState(false)
         const [openConfirmAlertError, setopenConfirmAlertError] = useState(false)
+const [openStoreManagerError, setopenStoreManagerError] = useState(false)
+const [openStoreManagerSucess, setopenStoreManagerSucess] = useState(false)
+const [openStoreManagerDeliverError, setopenStoreManagerDeliverError] = useState(false)
+
+
+
+
+const handleCloseStoreManagerDeliverError = ()=>{
+  setopenStoreManagerDeliverError(false)
+}
+
+const  handleCloseStoreManagerSucess = ()=>{
+  setopenStoreManagerSucess(false)
+}
+
 
         
 
+       const handleCloseStoreManagerError = ()=>{
+        setopenStoreManagerError(false)
+       }
 
 
 
@@ -38,17 +63,18 @@ const navigate = useNavigate()
 
 
 
-
-
-
+ 
 
 const confirmBag = async(e)=> {
   e.preventDefault()
   try {
     setloading(true)
-    const response = await fetch('/',{
+    const response = await fetch('/api/confirm_deivered_bags_from_store',{
       method: 'POST',
       credentials: 'include',
+    body: JSON.stringify(
+      storeManagerSet
+    ),
 
       headers: {
         'Content-Type': 'application/json'
@@ -57,12 +83,15 @@ const confirmBag = async(e)=> {
     })
     if (response.ok) {
       setloading(false)
+      setopenStoreManagerSucess(true)
     } else {
       setloading(false)
+      setopenStoreManagerDeliverError(true)
 
     }
   } catch (error) {
     setloading(false)
+    setopenStoreManagerDeliverError(true)
   }
 }
 
@@ -79,6 +108,10 @@ const handleLogout = async() => {
       credentials: 'include'
 
     })
+
+    if (response.status === 403) {
+      setopenStoreManagerError(true)
+    }
 if (response.ok) {
   navigate('/store_manager_role')
   localStorage.removeItem('store manager');
@@ -92,17 +125,17 @@ if (response.ok) {
     setOpen(true)
   }
 }
-
-
-
-
-
-
   return (
 
-
    <>
+   <StoreManagerErrorLogin openStoreManagerError={openStoreManagerError}
+    handleCloseStoreManagerError={handleCloseStoreManagerError} />
+
+    <StoreManagerDeliveredError  openStoreManagerDeliverError={openStoreManagerDeliverError}
+     handleCloseStoreManagerDeliverError={handleCloseStoreManagerDeliverError}/>
   
+  <StoreManagerDelivered openStoreManagerSucess={openStoreManagerSucess}
+    handleCloseStoreManagerSucess={handleCloseStoreManagerSucess} />
 <section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
@@ -120,7 +153,8 @@ if (response.ok) {
                   
         </div>
       
-    <form onSubmit={confirmBag} >
+     <div className='flex justify-center'> <p className='playwrite-de-grund text-black font-bold'>Confirm Delivered Bag</p> </div>
+    <form onSubmit={confirmBag} className='' >
        
 
 {/* 
@@ -130,41 +164,37 @@ if (response.ok) {
 
 </div> */}
 
+<div className='p-7'>
 
-<div>
-        <div className="mb-2 block">
-          <Label htmlFor="email2" value="Your email" />
-        </div>
-        <TextInput id="email2" type="email" placeholder="name@flowbite.com" required shadow />
-      </div>
+      
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="password2" value="Your password" />
+        <div className=" block playwrite-de-grund">
+          <Label htmlFor="repeat-password" value="Number Of Bags Delivered" />
         </div>
-        <TextInput id="password2" type="password" required shadow />
+        <TextInput id="repeat-password"  className='py-3' type="text" name='number_of_bags_delivered'
+         value={storeManagerSet.number_of_bags_delivered} onChange={handleChangeStoreSet} shadow />
       </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="repeat-password" value="Repeat password" />
-        </div>
-        <TextInput id="repeat-password" type="password" required shadow />
       </div>
-      <div className="flex items-center gap-2">
-        <Checkbox id="agree" />
-        <Label htmlFor="agree" className="flex">
-          I agree with the&nbsp;
-          <Link href="#" className="text-cyan-600 hover:underline dark:text-cyan-500">
-            terms and conditions
-          </Link>
-        </Label>
-      </div>
+
+      
         <div className='mt-9 '>
+<Link to='/store_manager_receved'>
+        <div className='relative  cursor-pointer '>
+          <div className='absolute right-0'>
+          <FaHandPointRight className='text-black w-10 h-10 ' />
+          <p className='playwrite-de-grund text-black '>Confirm Received?</p>
+          </div>
+        
+       </div>
+       </Link>
 
 <div className='text-black text-xl cursor-pointer playwrite-de-grund p-3'  onClick={handleLogout}>
-            <BiLogOut />
+            <FaHandPointLeft className='w-10 h-10' />
             <p>Logout</p>
             </div>
        
+
+      
        
       <Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
         <div role="status">

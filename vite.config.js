@@ -7,6 +7,9 @@ export default defineConfig({
   plugins: [react()],
   
   server: {
+    mimeTypes: {
+      js: 'application/javascript',
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:4000',

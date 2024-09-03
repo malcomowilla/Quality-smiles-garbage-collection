@@ -70,7 +70,7 @@ const capitalizeForm = capitalizePrefix(value)
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-gradient-to-br from-green-600 to-teal-600 text-white p-6 rounded-lg w-full
+          className="bg-white text-black p-6 rounded-lg w-full
            max-w-lg shadow-xl cursor-default relative overflow-hidden"
         >
           <div className="relative z-10">
@@ -82,14 +82,14 @@ const capitalizeForm = capitalizePrefix(value)
 
 <form className="max-w-sm mx-auto" onSubmit={addLocation} >
 <div className="mb-5">
-  <label  className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Location Name</label>
+  <label  className="block  mb-2 text-sm playwrite-de-grund  text-black">Location Name</label>
   <input     type="text" name="location_name" value={location_name}  className="input border-black focus:border-black
     focus:ring-black input-lg w-full 
    bg-transparent"   onChange={handleChange}  />
 
 </div>
 <div className="mb-5">
-  <label className="block mb-2 text-sm playwrite-de-grund  dark:text-white">Location Code</label>
+  <label className="block mb-2 text-sm playwrite-de-grund  text-black">Location Code</label>
   <input  value={location_code}  onChange={handleChange} type="text" name="location_code"  className="input 
    border-black focus:border-black
   input-lg w-full  bg-transparent"   />
@@ -100,7 +100,7 @@ const capitalizeForm = capitalizePrefix(value)
 
 
 <div className="mb-5">
-  <label  className="block mb-2 text-sm playwrite-de-grund dark:text-white">Sub Location</label>
+  <label  className="block mb-2 text-sm playwrite-de-grund text-black">Sub Location</label>
   <input type="text" name="sub_location"  value={sub_location}     onChange={handleChange}  className="input  
   focus:border-black input-lg w-full border-black
     bg-transparent" />
@@ -120,21 +120,29 @@ const capitalizeForm = capitalizePrefix(value)
 
 
 <div className="flex gap-8">
-            <button type="submit" disabled={loading} className="btn btn-active"> 
+<button  type='submit'  disabled={loading} className="px-6 py-2 font-medium rounded-md bg-green-500 text-white
+ w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+   {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
+        Submit
+      </button>
+            {/* <button type="submit" disabled={loading} className="btn btn-active"> 
 
             {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
            
 
-            Submit</button>
-
-              <button
+            Submit</button> */}
+<button  onClick={handleCloseSubLocationForm} className="px-6 py-2 font-medium bg-red-700 text-white w-fit transition-all shadow-[3px_3px_0px_black]
+ hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Cancel
+      </button>
+              {/* <button
               
                 onClick={handleCloseSubLocationForm}
                 className="btn btn-outline btn-error"
               >
                   Cancel
 
-              </button>
+              </button> */}
             </div>
 </form>
 

@@ -13,6 +13,8 @@ import  LocationDeleteAlert from '../Alert/LocationDeleteAlert'
 import LocationAlertError from '../Alert/LocationAlertError'
 import DeleteLocation  from './DeleteLocation'
 import AccessDenied from '../access_denied/AccessDenied'
+import {useNavigate} from 'react-router-dom'
+import { requestPermission } from '../firebase/firebasePermission';
 
 
 
@@ -26,13 +28,16 @@ const [openDeleteLocationAlert, setopenDeleteLocationAlert] = useState(false)
 const [openLocationAlertError, setopenLocationAlertError] = useState(false)
 const [isOpenDelete, setisOpenDelete] = useState(false)
 
-
+const navigate = useNavigate()
 
  const handleCloseLocationAlertError = () => {
   setopenLocationAlertError(false)
  }
 
 
+//  useEffect(() => {
+//   requestPermission();
+// }, []);
 
 
 const handleCloseDeleteLocationAlert = () => {
@@ -169,6 +174,13 @@ useCallback(
       clearTimeout(id);
 
       const newData = await response.json()
+
+      if (response.status === 401) {
+        navigate('/signin')
+
+
+      }
+
       if (response.status === 403) {
         setopenLocationAlertError(true)
         // setopenopenAccessDenied(true)
@@ -205,6 +217,16 @@ useEffect(() => {
 
 
   const addLocation = async (e) => {
+
+
+
+  addNotification({
+    title: 'Warning',
+    subtitle: 'This is a subtitle',
+    message: 'This is a very long message',
+    theme: 'darkblue',
+    native: true // when using native, your OS will handle theming.
+});
     e.preventDefault()
 
     try {

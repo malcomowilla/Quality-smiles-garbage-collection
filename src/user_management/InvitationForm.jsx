@@ -25,6 +25,7 @@ import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import { MdOutlineTextsms } from "react-icons/md";
 import { CgTemplate } from "react-icons/cg";
+import { PiTicketLight } from "react-icons/pi";
 
 
 
@@ -58,6 +59,7 @@ const [seeItem, setSeeItem] = useState({
   calendar: false,
   sms: false,
   smsTemplates: false,
+  tickets: false
   
 })
 
@@ -153,11 +155,14 @@ const handleUserRoleFormDataChange = (role,  event)=> {
     can_read_sms: permissionAndRoles.sms.read,
     can_manage_sms: permissionAndRoles.sms.readWrite,
     can_manage_sms_templates: permissionAndRoles.smsTemplates.readWrite,
-    can_read_sms_templates: permissionAndRoles.smsTemplates.read
+    can_read_sms_templates: permissionAndRoles.smsTemplates.read,
+    can_read_tickets: permissionAndRoles.tickets.read,
+    can_manage_tickets: permissionAndRoles.tickets.readWrite,
+    can_manage_calendar: permissionAndRoles.calendar.readWrite,
+    can_read_calendar: permissionAndRoles.calendar.read
+
   }));
 }
-
-
 
 
 const variantDiv = {
@@ -183,6 +188,7 @@ const variantDiv = {
     { label: 'administrator',},
     { label: 'super_administrator',},
     { label: "store_manager",  },
+    { label: "agent",  },
 
     
     ]
@@ -203,7 +209,8 @@ const variantDiv = {
 
   return (
     <>
-    {loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    {loading &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
   
   <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
     
@@ -223,7 +230,7 @@ const variantDiv = {
             initial={{ scale: 0, rotate: "12.5deg" }}
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
-            className="bg-gradient-to-br from-teal-600 to-teal-600 text-white      p-6 rounded-lg w-full max-w-[600px]
+            className="bg-white text-black    p-6 rounded-lg w-full max-w-[600px]
              shadow-xl cursor-default relative "
           >
             <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
@@ -257,7 +264,6 @@ onChange={(e) => handleUserDetailsFormDataChange(e)}
 <div className='flex flex-col gap-2'>
 <label htmlFor="">Phone Number</label>
 <input
-required
 name='phone_number'
 onChange={(e) =>handleUserDetailsPhoneNumber(e)}
   type="text"
@@ -271,7 +277,6 @@ onChange={(e) =>handleUserDetailsPhoneNumber(e)}
 <label htmlFor="">Email</label>
 
 <input
-required
 onChange={(e) =>handleUserDetailsFormDataChange(e)}
 name='email'
 value={userPermisions.email}
@@ -316,7 +321,7 @@ getOptionLabel={(option) => option.label}
               
                       },
                         '& label.Mui-focused': {
-                          color: 'white',
+                          color: 'black',
                           fontSize:'16px'
                           },
                         '& .MuiOutlinedInput-root': {
@@ -410,6 +415,7 @@ w-full p-5 font-medium rtl:text-right
                           {role === 'generalSetting' && <CiSettings  className='w-5 h-5'/>}
                           {role === 'sms' && <MdOutlineTextsms className='w-5 h-5'/>}
                           {role === 'smsTemplates' && < CgTemplate className='w-5 h-5'/>}
+                          {role === 'tickets' && <PiTicketLight className='w-5 h-5' />}
 
   
   
@@ -454,6 +460,22 @@ w-full p-5 font-medium rtl:text-right
     <div className="flex gap-2 p-3">
 
 <div className='flex justify-center gap-7'>
+<button  type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
+ hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Invite
+      </button>
+
+      <button   onClick={(e) =>{
+            e.preventDefault()
+            setIsOpen(false)
+
+          } } className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
+       hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Cancel
+      </button>
+
+
+{/*   
 <button type='submit' className="btn ">invite</button>
 
 
@@ -466,7 +488,7 @@ w-full p-5 font-medium rtl:text-right
           className="btn btn-error"
         >
           cancel
-        </button>
+        </button> */}
 </div>
      
     

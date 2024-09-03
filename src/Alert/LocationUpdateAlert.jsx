@@ -6,9 +6,19 @@ import Alert from '@mui/material/Alert';
  function LocationUpdateAlert ({openUpdateLocationAlert, handleCloseUpdateLocationAlert}) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
+
   return (
     <div>
-      <Snackbar open={openUpdateLocationAlert} autoHideDuration={6000} onClose={handleCloseUpdateLocationAlert}>
+      <Snackbar open={openUpdateLocationAlert}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseUpdateLocationAlert}>
         <Alert
           onClose={handleCloseUpdateLocationAlert}
           severity="success"

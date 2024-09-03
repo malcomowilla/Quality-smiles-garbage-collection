@@ -12,6 +12,7 @@ import UserUpdateAlert from '../Alert/UserUpdateAlert'
 import DeleteUser from './DeleteUser'
 import UserDeleteAlert from '../Alert/UserDeleteAlert'
 import { CgTemplate } from "react-icons/cg";
+import { PiTicket } from "react-icons/pi";
 
 
 const ManageUsers = () => {
@@ -36,6 +37,14 @@ const  handleCloseUpdatedAddAlert = ()=> {
   setopenUserUpdatedAlert(false)
 }
 
+
+
+
+const {
+      
+  materialuitheme, adminFormSettings  } = useApplicationSettings()
+
+
   const [permissionAndRoles, setPermissionAndRoles] = useState({
     generalSetting: { read: false, readWrite: false },
     location: { read: false, readWrite: false },
@@ -49,7 +58,8 @@ const  handleCloseUpdatedAddAlert = ()=> {
     invoice: { read: false, readWrite: false },
     calendar: { read: false, readWrite: false },
     sms: {read: false, readWrite: false },
-    smsTemplates: {read: false, readWrite: false}
+    smsTemplates: {read: false, readWrite: false},
+    tickets: {read: false, readWrite: false},
     
   });
 
@@ -95,8 +105,7 @@ const handleCloseUserAddAlert = ()=> {
 
 
 const handleRowAdd = (event, rowData)=> {
-  console.log('user_role_form:', userPermisions)
-    console.log('user_role_rowData:', rowData)
+  
 
   setUserPermisions((prevData) => {
     
@@ -165,9 +174,12 @@ const handleRowAdd = (event, rowData)=> {
     smsTemplates: {
       
       read: rowData.can_read_sms_templates,
-      readWrite: rowData.an_manage_sms_templates
-    
-    
+      readWrite: rowData.can_manage_sms_templates
+    },
+
+    tickets: {
+      read: rowData.can_read_tickets,
+      readWrite: rowData.can_manage_tickets
     }
   });
 }
@@ -222,7 +234,6 @@ useEffect(() => {
 // user_roles
 // update_user_roles
 // https://700f-102-68-79-197.ngrok-free.app/
-
 const handleAddUser = async (e) => {
   e.preventDefault();
   try {
@@ -242,6 +253,9 @@ const handleAddUser = async (e) => {
       body: JSON.stringify({
         ...userPermisions,
         user_role: userPermisions.user_role,
+        login_with_web_auth: adminFormSettings.login_with_web_auth,
+        send_password_via_email: adminFormSettings.send_password_via_email,
+        send_password_via_sms: adminFormSettings.send_password_via_sms
       }),
     });
 
@@ -345,10 +359,6 @@ const handleAddUser = async (e) => {
 
 
 
-    const {
-      
-        materialuitheme  } = useApplicationSettings()
-
 
 
 
@@ -370,7 +380,8 @@ const handleAddUser = async (e) => {
     invoice: { read: false, readWrite: false },
     calendar: { read: false, readWrite: false },
     sms: {read: false, readWrite: false},
-    smsTemplates: {read: false, readWrite: false}
+    smsTemplates: {read: false, readWrite: false},
+    tickets: {read: false, readWrite: false}
         })
         }
 

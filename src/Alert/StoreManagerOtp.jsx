@@ -11,9 +11,17 @@ import Alert from '@mui/material/Alert';
  function StoreManagerOtp({openOtp, handleCloseOtp}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openOtp} autoHideDuration={6000} onClose={handleCloseOtp}>
+      <Snackbar open={openOtp}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseOtp}>
         <Alert
           onClose={handleCloseOtp}
           severity="success"

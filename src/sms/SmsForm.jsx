@@ -7,18 +7,25 @@ import CircularProgress from '@mui/material/CircularProgress';
 import * as React from 'react';
 
 
-const SmsForm = ({ isOpen, setIsOpen }) => {
+const SmsForm = ({ isOpen, setIsOpen, message, setMessage }) => {
 
   
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
+  
 
 
 
 
+const handleChange = (e) =>{
 
-
+const {name,id, value} = e.target
+setMessage((prev)=>({
+  ...prev,
+  [name]: value
+}))
+}
 
 
 
@@ -108,7 +115,7 @@ const SmsForm = ({ isOpen, setIsOpen }) => {
             initial={{ scale: 0, rotate: "12.5deg" }}
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
-            className="bg-gradient-to-br from-teal-600 to-teal-800 text-white p-6 rounded-lg w-full max-w-[900px] shadow-xl
+            className="bg-white text-black p-6 rounded-lg w-full max-w-[900px] shadow-xl
              cursor-default relative overflow-hidden"
           >
             <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
@@ -117,12 +124,9 @@ const SmsForm = ({ isOpen, setIsOpen }) => {
                 <FiAlertCircle />
               </div>
               <h3 className="text-3xl font-bold text-center mb-2">
-                Send Sms!
+                Send Sms
               </h3>
-              <p className="text-center mb-6">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Id
-                aperiam vitae, sapiente ducimus eveniet in velit.
-              </p>
+            
               
 
 
@@ -135,6 +139,8 @@ const SmsForm = ({ isOpen, setIsOpen }) => {
 
 <div className='p-5'>
 <div className='p-4'>
+
+  
 <Autocomplete
 className='myTextField'
       id="asynchronous-demo"
@@ -200,9 +206,27 @@ className='myTextField'
 rows={7}
   placeholder="Message..."
   className="border-black focus:border-black textarea-lg textarea w-full bg-transparent
-   max-w-screen myTextField"></textarea>
+   max-w-screen myTextField" name='message' value={message.message} onChange={handleChange}></textarea>
 </div>
-<div className="flex gap-2 p-3">
+<div className="flex gap-4 p-3">
+
+<button type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all 
+shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Send Sms
+      </button>
+
+      <button  onClick={(e) =>{
+            e.preventDefault()
+            setIsOpen(false)
+
+          } } className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all
+       shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]
+       rounded-md">
+        Cancel
+      </button>
+
+
+{/*   
 <button type='submit' className="btn ">send sms</button>
 
         <button
@@ -214,7 +238,7 @@ rows={7}
           className="btn btn-error"
         >
           cancel
-        </button>
+        </button> */}
         </div>
   </form>
 

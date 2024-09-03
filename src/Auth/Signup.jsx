@@ -43,16 +43,12 @@ const Signup = () => {
     handleFormDataChange,
     setPhone,
     phone,
-    isloading,
-    registrationError,
-    setRegistrationError,
     setSignupFormData,
     setloading,
     open,
     setOpen,
     handleClose,
-    seeError,
-    setSeeError,
+    
     handleChangePhoneNumber
   } = useApplicationSettings();
   const { email, password, password_confirmation, user_name, phone_number } = signupFormData;
@@ -60,8 +56,11 @@ const Signup = () => {
   const [screenload, setscreenload] = useState(false);
   const [openLoad, setOpenLoad] = useState(false);
   const [done, setDone] = useState(false)
- 
-
+ const [isloading, setisloading] = useState(false)
+ const [registrationError, setRegistrationError] = useState('')
+const [seeError, setSeeError] = useState(false)
+const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
+  
 
 
 
@@ -76,14 +75,17 @@ const Signup = () => {
   // api/signup-admin
 
 
+
+
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     try {
-      setloading(true);
+      setisloading(true);
       setOpenLoad(true)
       setDone(false)
-      const users = await fetch('https://quality-smile-garbabe-collection-backend-1jcd.onrender.com/signup-admin', {
+      const users = await fetch('api/signup-admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +97,6 @@ const Signup = () => {
       let actualUserDataInJson = await users.json();
 
       if (users.ok) {
-        
         setOpen(true);
         setSeeError(false);
         setSignupFormData('');
@@ -117,7 +118,7 @@ const Signup = () => {
 
 
       } else {
-        setloading(false);
+        setisloading(false);
         console.log('signup failed');
         setOpen(false);
         console.log(actualUserDataInJson.errors);
@@ -126,7 +127,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.log(error.name === 'AbortError');
-      setloading(false);
+      setisloading(false);
       setOpen(false);
       setSeeError(false);
     }
@@ -173,12 +174,12 @@ const Signup = () => {
         >
           <SignupAlert open={open} handleClose={handleClose} />
           <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <a href="#" className="flex items-center mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+            <a href="#" className="flex items-center mb-2 text-2xl font-semibold text-white">
               <img className="w-20 h-20 mr-2 rounded-full" src="/images/logo/logo-small.png" alt="logo" />
               { 'Quality Smiles'}
             </a>
             <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-              <div className="p-6 space-y-4 md:space-y-6 sm:p-8 dark:bg-white rounded-lg">
+              <div className="p-6 space-y-4 md:space-y-6 sm:p-8 rounded-lg">
                 <h1 className="text-xl leading-tight playwrite-de-grund tracking-wide text-white md:text-2xl">
                   Create an account
                 </h1>
@@ -240,13 +241,15 @@ const Signup = () => {
                       onChange={handleFormDataChange}
                       type="text"
                       name="user_name"
-                      className="border focus:border text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
+                      className="border focus:border text-white handlee-regular sm:text-lg 
+                      rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5
+                       focus:border-green-700"
                     />
                   </div>
 
                   <div className="flex flex-col relative">
                     <div className="absolute self-end bottom-0 p-2" onClick={() => setIsSeenPassword(!isSeenPassWord)}>
-                      <ion-icon name={isSeenPassWord ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
+                      <ion-icon    style={{color: 'white'}}  name={isSeenPassWord ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
                     </div>
                     <label htmlFor="password" className="block mb-2 text-xl playwrite-de-grund font-medium text-white">
                       Password
@@ -264,7 +267,10 @@ const Signup = () => {
                     />
                   </div>
 
-                  <div>
+                  <div className='flex flex-col relative'>
+                  <div className="absolute self-end bottom-0 p-2" onClick={() => setIsSeenPassword1(!isSeenPassWord1)}>
+                      <ion-icon style={{color: 'white'}} name={isSeenPassWord1 ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
+                    </div>
                     <label htmlFor="confirm-password" className="block mb-2 text-xl playwrite-de-grund font-medium text-white">
                       Confirm password
                     </label>
@@ -274,7 +280,7 @@ const Signup = () => {
                     <input
                       value={password_confirmation}
                       onChange={handleFormDataChange}
-                      type="password"
+                      type={isSeenPassWord1 ? 'password' : 'text'}
                       name="password_confirmation"
                       id="password_confirmation"
                       className="border focus:border-2 text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
@@ -299,6 +305,11 @@ const Signup = () => {
                         Login here
                       </Link>
                     </a>
+                  </p >
+
+
+                  <p className="text-lg font-extrabold playwrite-de-grund text-white hover:underline cursor-pointer">
+                   <Link to='/kasspas-key'> Signing Up With Passkeys?</Link>
                   </p>
                 </form>
               </div>

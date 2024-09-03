@@ -4,6 +4,8 @@ import { Button, } from "flowbite-react";
 import  CustomerRequestAlert from '../Alert/CustomerRequestAlert'
 import CustomerRequestError from '../Alert/CustomerRequestError'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
+import { SiMoneygram } from "react-icons/si";
+import { motion } from "framer-motion"
 
 
 
@@ -101,6 +103,16 @@ const confirmRequest = async(e)=> {
 
 
 <section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+<Link to='/customer-payment'>
+<motion.div whileHover={{
+    scale: 1.2,
+    transition: { duration: 0.5 },
+
+    
+  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 border-green-800
+    ml-4  text-black cursor-pointer   w-[120px] gap-x-4  playwrite-de-grund rounded-md'>
+      <SiMoneygram className='text-green-700'/>
+      To Up   </motion.div> </Link>
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
 

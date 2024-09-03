@@ -8,9 +8,19 @@ import Alert from '@mui/material/Alert';
  function ServiceProviderPickUpConfirmAlert ({openProviderConfirmationPickup, handleCloseProviderConfirmationPickup}) {
  
 
+
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openProviderConfirmationPickup} autoHideDuration={6000} onClose={handleCloseProviderConfirmationPickup}>
+      <Snackbar open={openProviderConfirmationPickup} anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseProviderConfirmationPickup}>
         <Alert
           onClose={handleCloseProviderConfirmationPickup}
           severity="success"

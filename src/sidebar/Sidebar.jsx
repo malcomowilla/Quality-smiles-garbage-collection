@@ -24,7 +24,7 @@ const Sidebar = () => {
       visible: {
         opacity: 1,
         overflow: 'hidden',
-        height: '250px'
+        height: '100px'
       }
 
 
@@ -45,7 +45,11 @@ const Sidebar = () => {
     
     
    const {isSeen, setIsSeen, seeSidebar, setSeeSideBar,seelocation, user, setUser,
-      canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting
+      canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting,canReadSms, canManageSms,
+      canReadCalendar,canManageCalendar,canReadTickets,canManageTickets,
+    canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,canManageStoreManager,
+    canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation,
+      imagePreview
 
     } = useApplicationSettings()
 
@@ -68,7 +72,7 @@ const Sidebar = () => {
      dark:bg-teal-800 scrollbar-thin overflow-y-auto">
 
       <div className='p-3 flex justify-between text-white'>
-      <img src="/images/logo/logo-small.png " className='w-[60px] h-[60px] rounded-full' alt="quality-smiles-logo" />
+      <img src={imagePreview} className='w-[60px] h-[60px] rounded-full shadow-xl' alt="quality-smiles-logo" />
 
       <MenuOpenSharpIcon  onClick={()=> setSeeSideBar(!seeSidebar)} style={{ width: '40px', height: '40px' }}/>
       </div>
@@ -79,12 +83,14 @@ const Sidebar = () => {
       <div className='mt-5 text-white text-2xl'>Admin</div>
       <ul className="space-y-2 font-medium mt-2">
          <li>
-            <a href="#" className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
+         <Link to='/admin/dashboard'>
+            <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25
               group">
               <img src="/images/logo/icons8-dashboard-64.png"  className='w-8 h-8 bg-white rounded-full' alt="dashboard" />
-               <span className="ms-3 text-lg"><Link to='/admin/dashboard'>Dashboard</Link></span>
+               <span className="ms-3 text-lg">Dashboard</span>
             </a>
+            </Link>
          </li>
          <li>
             <button   onClick={()=>setIsSeen(!isSeen)} type="button" className="flex items-center w-full p-1 text-base
@@ -103,31 +109,20 @@ const Sidebar = () => {
             <motion.ul    id="dropdown-example"   variants={variantUl} transition={{duration:0.5, ease: "easeInOut",
   }} initial='hidden' animate={isSeen ? "visible" : "hidden"} className={` py-2 space-y-2  
              `}>
-                  <li  >
+                 
+                 {canManageCalendar === true || canReadCalendar === 
+                 true || user === 'super_administrator'  || user === 'administrator'?  (
+                   <li >
+                   <Link to='/admin/calendar' className="flex items-center  gap-x-2 w-full p-1 transition duration-75 
+                   rounded-lg pl-11 group hover:bg-neutral-300
+                   hover:bg-opacity-25 text-white ">
+                                           <img src="/images/logo/icons8-calendar-64.png" alt="calender" className='w-8 h-8' />
 
-                     <a href="#" className="flex items-center w-full p-1  transition duration-75 rounded-lg 
-                     pl-11 group hover:bg-neutral-300
-                     hover:bg-opacity-25 text-white gap-x-2">
-                      <img src="/images/logo/icons8-chat-100.png" className='w-10 h-10' alt="chat" />
-
-                        Chat</a>
-                  </li>
-                  <li >
-                     <a href="#" className="flex items-center  gap-x-2 w-full p-1 transition duration-75 
-                     rounded-lg pl-11 group hover:bg-neutral-300
-                     hover:bg-opacity-25 text-white ">
-                                             <img src="/images/logo/icons8-calendar-64.png" alt="calender" className='w-8 h-8' />
-
-                        Calendar</a>
-                  </li>
-                  <li>
-                     <a href="#" className="flex items-center  gap-x-2 w-full p-2  transition duration-75 rounded-lg 
-                     pl-11 group  text-white hover:bg-neutral-300
-                     hover:bg-opacity-25">
-                        <img src="/images/logo/icons8-email-48.png" alt="email" className='w-8 h-8' />
-
-                        Email</a>
-                  </li>
+                      Calendar</Link>
+                </li>
+               
+                 ): null}
+                 
 
                   <li>
                      <a href="#" className="flex  gap-x-2 items-center w-full p-2  transition duration-75 rounded-lg 
@@ -159,78 +154,130 @@ hover:bg-opacity-25
 </li>
 
    <>
-         <hr className='border-1 opacity-25'  />
-         <div className='mt-5 text-white text-2xl'>{'Location'}</div>
+      <>
 
-         <li >
 
-            <a href="#" className="flex items-center p-2  rounded-lg text-white    mt-4 hover:bg-neutral-300
-            hover:bg-opacity-25
-              group">
-             <img src="/images/logo/icons8-location-48.png" className='w-5 h-5' alt="" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/location'>{'Location'}</Link></span>
-               
-            </a>
-         </li>
+<hr className='border-1 opacity-25'  />
+{user === 'super_administrator' || canManageLocation === true || canReadLocation === true || user === 'administrator' ? (
+   
+<div className='mt-5 text-white text-2xl'>{'Location'}</div>
+
+): ''}
+         
+{user === 'super_administrator' || canManageLocation === true || canReadLocation === true || user === 'administrator' ? (
+    <li >
+    <Link to='/admin/location'>
+       <a  className="flex items-center p-2  rounded-lg text-white    mt-4 hover:bg-neutral-300
+       hover:bg-opacity-25
+         group">
+        <img src="/images/logo/icons8-location-48.png" className='w-5 h-5' alt="" />
+          <span className="flex-1 ms-3 whitespace-nowrap text-lg">{'Location'}</span>
+          
+       </a>
+       </Link>
+    </li>
+): ''}
+        
+      </>
+       
 
          </>
 
 
 
+{user === 'super_administrator' || user ===  'administrator' || canManageSubLocation === true
+ || canReadSubLocation === true  ? (
+   <>
 
-         <li>
-            <a href="#" className="flex items-center p-2  rounded-lg text-white  hover:bg-neutral-300
+<li>
+<Link to='/admin/sublocation'>
+            <a  className="flex items-center p-2  rounded-lg text-white  hover:bg-neutral-300
             hover:bg-opacity-25
               group">
                <AirlineStopsIcon  className=' group-hover:text-white'/>
-               <span className="flex-1 ms-3 whitespace-nowrap  text-lg"><Link to='/admin/sublocation'>Sub Location</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap  text-lg">Sub Location</span>
             </a>
+            </Link>
          </li>
+   </>
+): null}
+        
 
 
-         <hr className='border-1 opacity-25' />
-         <div className='mt-5 text-white text-2xl'>Store</div>
 
 
-         <li>
-            <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
-            hover:bg-opacity-25
-              group">
-             <img src="/images/logo/icons8-store-64.png" alt="wallet" className='w-8 h-8' />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/store'>Store</Link></span>
-            </a>
-         </li>
+      <>
+
+<hr className='border-1 opacity-25' />
+
+{user === 'super_administrator' || user ===  'administrator' ||
+ canManageStore === true || canReadStore === true ? (
+   <div className='mt-5 text-white text-2xl'>Store</div>
+ ) : ''}
+        
 
 
-         <li>
+
+{user === 'super_administrator' || user ===  'administrator' ||
+ canManageStore === true || canReadStore === true ? (
+   <li>
+   <Link to='/admin/store'>
+      <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
+      hover:bg-opacity-25
+        group">
+       <img src="/images/logo/icons8-store-64.png" alt="wallet" className='w-8 h-8' />
+         <span className="flex-1 ms-3 whitespace-nowrap text-lg">Store</span>
+      </a>
+      </Link>
+   </li>
+ ): ''}
+        
+
+      </>
+        
+
+
+{user === 'super_administrator' || user === 'administrator' || canManageStoreManager === true || 
+canReadStoreManager === true ? (
+   <>
+
+<li>
+<Link to='/admin/store-managers'>
             <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25
               group">
              <img src="/images/logo/1376035_blond_insurer_manager_marketer_person_icon.png" alt="wallet" className='w-8 h-8' />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/store-managers'>Store Manager</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Store Manager</span>
             </a>
+            </Link>
          </li>
+   </>
+):  null}
+        
+
 
          <hr className='border-1 opacity-25' />
          <div className='mt-5 text-white text-2xl'>Payments</div>
 
          <li>
-            <a href="#" className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
+         <Link to='/admin/payment'>
+            <a  className="flex items-center p-2  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25
               group">
              <img src="/images/logo/icons8-travel-portable-cash-storage-holder-purse-accessory-28.png" alt="wallet" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/payment'>Payments</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Payments</span>
             </a>
+            </Link>
          </li>
          <li>
-            <a href="#" className="flex items-center p-1  rounded-lg text-white hover:bg-neutral-300
+            <a  className="flex items-center p-1  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25 group">
              <img src="/images/logo/icons8-invoice-64.png" alt="invoice"  className='w-8 h-8' />
                <span className="flex-1 ms-3 whitespace-nowrap text-lg">Invoices</span>
             </a>
          </li>
          <li>
-            <a href="#" className="flex items-center p-1  rounded-lg text-white hover:bg-neutral-300
+            <a  className="flex items-center p-1  rounded-lg text-white hover:bg-neutral-300
             hover:bg-opacity-25
               group">
              <img src="/images/logo/icons8-report-64.png" className='w-8 h-8' alt="report" />
@@ -289,49 +336,98 @@ hover:bg-opacity-25
          <div className='mt-5 text-white text-2xl'>Finances And Accounts</div>
 
          <li>
-            <a href="#" className="flex items-center p-1  rounded-lg text-white
+         <Link to='/admin/expenses'>
+            <a  className="flex items-center p-1  rounded-lg text-white
              hover:bg-neutral-300
              hover:bg-opacity-25 group">
                <img src="/images/logo/icons8-taxes-64.png"  className='w-8 h-8' alt="exenses" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/expenses'>Expenses</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Expenses</span>
             </a>
-         </li>
-         <div className='mt-5 text-white text-2xl'>Customers</div>
-
-         <hr className='border-1 opacity-25' />
-         <li>
-            <a href="#" className="flex items-center p-1  rounded-lg text-white
-             hover:bg-neutral-300
-             hover:bg-opacity-25 group">
-              <img src="/images/logo/icons8-customers-100.png" className='w-10 h-10' alt="customers" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg" ><Link to='/admin/customers'>Customers</Link></span>
-            </a>
+            </Link>
          </li>
 
-         <li>
-            <a href="#" className="flex items-center p-2  rounded-lg text-white
+            <>
+{user === 'super_administrator' || user === 'administrator' || canManageCustomers === true || canReadCustomers === true
+? (
+   <div className='mt-5 text-white text-2xl'>Customers</div>
+
+): null
+}
+
+
+
+<hr className='border-1 opacity-25' />
+
+{user === 'super_administrator' || user === 'administrator' || canManageCustomers === true || canReadCustomers === true 
+? (
+   <li>
+<Link to='/admin/customers'>
+   <a  className="flex items-center p-1  rounded-lg text-white
+    hover:bg-neutral-300
+    hover:bg-opacity-25 group">
+     <img src="/images/logo/icons8-customers-100.png" className='w-10 h-10' alt="customers" />
+      <span className="flex-1 ms-3 whitespace-nowrap text-lg" >Customers</span>
+      
+   </a>
+   </Link>
+</li>
+
+): null}
+
+
+            </>
+
+        
+
+
+
+{ user === 'super_administrator' || user === 'administrator' || canManageServiceProviders === true 
+|| canReadServiceProviders === true ? (
+   <>
+ <li>
+ <Link to='/admin/service-provider'>
+            <a  className="flex items-center p-2  rounded-lg text-white
              hover:bg-neutral-300
              hover:bg-opacity-25 group">
                <img src="/images/logo/icons8-worker-50.png" className='w-8 h-8' alt="worker" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/service-provider'>Service Providers</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Service Providers</span>
             </a>
+            </Link>
          </li>
+
+   </>
+): null
+        
+}
+
+
+
          
-       
-         <hr className='border-1 opacity-25' />
+
+         <>
+  <hr className='border-1 opacity-25' />
          <div className='mt-3 text-white text-2xl'>User Invitation</div>
          <li>
+         <Link to='/admin/user-management'>
             <a className="flex items-center p-1  rounded-lg
              text-white hover:bg-neutral-300
              hover:bg-opacity-25 group">
                <img src="/images/logo/icons8-user-100.png" className='w-10 h-10' alt="users" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/user-management'>Manage Users</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Manage Users</span>
             </a>
+            </Link>
          </li>
+         </>
+      
 
-         <hr className='border-1 opacity-25' />
+
+
+{ user === 'super_administrator'  || canReadSms === true || canManageSms === true ?(
+   <>
+ <hr className='border-1 opacity-25' />
          <div className='mt-3 text-white text-2xl'>SMS</div>
          <li>
+         <Link to='/admin/sms'>
             <a className="flex items-center p-1  rounded-lg
              text-white hover:bg-neutral-300
              hover:bg-opacity-25 group">
@@ -340,12 +436,48 @@ hover:bg-opacity-25
                <FcSms   className='w-5 h-5' />
                </div>
                
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/sms'>Manage SMS</Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Manage SMS</span>
             </a>
+            </Link>
          </li>
 
+   </>
+):  null
+        
+}
+
+
+<hr className='border-1 opacity-25' />
+{user === 'super_administrator' || user === 'administrator' || canManageTickets === true || canReadTickets === true
+|| user === 'agent'
+? (
+   <div className='mt-5 text-white text-2xl'>Customer Support Tickets</div>
+
+):
+null
+}
+
+
+{user === 'super_administrator' || user === 'administrator' || canManageTickets === true || canReadTickets === true
+|| user === 'agent'
+
+? (
+   <li>
+         <Link to='/admin/support-tickets'>   <a  className="flex items-center p-1  rounded-lg text-white
+             hover:bg-neutral-300
+             hover:bg-opacity-25 group">
+               <img src="/images/logo/support.png"  className='w-8 h-8' alt="exenses" />
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Tickets</span>
+            </a></Link>
+         </li>
+): null}
+
+
+
+
+
          
-      { user === 'super_administrator' || canreadSetting  === true  || canManageSetting == true ? (
+      { user === 'super_administrator' || user == 'administrator'  || canreadSetting  === true  || canManageSetting == true ? (
          <>
 
 <div className='translate-y-[10px] '>
@@ -357,13 +489,15 @@ hover:bg-opacity-25
             <div className='text-white text-2xl'>Settings</div> 
 
          <li >
-            <a href="#" className="flex items-center p-1  rounded-lg text-white
+         <Link to='/admin/general-settings'>
+            <a  className="flex items-center p-1  rounded-lg text-white
              hover:bg-neutral-300
              hover:bg-opacity-25 group">
              <img src="/images/logo/icons8-settings-48.png"   className='w-10 h-10' alt="settings" />
-               <span className="flex-1 ms-3 whitespace-nowrap text-lg"><Link to='/admin/general-settings'>Settings
-               </Link></span>
+               <span className="flex-1 ms-3 whitespace-nowrap text-lg">Settings
+               </span>
             </a>
+            </Link>
          </li>
          </div>
 

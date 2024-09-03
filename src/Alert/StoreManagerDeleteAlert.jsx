@@ -7,9 +7,20 @@ import Alert from '@mui/material/Alert';
  function StoreManagerDeleteAlert({openDeleteStore, handleCloseDeleteStore}) {
  
 
+
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
+
   return (
     <div>
-      <Snackbar open={openDeleteStore} autoHideDuration={6000} onClose={handleCloseDeleteStore}>
+      <Snackbar open={openDeleteStore}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseDeleteStore}>
         <Alert
           onClose={handleCloseDeleteStore}
           severity="success"

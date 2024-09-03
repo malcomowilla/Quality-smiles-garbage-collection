@@ -1,20 +1,24 @@
 
-
-
-
-
-
-
-
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import {useState} from 'react'
+
+
 
  function CustomerRequestError ({openRequestError ,handleCloseRequestError}) {
  
 
+  const [state, setState] = useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openRequestError} autoHideDuration={6000} onClose={handleCloseRequestError}>
+      <Snackbar open={openRequestError}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseRequestError}>
         <Alert
           onClose={handleCloseRequestError}
           severity="error"

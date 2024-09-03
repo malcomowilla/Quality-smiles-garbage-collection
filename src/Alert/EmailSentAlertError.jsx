@@ -7,9 +7,18 @@ import Alert from '@mui/material/Alert';
  function EmailSentAlertError ({openEmailSentError, handleCloseEmailSentError,emailError,seeEmailError }) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openEmailSentError} autoHideDuration={9000} onClose={handleCloseEmailSentError}>
+      <Snackbar open={openEmailSentError}  anchorOrigin={{ vertical, horizontal }}  autoHideDuration={9000} onClose={handleCloseEmailSentError}>
         <Alert
           onClose={handleCloseEmailSentError}
           severity="error"

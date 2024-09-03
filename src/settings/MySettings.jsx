@@ -15,7 +15,9 @@ import { ImSpinner9 } from "react-icons/im";
 import {useEffect, useCallback, useState} from 'react'
 import AccessDenied from '../access_denied/AccessDenied'
 import Tooltip from '@mui/material/Tooltip';
-
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
 
 
 
@@ -29,14 +31,19 @@ const MySettings = () => {
       settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
        handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
-       setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin
+       setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
      } = useApplicationSettings();
 
 
-const { login_with_otp} = adminFormSettings
+const { login_with_otp, login_with_web_auth, login_with_otp_email, send_password_via_sms,
+  send_password_via_email,check_is_inactive,check_inactive_days,check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes
+} = adminFormSettings
 
-      
 
+// const {send_manager_number_via_email , send_manager_number_via_sms, enable_2fa_for_store_manager} = storeManagerSettings
+      const [seeSettings6, setSeeSettings6] = useState(false)
+     const [openLoad, setOpenLoad] = useState(false)
        
 
      const [open, setOpen] = useState(false);
@@ -48,9 +55,18 @@ const [isloading, setisloading] = useState({
   loading3: false,
   loading4: false,
   loading5: false,
+  loading6: false
   
 
 })
+
+
+
+
+
+
+
+
 
      const handleClose = (event, reason) => {
        if (reason === 'clickaway') {
@@ -94,7 +110,6 @@ const [isloading, setisloading] = useState({
   
   
   
-  
     const handlegetproviderSettings  = useCallback(
               
       async()=> {
@@ -102,7 +117,10 @@ const [isloading, setisloading] = useState({
     
       const requestParams = {
         use_auto_generated_number_for_service_provider:storedData.use_auto_generated_number_for_service_provider,
-        send_sms_and_email_for_provider:storedData.send_sms_and_email_for_provider
+        send_sms_and_email_for_provider:storedData.send_sms_and_email_for_provider,
+        enable_2fa_for_service_provider:storedData.enable_2fa_for_service_provider,
+        send_email_for_provider: storedData.send_email_for_provider,
+        
       
       };
     try {
@@ -127,9 +145,11 @@ const [isloading, setisloading] = useState({
       setOpenOfflineError(false)
   
     
-      const {prefix, minimum_digits,  use_auto_generated_number_for_service_provider, send_sms_and_email_for_provider} = newData[0]
+      const {prefix, minimum_digits,  use_auto_generated_number_for_service_provider, 
+        send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = newData[0]
       setsettingsforProvider({...settingsformData, prefix,  minimum_digits, 
-         use_auto_generated_number_for_service_provider, send_sms_and_email_for_provider
+         use_auto_generated_number_for_service_provider, send_sms_and_email_for_provider,
+         send_email_for_provider,enable_2fa_for_service_provider
       
       })
       
@@ -162,7 +182,10 @@ const [isloading, setisloading] = useState({
          
            const requestParams = {
              use_auto_generated_number:storedData.use_auto_generated_number,
-             send_sms_and_email:storedData.send_sms_and_email 
+             send_sms_and_email:storedData.send_sms_and_email,
+             send_email: storedData.send_email,
+             enable_2fa: storedData.enable_2fa
+              
            
            };
          try {
@@ -185,9 +208,10 @@ const [isloading, setisloading] = useState({
            // const minimum_digits = newData.minimum_digits
          
          
-           const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email} = newData[0]
+           const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
+            enable_2fa, enable_2fa_for_service_provider} = newData[0]
            setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
-            send_sms_and_email
+            send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
            
            })
            
@@ -221,8 +245,15 @@ const [isloading, setisloading] = useState({
          
            const requestParams = {
             login_with_otp:storedData.login_with_otp,
+            login_with_web_auth:storedData.login_with_web_authn,
+            login_with_otp_email:storedData.login_with_otp_email,
+            send_password_via_email:storedData.send_password_via_email,
+            send_password_via_sms:storedData.send_password_via_sms,
+            check_is_inactive: storedData.check_is_inactive,
+            enable_2fa_for_admin: storedData.enable_2fa_for_admin
            
            };
+
          try {
            const response = await fetch(`/api/get_settings_for_admin?${new URLSearchParams(requestParams)}`, {
            method: 'GET',
@@ -240,13 +271,23 @@ const [isloading, setisloading] = useState({
            if (response.ok) {
            // const use_auto_generated_number = newData.use_auto_generated_number
            // const prefix = newData.prefix
-           const login_with_otp = newData.login_with_otp 
-         
+           const login_with_otp = newData[0].login_with_otp 
+           const login_with_web_auth = newData[0].login_with_web_auth
+           const login_with_otp_email = newData[0].login_with_otp_email
+           const send_password_via_email = newData[0].send_password_via_email
+           const send_password_via_sms = newData[0].send_password_via_sms
+           const check_is_inactive = newData[0].check_is_inactive
+           const check_inactive_hrs = newData[0].check_inactive_hrs
+           const check_inactive_minutes = newData[0].check_inactive_minutes
+           const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
          
           //  const {login_with_otp} = newData[0]
-           setAdminFormSettings({...adminFormSettings, login_with_otp
-           
-           })
+          
+           setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
+            login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
+            check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes
+           }))
+         
            
            } else {
            console.log('failed to fetch')
@@ -267,7 +308,7 @@ const [isloading, setisloading] = useState({
     
     useEffect(() => {
       handlegetAdminSettings()
-    }, [handlegetAdminSettings, setAdminFormSettings]);
+    }, [handlegetAdminSettings]);
   
 
 
@@ -281,6 +322,7 @@ const [isloading, setisloading] = useState({
      const handleUpdateCustomer = async(e)=> {
       // setloading(prev => !prev)
       setisloading({...isloading, loading2: true})
+      setOpenLoad(true)
       e.preventDefault()
       try {
         const response = await fetch('/api/update_customer_settings',{
@@ -300,18 +342,25 @@ const [isloading, setisloading] = useState({
           const minimum_digits = newData.minimum_digits
           const use_auto_generated_number = newData.use_auto_generated_number
           const send_sms_and_email = newData.send_sms_and_email
+          const send_email = newData.send_email
+          const enable_2fa = newData.enable_2fa
           setOpen(true)
+          setOpenLoad(false)
           // setloading(false)
           setisloading({...isloading, loading2: false})
           setsettingsformData((prevData)=>  ({...prevData, prefix, minimum_digits, 
-            use_auto_generated_number,send_sms_and_email
+            use_auto_generated_number,send_sms_and_email,send_email,enable_2fa
              }))
 
-             localStorage.setItem('customer settings', JSON.stringify({ use_auto_generated_number, send_sms_and_email}))
+             localStorage.setItem('customer settings', JSON.stringify({ use_auto_generated_number, send_sms_and_email,
+              send_email, enable_2fa
+
+             }))
           console.log('customer_data:',newData)
         } else {
           console.log('failed')
           setOpen(false)
+          setOpenLoad(false)
           // setOpenError(true)
           // setloading(false)
           setisloading({...isloading, loading2: false})
@@ -319,6 +368,7 @@ const [isloading, setisloading] = useState({
       } catch (error) {
         console.log(error)
         setOpen(false)
+        setOpenLoad(false)
         setisloading({...isloading, loading2: false})
         // setloading(false)
         // setloading(prev => prev)
@@ -333,6 +383,7 @@ const [isloading, setisloading] = useState({
      const handleUpdateAdminSettings = async(e)=> {
       // setloading(true)
       setisloading({...isloading, loading1: true})
+      setOpenLoad(true)
       e.preventDefault()
       try {
         const response = await fetch('/api/admin_settings',{
@@ -350,17 +401,41 @@ const [isloading, setisloading] = useState({
         }
         if (response.ok) {
           const login_with_otp = newData.login_with_otp
-         
+         const login_with_web_authn = newData.login_with_web_auth
+         const login_with_otp_email = newData.login_with_otp_email
+         const send_password_via_email = newData.send_password_via_email
+         const send_password_via_sms = newData.send_password_via_sms
+         const check_inactive_hrs = newData.check_inactive_hrs
+         const check_is_inactive = newData.check_is_inactive
+         const check_inactive_days = newData.check_inactive_days
+         const enable_2fa_for_admin = newData.enable_2fa_for_admin
+         const check_inactive_minutes = newData.check_inactive_minutes
+
+
           setOpen(true)
+          setOpenLoad(false)
+          setisloading({...isloading,loading1: false})
           // setloading(false)
-          setAdminFormSettings((prevData)=>  ({...prevData, login_with_otp
+          setAdminFormSettings((prevData)=>  ({...prevData, login_with_otp,login_with_web_authn,
+            login_with_otp_email,send_password_via_email,send_password_via_sms,
+            check_inactive_hrs, check_inactive_days,check_is_inactive,enable_2fa_for_admin,check_inactive_minutes
              }))
 
-             localStorage.setItem('admin settings', JSON.stringify({login_with_otp}))
+
+          // setAdminWebAuthSettings({...adminWebAuthSettings, login_with_web_authn})
+
+           
+
+             localStorage.setItem('admin settings', JSON.stringify({login_with_otp, login_with_web_authn,
+              login_with_otp_email,send_password_via_email,send_password_via_sms,check_inactive_hrs,
+              check_is_inactive,enable_2fa_for_admin,
+              check_inactive_days
+             }))
           console.log('admin_data:',newData)
         } else {
           console.log('failed')
           setOpen(false)
+          setOpenLoad(false)
           // setOpenError(true)
           // setloading(false)
           setisloading({...isloading,loading1: false})
@@ -368,6 +443,7 @@ const [isloading, setisloading] = useState({
       } catch (error) {
         console.log(error)
         setOpen(false)
+        setOpenLoad(false)
         // setloading(false)
         setisloading({...isloading,loading1: false})
       }
@@ -382,6 +458,7 @@ const [isloading, setisloading] = useState({
      const handleUpdateStoreManager = async(e)=> {
       // setloading(true)
       setisloading({...isloading, loading5: true})
+      setOpenLoad(true)
       e.preventDefault()
       try {
         const response = await fetch('/api/update_store_manager',{
@@ -389,7 +466,66 @@ const [isloading, setisloading] = useState({
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(settingsformData)
+          body: JSON.stringify(storeManagerSettings)
+        })
+        const newData = await response.json()
+
+
+        if (response.status === 403) {
+          setOpenError(true)
+        }
+        if (response.ok) {
+          const prefix = newData.prefix
+          const minimum_digits = newData.minimum_digits
+          const send_manager_number_via_email = newData.send_manager_number_via_email
+          const enable_2fa_for_store_manager = newData.enable_2fa_for_store_manager
+          const send_manager_number_via_sms = newData.send_manager_number_via_sms
+
+          setOpen(true)
+          // setloading(false)
+          setisloading({...isloading, loading5: false})
+          localStorage.setItem('store_manager_settings',  
+            JSON.stringify({send_manager_number_via_sms, enable_2fa_for_store_manager, send_manager_number_via_email})
+             );
+          setstoreManagerSettings((prevData)=>  ({...prevData, prefix, minimum_digits, 
+      send_manager_number_via_sms, enable_2fa_for_store_manager,send_manager_number_via_email
+             }))
+             setOpenLoad(false)
+
+        } else {
+          console.log('failed')
+          setOpen(false)
+          // setOpenError(true)
+          // setloading(false)
+          setisloading({...isloading, loading5: false})
+          setOpenLoad(false)
+        }
+      } catch (error) {
+        console.log(error)
+        setOpen(false)
+        setOpenLoad(false)
+        // setloading(false)
+        setisloading({...isloading, loading5: false})
+      }
+     }
+
+
+
+
+
+
+     const handleUpdateTicket = async(e)=> {
+      // setloading(true)
+      setisloading({...isloading, loading6: true})
+      setOpenLoad(true)
+      e.preventDefault()
+      try {
+        const response = await fetch('/api/update_ticket_settings',{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(settingsTicket)
         })
         const newData = await response.json()
 
@@ -402,22 +538,25 @@ const [isloading, setisloading] = useState({
           const minimum_digits = newData.minimum_digits
           setOpen(true)
           // setloading(false)
-          setisloading({...isloading, loading5: false})
-          setstoreManagerSettings((prevData)=>  ({...prevData, prefix, minimum_digits, 
+          setisloading({...isloading, loading6: false})
+          setsettingsTicket((prevData)=>  ({...prevData, prefix, minimum_digits, 
              }))
-
+             setOpenLoad(false)
         } else {
           console.log('failed')
           setOpen(false)
+          setOpenLoad(false)
           // setOpenError(true)
           // setloading(false)
-          setisloading({...isloading, loading5: false})
+          setisloading({...isloading, loading6: false})
+
         }
       } catch (error) {
         console.log(error)
         setOpen(false)
+        setOpenLoad(false)
         // setloading(false)
-        setisloading({...isloading, loading5: false})
+        setisloading({...isloading, loading6: false})
       }
      }
 
@@ -434,6 +573,7 @@ const [isloading, setisloading] = useState({
       try {
         // setloading(true)
         setisloading({...isloading, loading3: true})
+        setOpenLoad(true)
         const response = await fetch('/api/update_provider_settings',{
           method: "POST",
           headers: {
@@ -453,20 +593,25 @@ const [isloading, setisloading] = useState({
           const minimum_digits = newData.minimum_digits
           const use_auto_generated_number_for_service_provider = newData.use_auto_generated_number_for_service_provider
           const send_sms_and_email_for_provider = newData.send_sms_and_email_for_provider
+          const enable_2fa_for_service_provider = newData.enable_2fa_for_service_provider
+          const send_email_for_provider = newData.send_email_for_provider
           setOpen(true)
+          setOpenLoad(false)
           // setloading(false)
           setisloading({...isloading, loading3: false})
           setsettingsforProvider((prevData) =>  ({...prevData, prefix, minimum_digits, 
-            use_auto_generated_number_for_service_provider,send_sms_and_email_for_provider
+            use_auto_generated_number_for_service_provider,send_sms_and_email_for_provider,
+            send_email_for_provider,enable_2fa_for_service_provider
              }))
 
              localStorage.setItem('provider settings', JSON.stringify({ use_auto_generated_number_for_service_provider,
-               send_sms_and_email_for_provider}))
+               send_sms_and_email_for_provider, enable_2fa_for_service_provider, send_email_for_provider}))
           console.log('customer_data:',newData)
 
         } else {
           console.log('failed')
           setOpen(false)
+          setOpenLoad(false)
           // setOpenError(true)
           // setloading(false)
           setisloading({...isloading, loading3: false})
@@ -474,6 +619,7 @@ const [isloading, setisloading] = useState({
       } catch (error) {
         console.log(error)
         setOpen(false)
+        setOpenLoad(false)
         // setloading(false)
         setisloading({...isloading, loading3: false})
       }
@@ -545,12 +691,18 @@ const [isloading, setisloading] = useState({
 
 
 
-    const handlegetstoreManagerSettings = useCallback(
+   
+
+
+
+
+
+    const handlegetTicketSettings = useCallback(
       async()=> {
          
           
          try {
-           const response = await fetch(`/api/get_store_manager`, {
+           const response = await fetch(`/api/get_ticket_settings`, {
            method: 'GET',
            signal: controller.signal,  
   
@@ -569,7 +721,7 @@ const [isloading, setisloading] = useState({
          
          
            const {prefix, minimum_digits} = newData[0]
-           setstoreManagerSettings({...storeManagerSettings, prefix,  minimum_digits
+           setsettingsTicket({...settingsTicket, prefix,  minimum_digits
            
            })
            
@@ -591,10 +743,9 @@ const [isloading, setisloading] = useState({
       
     
     useEffect(() => {
-      handlegetstoreManagerSettings()
-    }, [handlegetstoreManagerSettings]);
+      handlegetTicketSettings()
+    }, [handlegetTicketSettings]);
   
-
 
 
 
@@ -612,12 +763,13 @@ const [isloading, setisloading] = useState({
       try {
         // setloading(true)
         setisloading({...isloading, loading4: true})
+        setOpenLoad(true)
         const response = await fetch('/api/update_store_settings',{
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(storeManagerSettings)
+          body: JSON.stringify(settingsForStore)
         })
         const newData = await response.json()
 
@@ -630,6 +782,7 @@ const [isloading, setisloading] = useState({
           const prefix = newData.prefix
           const minimum_digits = newData.minimum_digits
           setOpen(true)
+          setOpenLoad(false)
           // setloading(false)
           setisloading({...isloading, loading4: false})
           setsettingsForStore((prevData) =>  ({...prevData, prefix, minimum_digits, 
@@ -642,11 +795,13 @@ const [isloading, setisloading] = useState({
           setOpen(false)
           // setOpenError(true)
           // setloading(false)
+          setOpenLoad(false)
           setisloading({...isloading, loading4: false})
         }
       } catch (error) {
         console.log(error)
         setOpen(false)
+        setOpenLoad(false)
         // setloading(false)
         setisloading({...isloading, loading4: false})
       }
@@ -668,10 +823,70 @@ const variantDiv = {
 }
 
 
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
 
 
   return (
 
+<>
+
+
+{isloading.loading1 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+
+{isloading.loading2 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+{isloading.loading3 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+
+{isloading.loading4 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+{isloading.loading5 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+
+{isloading.loading6 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
 
 
 <div id="accordion-open" data-accordion="open" className='mt-9'>
@@ -710,24 +925,46 @@ const variantDiv = {
    >
     <div className="p-5 border border-b-0 border-gray-200 ">
    
+    <ThemeProvider theme={materialuitheme}>
 
     <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />}
      label="Require Email At Signup" />
 
-     <Tooltip title={<p className='text-lg'>require your users to login with a one time password/two factor authentication </p>}>
+     <Tooltip title={<p className='text-lg'>require your users to login with two factor authentication </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
          checked={login_with_otp} color="default"/>} 
-      label="Allow Login With OTP(one time password)/2FA" name='login_with_otp' />
+      label="enable 2FA for admins(sms)" name='login_with_otp' />
 </Tooltip>
 
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />} 
-      label="Logout User on exit or after a period of inactivity" />
+
+<Tooltip title={<p className='text-lg'>require your users to login with two factor authentication </p>}>
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
+         checked={login_with_otp_email} color="default"/>} 
+      label="enable 2FA for admins(email)" name='login_with_otp_email' />
+</Tooltip>
+
+
+<Tooltip title={<p className='text-lg'>enable two factor authentication for admin </p>}>
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
+         checked={enable_2fa_for_admin} color="default"/>} 
+      label="enable 2FA for admins" name='enable_2fa_for_admin' />
+</Tooltip>
+
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox
+      checked={check_is_inactive} onChange={handleFormDataChangeForAdmin} color="default" />} 
+      label="Logout  after a period of inactivity"  name='check_is_inactive' />
+
+
+
 
 <Tooltip title={<p className='text-lg'>emails with .co.ke will be rejected, for example  otoshisan@arigato.co.ke </p>} arrow>
     
     
 <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />} 
       label="Use Strict Email Validation"  /> </Tooltip>
+
+</ThemeProvider >
+
       <Box
        className='dark:text-black myTextField'
       component="form"
@@ -737,6 +974,8 @@ const variantDiv = {
       noValidate
     >
 <ThemeProvider theme={materialuitheme}>
+
+
 
 <TextField sx={{
   '& label.Mui-focused':{
@@ -762,20 +1001,115 @@ xs: '30%'
           label="Logout User after a period of inactivity(hrs)"
 
 type='number'
+name='check_inactive_hrs'
+onChange={handleFormDataChangeForAdmin}
+value={check_inactive_hrs}
         />
+
+
+
+
+<TextField sx={{
+  '& label.Mui-focused':{
+    color: 'gray'
+  },
+width: {
+xs: '30%'
+},
+
+'& .MuiOutlinedInput-root': {
+  
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "black",
+    borderWidth: '3px'
+    },
+ '&.Mui-focused fieldset':  {
+    borderColor: 'black', // Set border color to transparent when focused
+
+  }
+},
+}}
+          id="outlined-multiline-flexible"
+          label="Logout User after a period of inactivity(days)"
+value={check_inactive_days}
+onChange={handleFormDataChangeForAdmin}
+name='check_inactive_days'
+type='number'
+        />
+
+
+<TextField sx={{
+  '& label.Mui-focused':{
+    color: 'gray'
+  },
+width: {
+xs: '30%'
+},
+
+'& .MuiOutlinedInput-root': {
+  
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "black",
+    borderWidth: '3px'
+    },
+ '&.Mui-focused fieldset':  {
+    borderColor: 'black', // Set border color to transparent when focused
+
+  }
+},
+}}
+          id="outlined-multiline-flexible"
+          label="Logout User after a period of inactivity(minutes)"
+value={check_inactive_minutes}
+onChange={handleFormDataChangeForAdmin}
+name='check_inactive_minutes'
+type='number'
+        />
+
+
+
 </ThemeProvider >
 
         </Box>
+        <ThemeProvider theme={materialuitheme}>
 
-        <Tooltip title={<p className='text-lg'>send welcome sms to admin after they get registered to the sytem</p>}>
-        <FormControlLabel  className='dark:text-black'  control={<Checkbox color="default"/>} l
-        label="Send Welcome Message After Registration(SMS)" />
+        <Tooltip title={<p className='text-lg'>send  email to admin after they get invited to the sytem</p>}>
+        <FormControlLabel   name='send_password_via_email' className='dark:text-black'  control={<Checkbox color="default"
+        checked={send_password_via_email} onChange={handleFormDataChangeForAdmin}/>} 
+        label="Send Password Via Email After Admin Registration" />
        </Tooltip>
-<div className='p-5'>
-        <button type='submit'  disabled={isloading.loading1} className="btn dark:btn  btn-outline hover:dark:text-white">
-        {isloading.loading1 &&  <ImSpinner9 className={` ${isloading.loading1 && 'animate-spin'  }   `} /> } 
 
-          UPDATE SETTINGS</button>
+
+       <Tooltip title={<p className='text-lg'>send  sms to admin after they get invited to the sytem</p>}>
+        <FormControlLabel  className='dark:text-black'  name='send_password_via_sms' control={<Checkbox color="default"
+        checked={send_password_via_sms} onChange={handleFormDataChangeForAdmin}/>} 
+        label="Send Password Via Sms After Admin Registration" />
+       </Tooltip>
+
+
+
+       <Tooltip title={<p className='text-lg'>users will be prompted/asked to enter their pin number,
+         faceid,touchid (biometrics) from their 
+        phone for them to be be authenticated with the system
+       </p>}>
+        <FormControlLabel  className='dark:text-black' name='login_with_web_auth'  control={<Checkbox color="default"
+        onChange={handleFormDataChangeForAdmin}  checked={login_with_web_auth}/>  } 
+        label="Invite users with passkeys" />
+       </Tooltip>
+
+       </ThemeProvider >
+
+<div className='p-5'>
+
+<button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading1 &&  <ImSpinner9 className={` ${isloading.loading1 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
+
+
+      
 
         </div>
     </div>
@@ -840,8 +1174,20 @@ checked={settingsformData.use_auto_generated_number}
 <FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
  checked={settingsformData.send_sms_and_email} onChange={handleCustomerFormDataChange}
 />}   name='send_sms_and_email'    label="Send Customer Code Once Account 
-Is Created Is Created(SMS/Email)"  />
+Is Created Is Created(Sms)"  />
 
+
+
+<FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
+ checked={settingsformData.enable_2fa} onChange={handleCustomerFormDataChange}
+/>}   name='enable_2fa'    label="Enable 2FA for customer login"  />
+
+
+
+<FormControlLabel name='send_email'  className='dark:text-black' checked={settingsformData.send_email} control={<Checkbox  color="default" 
+  onChange={handleCustomerFormDataChange}
+/>}      label="Send Customer Code Once Account 
+Is Created Is Created(Email)"  />
 
 
 </FormGroup>
@@ -880,10 +1226,12 @@ Is Created Is Created(SMS/Email)"  />
 
         </Stack>
         <div className='p-5'>
-        <button type='submit'  disabled={isloading.loading2} className="btn dark:btn  btn-outline hover:dark:text-white">
-        {isloading.loading2 &&  <ImSpinner9 className={` ${isloading.loading2 && 'animate-spin'  }   `} /> } 
-
-          UPDATE SETTINGS</button>
+        <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading2 &&  <ImSpinner9 className={` ${isloading.loading2 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
 
         </div>
 
@@ -929,12 +1277,29 @@ Is Created Is Created(SMS/Email)"  />
     
     } label="Use Auto GeneratedNumber As Service Provider Code"  />
 
+
+<FormControlLabel name='enable_2fa_for_service_provider'  className=' dark:text-black'
+ 
+       label="enable 2FA for service provider"
+       control={<Checkbox color="default"  onChange={handleCustomerFormDataChangeForProvider}
+        checked={settingsformDataForProvider.enable_2fa_for_service_provider}/>}
+      />
+
+
+
+<FormControlLabel name='send_email_for_provider'   className=' dark:text-black' 
+       label="Send Service Provider
+      Code Once Account Is Created Is Created(Email)"
+       control={<Checkbox color="default" onChange={handleCustomerFormDataChangeForProvider} 
+       checked={settingsformDataForProvider.send_email_for_provider}/>}
+      />
+
       <FormControlLabel  className=' dark:text-black' control={<Checkbox  color="default"   
        onChange={handleCustomerFormDataChangeForProvider}
       checked={settingsformDataForProvider.send_sms_and_email_for_provider
       }
       />} label="Send Service Provider
-      Code Once Account Is Created Is Created(SMS/Email)" name='send_sms_and_email_for_provider' />
+      Code Once Account Is Created Is Created(SMS)" name='send_sms_and_email_for_provider' />
    
       
       </FormGroup>
@@ -971,10 +1336,12 @@ Is Created Is Created(SMS/Email)"  />
    
            </Stack>
            <div className='p-5'>
-         <button type='submit'  disabled={isloading.loading3} className="btn dark:btn  btn-outline hover:dark:text-white">
-        {isloading.loading3 &&  <ImSpinner9 className={` ${isloading.loading3 && 'animate-spin'  }   `} /> } 
-
-          UPDATE SETTINGS</button>
+           <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading3 &&  <ImSpinner9 className={` ${isloading.loading3 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
 
         </div>
         </form>
@@ -1058,10 +1425,12 @@ Is Created Is Created(SMS/Email)"  />
 
         </Stack>
         <div className='p-5'>
-        <button type='submit'  disabled={isloading.loading4} className="btn dark:btn  btn-outline hover:dark:text-white">
-        {isloading.loading4 &&  <ImSpinner9 className={` ${isloading.loading4 && 'animate-spin'  }   `} /> } 
-
-          UPDATE SETTINGS</button>
+        <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading4 &&  <ImSpinner9 className={` ${isloading.loading4 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
 
         </div>
 
@@ -1103,6 +1472,30 @@ Is Created Is Created(SMS/Email)"  />
 
 
    <ThemeProvider theme={materialuitheme}>
+   <Tooltip title={<p className='text-lg'>choose this if you want store managers to receive manager number via sms  </p>}>
+      <FormControlLabel  className='dark:text-black text-white'   control={<Checkbox 
+      onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.send_manager_number_via_sms}
+          color="default"/>} 
+      label="Send Manager Number and otp via sms" name='send_manager_number_via_sms' />
+</Tooltip>
+
+
+<Tooltip title={<p className='text-lg'>choose this if you want store managers to receive manager number via email  </p>}>
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
+      checked={storeManagerSettings.send_manager_number_via_email} onChange={handleFormDataChangeForStoreManager}
+          color="default"/>} 
+      label="Send Manager Number and otp via email" name='send_manager_number_via_email' />
+</Tooltip>
+
+
+
+<Tooltip title={<p className='text-lg'>use two factor authentication for store manager login </p>}>
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
+      onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.enable_2fa_for_store_manager}
+          color="default"/>} 
+      label="enable 2FA for store manager" name='enable_2fa_for_store_manager' />
+</Tooltip>
+
 
 
   <FormGroup>
@@ -1148,11 +1541,109 @@ Is Created Is Created(SMS/Email)"  />
 
         </Stack>
         <div className='p-5'>
-         <button type='submit'  disabled={isloading.loading5} className="btn dark:btn  btn-outline hover:dark:text-white">
-        {isloading.loading5 &&  <ImSpinner9 className={` ${isloading.loading5 && 'animate-spin'  }   `} /> } 
+        <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading5 &&  <ImSpinner9 className={` ${isloading.loading5 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
 
-          UPDATE SETTINGS</button>
+        </div>
 
+        </ThemeProvider>
+
+  </motion.div>
+  </form>
+
+
+
+
+
+
+
+
+
+
+  <h2 id="accordion-open-heading-2">
+    <button type="button"   onClick={()=> setSeeSettings6(!seeSettings6)} className="flex items-center justify-between w-full p-5 
+    
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
+    hover:dark:text-white hover:text-black
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor" viewBox="0 0 20 20"
+       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 
+       1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+        clipRule="evenodd"></path></svg>Ticket Number?</span>
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+       fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
+      </svg>
+    </button>
+  </h2>
+
+
+  <form onSubmit={handleUpdateTicket}>
+
+
+  <motion.div  variants={variantDiv} transition={{duration:0.5, ease: "easeInOut",
+  }} initial='hidden' animate={seeSettings6 ? "visible" : "hidden"} id="accordion-open-body-2"   className={''} 
+  aria-labelledby="accordion-open-heading-2">
+
+
+   <ThemeProvider theme={materialuitheme}>
+
+
+  <FormGroup>
+          
+
+
+
+
+</FormGroup>
+        </ThemeProvider>
+
+<ThemeProvider theme={materialuitheme}>
+
+        <Stack direction='row'  className='myTextField'  sx={{
+           
+        '& .MuiTextField-root': { m: 1, width: '90ch',  marginTop: '30px',  '& label.Mui-focused': {
+          color: 'black',
+          fontSize: '16px'
+          },
+      '& .MuiOutlinedInput-root': {
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          borderColor: "black",
+          borderWidth: '3px',
+          },
+       '&.Mui-focused fieldset':  {
+          borderColor: 'black', 
+          
+        }
+      } },
+      }}   spacing={{
+          xs: 1,
+          sm: 2
+        }}>
+
+          <TextField  
+          
+          label='Ticket Number  Prefix' name='prefix'
+           value={settingsTicket.prefix} onChange={handleFormDataChangeForTickets}></TextField>
+
+          <TextField   
+           className='myTextField'   
+             type='number'  label='Ticket Number Minimum Digits(Zeros will be added to the front, eg SUB001 for
+              three digits)'  name='minimum_digits'  onChange={handleFormDataChangeForTickets} value={settingsTicket.minimum_digits}></TextField>
+
+        </Stack>
+        <div className='p-5'>
+        <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading6 &&  <ImSpinner9 className={` ${isloading.loading6 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
         </div>
 
         </ThemeProvider>
@@ -1161,6 +1652,7 @@ Is Created Is Created(SMS/Email)"  />
   </form>
 </div>
 
+</>
   )
 }
 

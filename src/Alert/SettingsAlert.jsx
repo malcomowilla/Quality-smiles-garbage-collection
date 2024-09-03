@@ -6,9 +6,18 @@ import Alert from '@mui/material/Alert';
  function SettingsAlert ({open, handleClose}) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={open} autoHideDuration={6000}   anchorOrigin={{ vertical, horizontal }}   onClose={handleClose}>
         <Alert
           onClose={handleClose}
           severity="success"

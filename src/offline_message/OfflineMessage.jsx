@@ -19,17 +19,19 @@ const OfflineMessage = () => (
     width: '100%',
     backgroundColor: 'green',
     color: 'white',
-    height: '100%',
+    // height: '150%',
+    height: '1%',
     textAlign: 'center',
     padding: '5px',
     
     zIndex: 1000
   }}>
     <Lottie   animationData={animationData} options={defaultOptions}
-        height={530}
-        width={350}/>
+        height={430}
+        width={250}/>
 
-        <p className='playwrite-de-grund text-2xl'>You are currently offline. Please Check Your Internet Connection.</p>
+        <p className='playwrite-de-grund text-2xl text-black dark:text-black'>You are currently offline. 
+          Please Check Your Internet Connection.</p>
 
     
   </div>

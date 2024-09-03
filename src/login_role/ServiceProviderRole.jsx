@@ -10,19 +10,32 @@ import ProviderLoginAlert from '../Alert/ProviderLoginAlert'
 import  ProviderInvalidCodeAlert from '../Alert/ProviderInvalidCodeAlert'
 import  ProviderInvalidOtpAlert from '../Alert/ProviderInvalidOtpAlert'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { GoPerson } from "react-icons/go";
 
 
  function ServiceProviderRole() {
   const navigate = useNavigate()
   const [loading, setloading] = useState(false)
   const [seeProviderCode, setSeeProviderCode] = useState(false)
-  const {providerLoginData, setproviderLoginData, serviceProvider, setserviceProvider } = useApplicationSettings()
+  const {providerLoginData, setproviderLoginData, serviceProvider, setserviceProvider
+    ,settingsformDataForProvider } = useApplicationSettings()
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [openOtp, setopenOtp] = useState(false)
   const [openProviderLoginAlert, setopenProviderLoginAlert] = useState(false)
 const [openProviderInvalidCode, setopenProviderInvalidCode] = useState(false)
 const [openProviderInvalidOtp, setopenProviderInvalidOtp] = useState(false)
+
+
+
+
+// const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
+
+const storedData = JSON.parse(localStorage.getItem('provider settings'))
+
+const send_sms_and_email_for_provider = storedData.send_sms_and_email_for_provider
+const send_email_for_provider = storedData.send_email_for_provider
+const enable_2fa_for_service_provider = storedData.enable_2fa_for_service_provider
 
 const  handleCloseProviderInvalidOtp = (event, reason)=> {
 
@@ -118,7 +131,6 @@ setopenProviderLoginAlert(true)
 
 
 
-
   const handleProviderSignIn = async(e)=> {
     e.preventDefault()
     
@@ -131,7 +143,8 @@ setopenProviderLoginAlert(true)
         },
         credentials: 'include',
     
-        body: JSON.stringify(providerLoginData)
+        body: JSON.stringify({...providerLoginData,
+           send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider})
       })
     
       if (response.ok) {
@@ -139,6 +152,16 @@ setopenProviderLoginAlert(true)
         setOtpSent(true);
 
         setserviceProvider(true)
+
+        if (enable_2fa_for_service_provider === false  || enable_2fa_for_service_provider === undefined 
+          || enable_2fa_for_service_provider === null || enable_2fa_for_service_provider === 'false'
+          
+        ) {
+          setopenOtp(false)
+          navigate('/service-provider')
+        } else {
+          setopenOtp(true)
+        }
         setopenOtp(true)
     localStorage.setItem('service provider', true);
     
@@ -198,158 +221,264 @@ setopenProviderLoginAlert(true)
  handleCloseProviderInvalidCode={handleCloseProviderInvalidCode}/>
 <ProviderInvalidOtpAlert openProviderInvalidOtp={openProviderInvalidOtp} handleCloseProviderInvalidOtp={handleCloseProviderInvalidOtp} />
 
-    <div    className='bg-white h-screen flex justify-center items-center'>
-    {otpSent ? (
 
-
+{enable_2fa_for_service_provider ? (
+        <>
+  <div    className='bg-white h-screen flex justify-center items-center'>
+     
+     {otpSent ? (
  
-<form    onSubmit={handleVerifyOtp} className="flex max-w-md flex-col gap-4">
-
-
-<div>
-
-<h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl'>
-   
-
-    Login With Your OTP</h2>
-
-<div className="mb-2 block playwrite-de-grund  ">
-  <Label htmlFor="repeat-password" value='Customer Code' />
-</div>
-
+ 
+  
+ <form    onSubmit={handleVerifyOtp} className="flex max-w-md flex-col gap-4">
+ 
+ 
+ <div>
+ 
+ <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
+    
+ 
+     Login With Your OTP
+     
+     <GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
+     </h2>
+ 
+ <div className="mb-2 block playwrite-de-grund  ">
+   <Label htmlFor="repeat-password" value='Customer Code' />
+ </div>
+ 
+     
+ 
+ 
+ <div  className='relative'>
+ <TextInput name="customer_code"  value={otp}  onChange={(e) => setOtp(e.target.value)}
+ type={seeProviderCode ? 'password' : 'text'} 
+  required shadow  
+ className='w-full pr-[-8px]' />
+ 
+   <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
+   flex items-center pr-1 cursor-pointer'>
+  { seeProviderCode  ?   <FaEyeSlash   />  : <FaEye/>
+ 
+ 
+ }
+ 
+   </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ </div>
+ 
+ </div>
+ 
+ <Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
+ 
+ 
+ 
+ <div role="status">
+ { loading &&
+ <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600 fill-red-700`}
+ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
+ 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
+ 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
+ 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+ <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
+ 
+ 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
+ 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
+  10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
+  79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
+  39.0409Z" fill="currentFill"/>
+ </svg>
+ }
+ 
+ </div>
+ 
+ Login, Into Your Portal</Button>
+ {/* <ArrowBackIcon style={{color: 'black'}} onclick={handleGoBack}/> */}
+ <Link className='' to='/choose_role'>
+    <p className='playwrite-de-grund text-black'>Go Back</p>
+    <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
+    </Link> 
+ 
+ 
+ </form>
+ 
+     ) : (
     
 
-
-<div  className='relative'>
-<TextInput name="customer_code"  value={otp}  onChange={(e) => setOtp(e.target.value)}
-type={seeProviderCode ? 'password' : 'text'} 
+      
+ <form    onSubmit={ handleProviderSignIn} className="flex max-w-md flex-col gap-4">
+ 
+ 
+ <div>
+ 
+ <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
+ 
+ 
+ Login With Your Service Provider Code
+ <GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
+ </h2>
+ 
+ <div className="mb-2 block playwrite-de-grund  ">
+ <Label htmlFor="repeat-password" value='Service Provider Code' />
+ </div>
+ 
+ 
+ 
+ 
+ <div  className='relative'>
+ <TextInput name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
+ type={seeProviderCode ? 'password' : 'text'} 
  required shadow  
-className='w-full pr-[-8px]' />
-
-  <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
-  flex items-center pr-1 cursor-pointer'>
- { seeProviderCode  ?   <FaEyeSlash   />  : <FaEye/>
-
-
-}
-
-  </div>
-
-
-
-
-
-
-</div>
-
-</div>
-
-<Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
-
-
-
-<div role="status">
-{ loading &&
-<svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600 fill-red-700`}
-viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-
-20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
+ className='w-full pr-[-8px]' />
+ 
+ <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
+ flex items-center pr-1 cursor-pointer'>
+ {seeProviderCode  ?   <FaEyeSlash   />  : <FaEye/>
+ 
+ 
+ }
+ 
+ </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ </div>
+ 
+ </div>
+ 
+ <Button className='playwrite-de-grund flex ' type="submit" disabled={loading}>
+ 
+ 
+ 
+ <div role="status">
+ { loading &&
+ <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600
+  fill-red-700`}
+ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
+ 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
+ 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
+ 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+ <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
+ 
+ 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
+ 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
  10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
  79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
  39.0409Z" fill="currentFill"/>
-</svg>
-}
+ </svg>
+ }
+ 
+ </div>
+ 
+ Login In </Button>
+ 
+ <Link className='' to='/choose_role'>
+    <p className='playwrite-de-grund text-black'>Go Back</p>
+    <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
+    </Link> 
+  
+ 
+ </form>
+     )}    
+ 
+ </div>
 
-</div>
+        </>
+      ):  <>
+      
+      <div    className='bg-white h-screen flex justify-center items-center'>
+      
+ <form    onSubmit={ handleProviderSignIn} className="flex max-w-md flex-col gap-4">
+ 
+ 
+ <div>
+ 
+ <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
+ 
+ 
+ Login With Your Service Provider Code2
+ <GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
+ </h2>
+ 
+ <div className="mb-2 block playwrite-de-grund  ">
+ <Label htmlFor="repeat-password" value='Service Provider Code' />
+ </div>
+ 
+ 
+ 
+ 
+ <div  className='relative'>
+ <TextInput name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
+ type={seeProviderCode ? 'password' : 'text'} 
+ required shadow  
+ className='w-full pr-[-8px]' />
+ 
+ <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
+ flex items-center pr-1 cursor-pointer'>
+ {seeProviderCode  ?   <FaEyeSlash   />  : <FaEye/>
+ 
+ 
+ }
+ 
+ </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ </div>
+ 
+ </div>
+ 
+ <Button className='playwrite-de-grund flex ' type="submit" disabled={loading}>
+ 
+ 
+ 
+ <div role="status">
+ { loading &&
+ <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600
+  fill-red-700`}
+ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
+ 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
+ 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
+ 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+ <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
+ 
+ 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
+ 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
+ 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
+ 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
+ 39.0409Z" fill="currentFill"/>
+ </svg>
+ }
+ 
+ </div>
+ 
+ Login In </Button>
+ 
+ <Link className='' to='/choose_role'>
+    <p className='playwrite-de-grund text-black'>Go Back</p>
+    <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
+    </Link> 
+ 
+ </form>
+      </div>
+      </>}
 
-Login, Into Your Portal</Button>
-{/* <ArrowBackIcon style={{color: 'black'}} onclick={handleGoBack}/> */}
 
-</form>
-
-    ) : (
-   
-<form    onSubmit={ handleProviderSignIn} className="flex max-w-md flex-col gap-4">
-
-
-<div>
-
-<h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl'>
-
-
-Login With Your Service Provider Code</h2>
-
-<div className="mb-2 block playwrite-de-grund  ">
-<Label htmlFor="repeat-password" value='Service Provider Code' />
-</div>
-
-
-
-
-<div  className='relative'>
-<TextInput name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
-type={seeProviderCode ? 'password' : 'text'} 
-required shadow  
-className='w-full pr-[-8px]' />
-
-<div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
-flex items-center pr-1 cursor-pointer'>
-{seeProviderCode  ?   <FaEyeSlash   />  : <FaEye/>
-
-
-}
-
-</div>
-
-
-
-
-
-
-</div>
-
-</div>
-
-<Button className='playwrite-de-grund flex ' type="submit" disabled={loading}>
-
-
-
-<div role="status">
-{ loading &&
-<svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600
- fill-red-700`}
-viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-
-20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-39.0409Z" fill="currentFill"/>
-</svg>
-}
-
-</div>
-
-Login In </Button>
-
-<ArrowBackIcon style={{color: 'black'}} onClick={handleGoBack} className='cursor-pointer'/>
-
-
-</form>
-    )}    
-
-</div>
+  
   
   </>
   );

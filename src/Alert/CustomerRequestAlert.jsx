@@ -13,10 +13,17 @@ import Alert from '@mui/material/Alert';
 
  function CustomerRequestAlert ({openRequest ,handleCloseRequest}) {
  
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
 
   return (
     <div>
-      <Snackbar open={openRequest} autoHideDuration={6000} onClose={handleCloseRequest}>
+      <Snackbar open={openRequest} anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseRequest}>
         <Alert
           onClose={handleCloseRequest}
           severity="success"

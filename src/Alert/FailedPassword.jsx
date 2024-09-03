@@ -11,9 +11,17 @@ import Alert from '@mui/material/Alert';
  function FailedPassword ({openFailedPasswordAlert, handleCloseFailedPasswordAlert,passwordError,seepasswordError}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openFailedPasswordAlert} autoHideDuration={9600} onClose={handleCloseFailedPasswordAlert}>
+      <Snackbar open={openFailedPasswordAlert}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={9600} onClose={handleCloseFailedPasswordAlert}>
         <Alert
           onClose={handleCloseFailedPasswordAlert}
           severity="error"

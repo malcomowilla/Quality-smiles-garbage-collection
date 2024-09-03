@@ -6,9 +6,19 @@ import Alert from '@mui/material/Alert';
  function StoreAlertError({openAlertError, handleCloseAlertError}) {
  
 
+
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openAlertError} autoHideDuration={6000} onClose={handleCloseAlertError}>
+      <Snackbar open={openAlertError}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseAlertError}>
         <Alert
           onClose={handleCloseAlertError}
           severity="error"

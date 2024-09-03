@@ -6,9 +6,17 @@ import Alert from '@mui/material/Alert';
  function LocationAlertError ({openLocationAlertError, handleCloseLocationAlertError}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openLocationAlertError} autoHideDuration={6000} onClose={handleCloseLocationAlertError}>
+      <Snackbar open={openLocationAlertError}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseLocationAlertError}>
         <Alert
           onClose={handleCloseLocationAlertError}
           severity="error"

@@ -129,7 +129,7 @@ const handleChangeDate = (date)=> {
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-gradient-to-br from-teal-600 to-teal-600 text-white p-6 rounded-lg w-full
+          className="bg-white text-black p-6 rounded-lg w-full
            max-w-lg shadow-xl cursor-default relative overflow-hidden"
         >
                       <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
@@ -143,7 +143,7 @@ const handleChangeDate = (date)=> {
 
 <form className="max-w-sm mx-auto" onSubmit={addCustomer} >
 <div className="mb-5">
-  <label htmlFor="email" className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Your email</label>
+  <label htmlFor="email" className="block  mb-2 text-sm playwrite-de-grund  text-black">Your email</label>
   <p className='text-rose-800'>{seeEmailError && emailError}</p>
   <input   value={email}  type="text" name="email"  className="input border-black focus:border-black
     focus:ring-black input-lg w-full 
@@ -151,7 +151,7 @@ const handleChangeDate = (date)=> {
 
 </div>
 <div className="mb-5">
-  <label className="block mb-2 text-sm playwrite-de-grund  dark:text-white">Your PhoneNumber</label>
+  <label className="block mb-2 text-sm playwrite-de-grund  text-black">Your PhoneNumber</label>
             <p className='text-rose-800'>{seePhoneNumberError && phoneNumberError}</p> 
   <input  value={phone_number}  onChange={handleChangePhoneNumber} type="text" name="phone_number"  className="input 
    border-black focus:border-black
@@ -159,7 +159,7 @@ const handleChangeDate = (date)=> {
 </div>
 
 <div className="mb-5">
-  <label className="block mb-2 text-sm playwrite-de-grund  dark:text-white">Your Name</label>
+  <label className="block mb-2 text-sm playwrite-de-grund  text-black">Your Name</label>
   <p className='text-rose-900'>{seeNameError && nameError}</p>
   <input  onChange={handleChange} value={name}    type="text" name="name"  className="input 
     focus:border-black input-lg w-full border-black bg-transparent" />
@@ -168,7 +168,7 @@ const handleChangeDate = (date)=> {
 
 
 <div className="mb-5">
-  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund dark:text-white">Amount paid</label>
+  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund text-black">Amount paid</label>
   <input type="number"   onChange={handleChange}  name='amount_paid'   value={amount_paid}  className="input  
     border-black focus:border-black input-lg w-full  bg-transparent" />
 </div>
@@ -177,7 +177,7 @@ const handleChangeDate = (date)=> {
 
 
 <div className="mb-5">
-  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund dark:text-white">Location</label>
+  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund text-black">Location</label>
   <input type="text" name="location"  value={location}     onChange={handleChange}  className="input  
   focus:border-black input-lg w-full border-black
     bg-transparent" />
@@ -189,7 +189,7 @@ const handleChangeDate = (date)=> {
 
 <DemoContainer   minDate={dayjs(new Date())}
            maxDate={dayjs(new Date())}   sx={{ m: 1,  '& label.Mui-focused': {
-          color: 'white',
+          color: 'black',
           fontSize:'16px'
         
           },
@@ -214,7 +214,7 @@ const handleChangeDate = (date)=> {
 
 
  <div className="mb-5">
-  {seeCustomerCode && (<>  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund dark:text-white">Customer Code</label>
+  {seeCustomerCode && (<>  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund text-black">Customer Code</label>
   <input type="text" name="customer_code"  value={customer_code} onChange={handleChange}  className="input  
   
     focus:border-black border-black
@@ -226,7 +226,20 @@ const handleChangeDate = (date)=> {
 
 
 <div className="flex gap-8">
-            <button type="submit"  disabled={loading}   className="btn btn-active">
+
+
+<button type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all shadow-[3px_3px_0px_black] 
+hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+  {loading && <ImSpinner9 className={`${loading && 'animate-spin block'} hidden`}/>}
+        Submit
+      </button>
+
+
+      <button  onClick={handleCloseRegistrationForm} className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
+       hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Cancel
+      </button>
+            {/* <button type="submit"  disabled={loading}   className="btn btn-active">
               
             {loading && <ImSpinner9 className={`${loading && 'animate-spin block'} hidden`}/>}
 
@@ -238,7 +251,7 @@ const handleChangeDate = (date)=> {
               >
                 
                   Cancel
-              </button>
+              </button> */}
             </div>
 </form>
 

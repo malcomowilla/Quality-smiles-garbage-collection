@@ -7,9 +7,18 @@ import Alert from '@mui/material/Alert';
  function ProviderOfflineError ({openProviderOfflineAlert, handleCloseroviderOfflineAlert}) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openProviderOfflineAlert} autoHideDuration={6000} onClose={handleCloseroviderOfflineAlert}>
+      <Snackbar open={openProviderOfflineAlert}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseroviderOfflineAlert}>
         <Alert
           onClose={handleCloseroviderOfflineAlert}
           severity="error"

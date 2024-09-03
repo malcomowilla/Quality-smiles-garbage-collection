@@ -13,11 +13,12 @@ import SubLocationUpdatedAlert from '../Alert/SubLocationUpdatedAlert'
 import SubLocationAddAlert from '../Alert/SubLocationAddAlert'
 import SubLocationAlertError from '../Alert/SubLocationAlertError'
 import AccessDenied from '../access_denied/AccessDenied'
-
+import {useNavigate} from 'react-router-dom'
 
 
  
 const Sublocation = () => {
+  const navigate = useNavigate()
     const {
       
         materialuitheme , sublocationForm, setSubLocationForm,sublocations, setSubLocations,openAccessDenied2,
@@ -131,6 +132,13 @@ useCallback(
       clearTimeout(id);
 
       const newData = await response.json()
+
+
+      if (response.status === 401) {
+        navigate('/signin')
+
+
+      }
       if (response.status === 403) {
         // setopenopenAccessDenied2(true)
       }

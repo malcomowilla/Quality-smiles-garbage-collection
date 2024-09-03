@@ -3,21 +3,29 @@ import { motion } from "framer-motion";
 import {Link} from 'react-router-dom'
 import MySettings from './MySettings'
 import SmsSettings from './SmsSettings'
-
+import {useApplicationSettings} from './ApplicationSettings'
 
 export const GeneralSettings = () => {
     const [tab, setTab] = useState('General')
 
+
+const {  canManageSmsTemplates,canReadSmsTemplates, user
+} = useApplicationSettings()
+
+
+
   return (
     <div className=" py-20">
-      <SlideTabs  setTab={setTab}/>
+      <SlideTabs  setTab={setTab} user={user} canManageSmsTemplates={canManageSmsTemplates}
+       canReadSmsTemplates={canReadSmsTemplates}/>
       {tab === 'General' &&  <MySettings />}
       {tab === 'Sms' && <SmsSettings />}
     </div>
   );
 };
 
-const SlideTabs = ({setTab}) => {
+const SlideTabs = ({setTab,   canManageSmsTemplates,canReadSmsTemplates, user
+}) => {
   
   const [position, setPosition] = useState({
     left: 0,
@@ -48,7 +56,8 @@ setTab('General')
         e.preventDefault()
 setTab('Sms')
 
-      }}>Sms</Link></Tab>
+      }}>{  user === 'super_administrator' || user === 'administrator' ||
+       canManageSmsTemplates === true || canReadSmsTemplates ===true ?  'Sms' : null}</Link></Tab>
 
       <Cursor position={position} />
     </ul>

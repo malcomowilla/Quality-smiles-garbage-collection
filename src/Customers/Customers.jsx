@@ -2,7 +2,7 @@ import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
-import {useState, useCallback, useEffect} from 'react'
+import {useState, useCallback, useEffect,} from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import CustomerRegistrationForm from '../registration/CustomerRegitrationForm'
@@ -16,17 +16,20 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { ImSpinner9 } from "react-icons/im";
 import AccessDenied from '../access_denied/AccessDenied'
-
+import { requestPermission } from '../firebase/firebasePermission';
+import {useNavigate} from 'react-router-dom'
+import OneSignal from 'react-onesignal';
 
 
 const Customers = () => {
-
+const navigate = useNavigate()
  
   const {customers, setGetCustomers, customerformData, setcustomerformData,
-     setSeeCustomerCode, updatedMessage, setUpdatedMessage,  settingsformData
+     setSeeCustomerCode, updatedMessage, setUpdatedMessage,  settingsformData,
+     materialuitheme
   } = useApplicationSettings()
 
-  const {send_sms_and_email} = settingsformData
+  const {send_sms_and_email, send_email} = settingsformData
 console.log('sms and email:',send_sms_and_email )
   const [isOpen, setIsOpen] = useState(false);
 const [openAddition, setopenAddition] = useState(false)
@@ -43,9 +46,37 @@ const [nameError, setNameError] = useState('')
 const [seeNameError, setSeeNameError] = useState(false)
 const [openAccessDenied, setopenopenAccessDenied] = useState(false)
 
-const handleCloseOfflineAlert = ()=> [
+
+// useEffect(() => {
+//   requestPermission();
+// }, []);
+
+
+// const runOneSignal = useCallback(
+//   async () => {
+//     await OneSignal.init({ appId: "9491f0f0-0f1b-4ab6-b339-6289d264eeb5", allowLocalhostAsSecureOrigin: true, 
+//       path: '/OneSignalSDKWorker.js'
+//     });
+//     OneSignal.Slidedown.promptPush();
+//   },
+//   [],
+// )
+
+
+
+// useEffect(() => {
+//   if (window.OneSignal) {
+//     runOneSignal();
+//   } else {
+//     console.error("OneSignal SDK not loaded");
+//   }
+// }, [runOneSignal]);
+
+
+
+const handleCloseOfflineAlert = ()=> {
   setOpenOfflineAlert(false)
-]
+}
 
 
 
@@ -176,7 +207,11 @@ useCallback(
 
       })
       clearTimeout(id);
+      if (response.status === 401) {
+        navigate('/signin')
 
+
+      }
       const newData = await response.json()
       if (response.status === 403) {
         // setopenopenAccessDenied(true)
@@ -217,7 +252,7 @@ useEffect(() => {
       headers: {
 'Content-Type': 'application/json'
       },
-      body: JSON.stringify({...customerformData, send_sms_and_email}),
+      body: JSON.stringify({...customerformData, send_sms_and_email, send_email}),
 
       })
 
@@ -234,7 +269,7 @@ useEffect(() => {
           setloading(false)
           setIsOpenUpdated(true)
           // Update existing package in tableData
-          setGetCustomers(customers.map(item => (item.id === customerformData.id ? newData.customer : item)));
+          setGetCustomers(customers.map(item => (item.id === customerformData.id ? newData.customer : item)))
          
           setUpdatedMessage(newData.message)
          
@@ -289,10 +324,6 @@ useEffect(() => {
         <img src="/images/logo/6217227_bin_fly_garbage_trash_icon.png"  onClick={()=> setIsOpenDelete(true)}  className='w-8 h-8 ' alt="delete" />
       )
 
-
-    const {
-      
-        materialuitheme  } = useApplicationSettings()
   return (
 
 <>

@@ -72,7 +72,7 @@ setSubLocationForm((prevData) => (
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-gradient-to-br from-green-600 to-teal-600 text-white p-6 rounded-lg w-full
+          className="bg-white text-black p-6 rounded-lg w-full
            max-w-lg shadow-xl cursor-default relative overflow-hidden"
         >
           <div className="relative z-10">
@@ -103,13 +103,31 @@ setSubLocationForm((prevData) => (
 
 
 <div className="flex gap-8">
-            <button type="submit" disabled={loading} className="btn btn-active"> 
+            {/* <button type="submit" disabled={loading} className="btn btn-active"> 
 
             {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
            
 
-            Submit</button>
+            Submit</button> */}
 
+
+
+<button type='submit' className="px-6 py-2 font-medium bg-green-500 text-white w-fit transition-all shadow-[3px_3px_0px_black]
+ hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+   {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
+      Submit
+      </button>
+
+
+      <button  onClick={handleCloseSublocationForm} className="px-6 py-2 font-medium bg-red-700 text-white w-fit transition-all shadow-[3px_3px_0px_black] 
+      hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+        Cancel
+      </button>
+
+
+
+
+{/* 
               <button
               
                 onClick={handleCloseSublocationForm}
@@ -117,7 +135,7 @@ setSubLocationForm((prevData) => (
               >
                   Cancel
 
-              </button>
+              </button> */}
             </div>
 </form>
 

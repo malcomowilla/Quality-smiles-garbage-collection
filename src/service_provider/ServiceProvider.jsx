@@ -16,17 +16,19 @@ import  ProviderDeleteAlert from '../Alert/ProviderDeleteAlert'
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import AccessDenied from '../access_denied/AccessDenied'
-
+import {useNavigate} from 'react-router-dom'
 
 
 
 const ServiceProvider = () => {
 
+
+  const navigate = useNavigate()
   const {providers, setGetProviders,  providerformData,  setproviderformData,
     setProviderCode,  updatedMessageProvider, setUpdatedMessageProvider, materialuitheme,settingsformDataForProvider
  } = useApplicationSettings()
 
-const {send_sms_and_email_for_provider} = settingsformDataForProvider
+const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
 
 
  const [isOpenProvider, setIsOpenProvider] = useState(false)
@@ -134,7 +136,11 @@ useCallback(
         signal: controller.signal,  
 
       })
+      if (response.status === 401) {
+        navigate('/signin')
 
+
+      }
       const newData = await response.json()
       if (response.status === 403) {
         // setOpenAcessDenied(true)
@@ -219,7 +225,9 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
       headers: {
 'Content-Type': 'application/json'
       },
-      body: JSON.stringify({...providerformData, send_sms_and_email_for_provider}),
+      body: JSON.stringify({...providerformData, send_sms_and_email_for_provider, send_email_for_provider,
+        enable_2fa_for_service_provider
+      }),
 
       })
 

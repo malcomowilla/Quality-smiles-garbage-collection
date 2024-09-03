@@ -19,12 +19,13 @@ import StoreManagerDeleteAlert from '../Alert/StoreManagerDeleteAlert'
 import  StoreManagerAlertError from '../Alert/StoreManagerAlertError'
 import  DeleteStoreManager from './DeleteStoreManager'
 import AccessDenied from '../access_denied/AccessDenied'
-
-
+import { IoCheckmarkOutline } from "react-icons/io5";
+import CloseIcon from '@mui/icons-material/Close';
+import StoreManagerUpdate from '../Alert/StoreManagerUpdate'
 
 
 const StoreManager = () => {
-    const {materialuitheme, storeManagerForm, setStoreManagerForm} = useApplicationSettings()
+    const {materialuitheme, storeManagerForm, setStoreManagerForm, storeManagerSettings} = useApplicationSettings()
 
     const [loading, setloading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -37,6 +38,17 @@ const [isOpenDelete, setisOpenDelete] = useState(false)
 const [openAccessDenied, setopenopenAccessDenied] = useState(false)
 const [open, setOpen] = useState(false);
 const [open2, setOpen2] = useState(false);
+const [openLoad, setopenLoad] = useState(false)
+const [openStoreManagerUpdate, setopenStoreManagerUpdate] = useState()
+
+const handleCloseStoreManagerUpdate = ()=>{
+  setopenStoreManagerUpdate(false)
+}
+
+
+const {send_manager_number_via_sms, enable_2fa_for_store_manager, send_manager_number_via_email} = storeManagerSettings
+
+
 
 const handleCloseErrorStoreManager = ()=> {
 
@@ -160,7 +172,7 @@ const response = await fetch(`/api/delete_store_manager/${id}`, {
 
 
 
-
+console.log("send_manager_number_via_email=>", send_manager_number_via_email)
 
 
 const handleAddStoreManager = async (e)=> {
@@ -168,6 +180,7 @@ e.preventDefault()
 
 try {
 setloading(true)
+setopenLoad(true)
   const url = storeManagerForm.id ? `/api/update_store_manager/${storeManagerForm.id}` : '/api/create_store_manager';
       const method = storeManagerForm.id ? 'PATCH' : 'POST';
 
@@ -177,7 +190,8 @@ setloading(true)
         headers: {
   'Content-Type': 'application/json'
         },
-        body: JSON.stringify(storeManagerForm),
+        body: JSON.stringify({...storeManagerForm, send_manager_number_via_email,
+           enable_2fa_for_store_manager, send_manager_number_via_sms}),
   
         })
   
@@ -187,13 +201,16 @@ setloading(true)
     setOpen2(false)
     if (storeManagerForm.id) {
       setloading(false)
+      setopenLoad(false)
       setopenUpdateStore(true)
       setStoreManager(storeManager.map(item => (item.id === storeManagerForm.id ? newData : item)));
       setIsOpen(false)
+      setopenStoreManagerUpdate(true)
 
 
     } else {
       setopenAddStore(true)
+      setopenLoad(false)
       setStoreManager((prevData)=> (
       [...prevData, newData]
       ));
@@ -206,6 +223,7 @@ setIsOpen(false)
     setloading(false)
     setpenAlertErrorStoreManager(true)
     setIsOpen(false)
+    setopenLoad(false)
 
   
 
@@ -215,7 +233,7 @@ setIsOpen(false)
   setloading(false)
   setpenAlertErrorStoreManager(true)
   setIsOpen(false)
-
+  setopenLoad(false)
   
 
 
@@ -244,7 +262,7 @@ const handleAddButton = ()=> {
            className='w-8 h-8 cursor-pointer' alt="delete"  onClick={()=> setisOpenDelete(true)}/>
         )
 
-
+        
 
   return (
 
@@ -254,9 +272,9 @@ const handleAddButton = ()=> {
     <AccessDenied />
    ) : 
    <>
-   
+   <StoreManagerUpdate openStoreManagerUpdate={openStoreManagerUpdate} handleCloseStoreManagerUpdate={handleCloseStoreManagerUpdate}/>
 <StoreManagerForm loading={loading} isOpen={isOpen} setIsOpen={setIsOpen} handleAddStoreManager={handleAddStoreManager}
-open={open} setOpen={setOpen} setOpen2={setOpen2} open2={open2}
+open={open} setOpen={setOpen} setOpen2={setOpen2} open2={open2} openLoad={openLoad}
 />
 <StoreManagerAddAlert handleCloseAddStore={handleCloseAddStore} openAddStore={openAddStore} openDeleteStore={openDeleteStore}
 
@@ -284,7 +302,6 @@ setisOpenDelete={setisOpenDelete}/>
       columns={[
         { title: "Number Of Bags Received", field: "number_of_bags_received" },
 
-        { title: "Date Received", field: "date_received" },
 
         {
             title: "Number Of Bags Delivered",
@@ -297,8 +314,13 @@ setisOpenDelete={setisOpenDelete}/>
           // },
           {
             title: "Date Delivered",
-            field: "date_delivered",
+            field: "formatted_delivered_date",
         
+          },
+
+          {
+title: "Date Received",
+field: "formatted_received_date"
           },
 
           {
@@ -324,14 +346,22 @@ setisOpenDelete={setisOpenDelete}/>
 
           {
             title: "Received Bags",
-            field: "Received Bags",
+            field: "received_bags",
+            lookup: {
+              "true": <IoCheckmarkOutline className='w-8 h-8 text-green-700' />,
+              "false": <CloseIcon style={{color: 'red'}}/>
+            }
         
           },
 
 
           {
             title: "Delivered Bags",
-            field: "Delivered Bags",
+            field: "delivered_bags",
+            lookup: {
+              "true": <IoCheckmarkOutline className='w-8 h-8 text-green-700' />,
+              "false": <CloseIcon style={{color: 'red'}}/>
+            }
         
           },
 

@@ -14,30 +14,37 @@ import AnimationDone from '../animation/done_tick-animation.json'
 import { RiArrowGoBackFill } from "react-icons/ri";
 import SinupInvalidOtpAlert from '../Alert/SinupInvalidOtpAlert'
 import {useAuth} from '../settings/AuthSettings'
+import LogoutSuccess from '../Alert/LogoutSuccess'
+import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
 
 
 
 
+// OtpSentSmsAlert openOtpSentAlert, handleCloseOtpSentAlert
 
 
 
 const SignIn = () => {
 
-  const {isSeenPassWord,  setIsSeenPassword,  setPhone, phone, signupFormData,isloading, handleFormDataChange,
+  const {isSeenPassWord,  setIsSeenPassword,  setPhone, phone,isloading, signinFormData,
+    handleFormDataChangeSignin,
     seeError, setSeeError, registrationError,
     setRegistrationError,
-    setloading, adminFormSettings, handleChangePhoneNumber, admin, setAdmin,adminPermission, setAdminPermission} = useApplicationSettings()
+    setloading, adminFormSettings, handleChangePhoneNumber, admin, setAdmin,adminPermission, 
+    setAdminPermission, fetchCurrentUser, setTheme,  openLogoutSuccess,handleCloseLogoutSuccess,
+    handleChangePhoneNumberSignin,
+
+    setopenLoginSuccess,user
+ } = useApplicationSettings()
 
 
 
 
-
-console.log('adminpermision',adminPermission)
 
 
 const {setUser, isUserLogedIn, setIsUserLoggedIn} = useAuth()
-const {login_with_otp} = adminFormSettings
-  const {email, password,phone_number }= signupFormData
+// const {login_with_otp, login_with_web_auth} = adminFormSettings
+  const {email, password,phone_number, user_name } = signinFormData
   const navigate = useNavigate()
 
   const [emailFocused, setEmailFocused] = useState(false);
@@ -53,9 +60,20 @@ const {login_with_otp} = adminFormSettings
   const [otpSent, setotpSent] = useState(false)
 const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
+const [openOtpSentAlert, setopenOtpSentAlert] = useState(false)
 
-console.log('login with otp:',login_with_otp)
+const handleCloseOtpSentAlert = ()=> {
+  setopenOtpSentAlert(false)
+}
 
+const storedDataJson = localStorage.getItem("admin settings");
+const storedData = storedDataJson ? JSON.parse(storedDataJson) : {};         
+  const login_with_otp = storedData.login_with_otp 
+ const login_with_web_auth = storedData.login_with_web_authn 
+const login_with_otp_email = storedData.login_with_otp_email  
+const enable_2fa_for_admin = storedData.enable_2fa_for_admin
+
+ console.log('login with otp:',login_with_otp)
 
 const  handleCloseOtpInvalid = ()=> {
   setopenOtpInvalid(false)
@@ -85,7 +103,8 @@ const  handleCloseOtpInvalid = ()=> {
 
 const handleGoBack = (e)=> {
   e.preventDefault()
-  navigate(-1)
+  // navigate(-1)
+  setotpSent(false)
 }
 
 
@@ -96,6 +115,27 @@ useEffect(() => {
 // api/login-admin
 
 // https://quality-smile-garbabe-collection-backend-1jcd.onrender.com/login-admin
+
+
+
+useEffect(() => {
+  
+  setRegistrationError('')
+}, [setRegistrationError]);
+
+
+
+
+// useEffect(() => {
+  
+// if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
+//   localStorage.setItem('acha umbwakni', false);
+// }
+//   return () => {
+    
+//   };
+// }, []);
+
   const handleSignIn = async (e) => {
  
 
@@ -113,8 +153,8 @@ useEffect(() => {
       }, 
       credentials: 'include', // Include cookies in the request
   
-  
-      body: JSON.stringify({...signupFormData, adminFormSettings}),
+      
+      body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp, enable_2fa_for_admin}),
   
     },
   
@@ -127,30 +167,31 @@ useEffect(() => {
     let  actualUserDataInJson = await users.json()
   
     if (users.ok) {
+      
+      
       // const actualUserDataInJson = await users.json
       setloading(false)
     // setUser(actualUserDataInJson.admin)
-
     setAdmin(true)
-    localStorage.setItem('acha umbwakni', true);
-    if (login_with_otp === false) {
-      navigate('/admin/location')
+    
+
+
+if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
+  setotpSent(true)
+  setopenOtpSentAlert(true)
+  localStorage.setItem('acha umbwakni', false);
+} else if(enable_2fa_for_admin === false || enable_2fa_for_admin === undefined || enable_2fa_for_admin === null
+   || enable_2fa_for_admin === 'false') {
+  navigate('/admin/dashboard')
+  localStorage.setItem('acha umbwakni', true);
+setopenLoginSuccess(true)
+fetchCurrentUser()
+      setTheme("light")
       console.log('admin',actualUserDataInJson.can_manage_settings
       )
       setAdminPermission(actualUserDataInJson.can_manage_settings
       )
-    }else if(login_with_otp === true){
-      navigate('/admin/location')
-    }
-    setTimeout(() => {
-      setDone(false);
-      setloading(false);
-      setTimeout(() => {
-       
-        setotpSent(true)
-      }, 2000);
-    }, 2500);
-
+}
 
 
 
@@ -161,15 +202,17 @@ useEffect(() => {
   
     } else {
         setloading(false)
-        console.log('sigup  failed')
+        console.log('signin  failed')
         setRegistrationError(actualUserDataInJson.error)
         setSeeError(true)
+        // setSigninFormData({})
     }   
 
   } catch (error) {
     console.log(error.name === 'AbortError');
     setloading(false)
     setSeeError(false)
+    // setSigninFormData('')
   }
   }
 
@@ -197,7 +240,7 @@ useEffect(() => {
       credentials: 'include', // Include cookies in the request
   
   
-      body: JSON.stringify({...signupFormData, otp, phone}),
+      body: JSON.stringify({...signinFormData, otp, phone}),
   
     },
   
@@ -214,13 +257,14 @@ useEffect(() => {
       setloading(false)
     console.log(actualUserDataInJson)
 
-
-
+    fetchCurrentUser()
+    setTheme("light")
+    setopenLoginSuccess(true)
     setTimeout(() => {
       setDone(true);
       setloading(false);
       setTimeout(() => {
-        navigate('/admin/location')
+        navigate('/admin/dashboard')
       }, 2000);
     }, 2500);
 
@@ -246,10 +290,14 @@ useEffect(() => {
     setSeeError(false)
   }
   }
-
   return (
     <>
-{login_with_otp ? (
+
+
+    <OtpSentSmsAlert handleCloseOtpSentAlert={handleCloseOtpSentAlert}   openOtpSentAlert={openOtpSentAlert}
+    />
+    <LogoutSuccess openLogoutSuccess={openLogoutSuccess} handleCloseLogoutSuccess={handleCloseLogoutSuccess} />
+{enable_2fa_for_admin ? (
   <>
   
   
@@ -272,89 +320,88 @@ useEffect(() => {
     <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
       
        </Backdrop> }
-    <section    className="bg-gray-50 h-screen relative z-50   grid 
-       xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
-     bg-small-screens2   ">
-
-    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
-              <div className='mb-9'>
-              <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
-            <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
-           <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
-        </a>
-              </div>
-      
-        <h2 className="text-2xl  leading-tight tracking-tight text-wrap playwrite-de-grund   font-bold mb-4 text-gray-900    ">
-          Continue With Your One Time Password
-
-          </h2>
-        
-        <div className="  rounded-lg shadow    md:mt-0 sm:max-w-[40rem] xl:p-0  ">
-      
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
-             
-              
-                <form className="space-y-4 md:space-y-6 " onSubmit={handleVerifyOtp}>
-                
-                   
+   
 
 
 
+       <section    className=" h-screen relative z-50   grid 
+xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
+bg-small-screens2  ">
 
-                    
+<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
+       <div className='mb-9'>
+       <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
+     <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
+    <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
+ </a>
+       </div>
 
+ <h2 className="text-2xl  leading-tight tracking-tight text-wrap playwrite-de-grund   font-bold mb-4 text-gray-900    ">
+   Continue With Your One Time Password
 
-                    <div className='flex flex-col relative'>
-                    <div className='absolute self-end bottom-0 p-2 text-white'  onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
-                  <ion-icon  name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
-                      </div>
-                        <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
-                         text-black">Your OTP</label>
-                        <motion.input  style={{width: passwordWidth}}     transition={{duration:5, ease: "easeOut",
-  }}   onChange={(e)=>{
-    setOtp(e.target.value)
-    passwordValue.set(e.target.value)
-  }} value={otp} type={isSeenPassWord  ? 'password' : 'text'} name="otp" id="otp"className=" border  focus:border-2
-                          text-white  handlee-regular   transition-all duration-1000 sm:text-lg rounded-lg 
-                          focus:ring-green-400 bg-transparent
-                           border-black
-                           block  p-2.5  focus:border-green-700
-                            "/>
-                    </div>
-                    
-                    <div className="flex items-start">
-                        <div className="flex items-center h-5">
-                          <motion.input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border
-                           border-gray-300
-                           rounded
-                           bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700
-                            dark:border-gray-600 dark:focus
-                           :ring-primar
-                           y-600 dark:ring-offset-gray-800"/>
-                        </div>
-                      
-                    </div>
-  
-                    <div className='flex justify-center'>
-                    <button type='submit' className="btn btn-outline btn-success ">Login
-                  
-                  <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
-                  </button>  
-                    </div>
-
-                    <div className='cursor-pointer' onClick={handleGoBack}>
-                    <RiArrowGoBackFill  className='text-black text-xl'/> <p className='text-black'>
-    Go Back
-  </p>
-                    </div>
+   </h2>
  
-                 
-                </form>
-            </div>
-        </div>
-    </div>
-    
-  </section>
+ <div className="  rounded-lg shadow    md:mt-0 sm:max-w-[40rem] xl:p-0  ">
+
+     <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
+      
+       
+         <form className="space-y-4 md:space-y-6 " onSubmit={handleVerifyOtp}>
+         
+            
+
+
+
+
+             
+
+
+             <div className='flex flex-col relative'>
+             <div className='absolute self-end bottom-0 p-2 text-white'  onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
+           <ion-icon  name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
+               </div>
+                 <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
+                  text-black">Your OTP</label>
+                 <motion.input  style={{width: passwordWidth}}     transition={{duration:5, ease: "easeOut",
+}}   onChange={(e)=>{
+setOtp(e.target.value)
+passwordValue.set(e.target.value)
+}} value={otp} type={isSeenPassWord  ? 'password' : 'text'} name="otp" id="otp"className=" border  focus:border-2
+                   text-white  handlee-regular   transition-all duration-1000 sm:text-lg rounded-lg 
+                   focus:ring-green-400 bg-transparent
+                    border-black
+                    block  p-2.5  focus:border-green-700
+                     "/>
+             </div>
+             
+             <div className="flex items-start">
+                 <div className="flex items-center h-5">
+                  
+                 </div>
+               
+             </div>
+
+             <div className='flex justify-center'>
+             <button type='submit' className="btn btn-outline btn-success ">Login
+           
+           <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
+           </button>  
+             </div>
+
+             <div className='cursor-pointer' onClick={handleGoBack}>
+             <RiArrowGoBackFill  className='text-black text-xl'/> <p className='text-black'>
+Go Back
+</p>
+             </div>
+
+          
+         </form>
+     </div>
+ </div>
+</div>
+
+</section>
+
   </>
 ) : <>
 
@@ -373,7 +420,11 @@ useEffect(() => {
     <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
       
        </Backdrop> }
-    <section    className="bg-gray-50 h-screen relative z-50   grid 
+   
+
+
+
+       <section    className="bg-gray-50 h-screen relative z-50   grid 
        xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
      bg-small-screens2   ">
 
@@ -415,10 +466,11 @@ useEffect(() => {
                         <motion.input
                            
                   type="email"
-                  onChange={  (e)=> {
-                    handleFormDataChange(e)
-                    emailValue.set(e.target.value)
-                  } }
+                  onChange={handleFormDataChangeSignin}
+                  // onChange={  (e)=> {
+                  //   handleFormDataChangeSignin(e)
+                  //   emailValue.set(e.target.value)
+                  // } }
                 style={{width: emailWidth}} transition={{duration:5, ease: "easeOut",
   }}    name="email"  value={email} id="email" 
                         className={` border  focus:border-2 
@@ -449,7 +501,7 @@ useEffect(() => {
 
 
 <input value={phone_number}
-        onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
+        onChange={handleChangePhoneNumberSignin}     name="phone_number"  className="border  focus:border-2
         text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
         sm:text-lg border-black
          block w-full p-2.5  focus:border-green-700
@@ -467,10 +519,19 @@ useEffect(() => {
                         <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
                          text-black">Password</label>
                         <motion.input       transition={{duration:5, ease: "easeOut",
-  }}   onChange={(e)=>{
-    handleFormDataChange(e)
-    passwordValue.set(e.target.value)
-  }} value={password} type={isSeenPassWord  ? 'password' : 'text'} name="password" id="password"className=" border 
+  }}
+  
+  
+  
+  // onChange={(e)=>{
+  //   handleFormDataChangeSignin(e)
+  //   passwordValue.set(e.target.value)
+  // }} 
+  
+  onChange={handleFormDataChangeSignin}
+  
+  
+  value={password} type={isSeenPassWord  ? 'password' : 'text'} name="password" id="password"className=" border 
    focus:border-2
                           text-white  handlee-regular   transition-all duration-1000 sm:text-lg rounded-lg 
                           focus:ring-green-400 bg-transparent
@@ -480,19 +541,18 @@ useEffect(() => {
                     </div>
                     
                     <div className="flex items-start">
-                        <div className="flex items-center h-5">
-                          <motion.input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border
-                           border-gray-300
-                           rounded
-                           bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700
-                            dark:border-gray-600 dark:focus
-                           :ring-primar
-                           y-600 dark:ring-offset-gray-800"/>
+                        <div className='flex gap-x-10'>
+                        <div className="ml-3 text-lg handlee-regular flex gap-x-7">
+                         
+                          <Link to='/forgot_password'> <p className='text-lg font-bold underline text-black
+                          '>Forgot your password?</p></Link>
                         </div>
-                        <div className="ml-3 text-lg handlee-regular ">
-                          <label htmlFor="terms" className="font-light text-black">Remember Me 
-                          </label>
-                        </div>
+                        
+  
+        <div>
+          <Link  className='text-black font-extrabold hover:underline' to='/kasspass-key-signin'>login with passkey? </Link>
+        </div>
+        </div>
                     </div>
   
                     <div className='flex justify-center'>
@@ -509,6 +569,8 @@ useEffect(() => {
     </div>
     
   </section>
+
+
 </>}
   </>
 ): <>
@@ -569,13 +631,13 @@ useEffect(() => {
                            
                   type="email"
                   onChange={  (e)=> {
-                    handleFormDataChange(e)
+                    handleFormDataChangeSignin(e)
                     emailValue.set(e.target.value)
                   } }
                 style={{width: emailWidth}} transition={{duration:5, ease: "easeOut",
   }}    name="email"  value={email} id="email" 
                         className={` border  focus:border-2 
-                          text-black  handlee-regular  transition-all duration-1000 sm:text-lg rounded-lg
+                          text-white  handlee-regular  transition-all duration-1000 sm:text-lg rounded-lg
                            focus:ring-green-400 bg-transparent
                            border-black 
                            block  p-2.5   focus:border-green-700
@@ -587,31 +649,33 @@ useEffect(() => {
 
 
 
+{enable_2fa_for_admin === true || enable_2fa_for_admin === 'true' ? (
+   <div>
+   <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
+    text-gray-900 ">Your Phone Number</label>
+   {/* <PhoneInput value={phone}
+onChange={setPhone}   type="text" name="email" id="email" className="border  focus:border-2
+text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
+sm:text-lg border-black
+block w-full p-2.5  focus:border-green-700
+       "
 
-                    <div>
-                        <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
-                         text-gray-900 ">Your Phone Number</label>
-                        {/* <PhoneInput value={phone}
-        onChange={setPhone}   type="text" name="email" id="email" className="border  focus:border-2
-        text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-        sm:text-lg border-black
-         block w-full p-2.5  focus:border-green-700
-                            "
-  
-                            /> */}
+       /> */}
 
 
 <input value={phone_number}
-        onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
-        text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-        sm:text-lg border-black
-         block w-full p-2.5  focus:border-green-700
-                            "
-  
-                            />
-  
-                    </div>
+onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
+text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
+sm:text-lg border-black
+block w-full p-2.5  focus:border-green-700
+       "
 
+       />
+
+</div>
+
+): '' }
+                   
 
                     <div className='flex flex-col relative'>
                     <div className='absolute self-end bottom-0 p-2 text-white'  onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
@@ -621,7 +685,7 @@ useEffect(() => {
                          text-black">Password</label>
                         <motion.input       transition={{duration:5, ease: "easeOut",
   }}   onChange={(e)=>{
-    handleFormDataChange(e)
+    handleFormDataChangeSignin(e)
     passwordValue.set(e.target.value)
   }} value={password} type={isSeenPassWord  ? 'password' : 'text'} name="password" id="password"className=" border 
    focus:border-2
@@ -632,25 +696,19 @@ useEffect(() => {
                             "/>
                     </div>
                     
-                    <div className="flex items-start">
-                        <div className="flex items-center h-5">
-                          <motion.input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border
-                           border-gray-300
-                           rounded
-                           bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700
-                            dark:border-gray-600 dark:focus
-                           :ring-primar
-                           y-600 dark:ring-offset-gray-800"/>
-                        </div>
+                       
                         <div className="ml-3 text-lg handlee-regular flex gap-x-7">
-                          <label htmlFor="terms" className="font-light text-black">Remember Me 
-
-                          </label>
-                          <Link to='/forgot_password'> <p className='text-lg font-bold underline text-black
+                          
+                          <Link to='/forgot_password'> <p className='text-lg tracking-wide font-bold underline text-white
                           '>Forgot your password?</p></Link>
                         </div>
-                    </div>
+                        
   
+        <div>
+          <Link  className='text-white font-extrabold  text-lg tracking-wider handlee-regular
+           underline' to='/kasspass-key-signin'>login with passkey? </Link>
+        </div>
+
                     <div className='flex justify-center'>
                     <button type='submit' className="btn btn-active ">Login
                   

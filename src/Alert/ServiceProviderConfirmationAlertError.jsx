@@ -8,9 +8,19 @@ import Alert from '@mui/material/Alert';
  function ServiceProviderConfirmationAlertError ({openProviderConfirmationError , handleCloseProviderConfirmationError}) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
+
   return (
     <div>
-      <Snackbar open={openProviderConfirmationError} autoHideDuration={6000} onClose={handleCloseProviderConfirmationError}>
+      <Snackbar open={openProviderConfirmationError}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseProviderConfirmationError}>
         <Alert
           onClose={handleCloseProviderConfirmationError}
           severity="error"

@@ -3,20 +3,38 @@ import React, { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../settings/AuthSettings'; // Adjust path as needed
 import {useApplicationSettings} from '../settings/ApplicationSettings'
-const ProtectAuthAdmin = () => {
-  const { user,  } = useAuth();
-  const {admin} = useApplicationSettings()
 
+
+const ProtectAuthAdmin = ({children}) => {
+  const { user,  } = useAuth();
+  const {admin, currentUser, setCurrentUser, fetchCurrentUser} = useApplicationSettings()
+// admin === true
   // useEffect(() => {
-  //   if (!user) {
+  //   if (currentUser === '') {
   //     fetchCurrentUser();
   //   }
-  // }, [user, fetchCurrentUser]);
-  if (admin === false) {
-    return <Navigate to="/signin" replace />;
-  }
+  // }, [currentUser, fetchCurrentUser]);
 
-  return <Outlet />;
+
+
+
+
+  console.log('currentUser:', currentUser)
+  // if ( currentUser === '') {
+  //   return <Navigate to="/signin" replace />;
+  // }
+
+  // return <Outlet />;
+
+
+  if(admin){
+
+    return <Outlet />;
+
+
+}
+
+    return  <Navigate to="/signin" replace={true} />
 };
 
 export default ProtectAuthAdmin;

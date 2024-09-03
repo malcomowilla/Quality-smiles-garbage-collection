@@ -9,33 +9,74 @@ import AddIcon from '@mui/icons-material/Add';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import SmsForm from '../sms/SmsForm'
 import { MdOutlineSupportAgent } from "react-icons/md";
-
- 
+import  DeleteSms from './DeleteSms'
+ import DeleteMessageAlert from '../Alert/DeleteMessageAlert'
 
 
 const Sms = () => {
 
   const [sms, setSms] = useState([])
   const [isOpen, setIsOpen] = useState(false);
+const [isOpenDelete, setisOpenDelete] = useState(false)
+const [message, setMessage] = useState({
+  message: ''
+})
+const [openDeleteMessage, setopenDeleteMessage] = useState(false)
 
+const handleCloseDeleteMessage = ()=>{
+  setopenDeleteMessage(false)
+}
+
+const [openLoad, setopenLoad] = useState(false)
+const [loading, setloading] = useState(false)
     const {
       
         materialuitheme, smsBalance, setSmsBalance  } = useApplicationSettings()
 
 
 const handleAddButton = () => {
+  setMessage('')
   setIsOpen(true)
 }
-
+const handleDeleteOpen= ()=>{
+  setisOpenDelete(true)
+}
 
 const handleRowClick = (event, rowData)=> {
-
+  setMessage(rowData)
 }
 
 const handleRowOpen = ()=> {
   setIsOpen(true)
 }
 
+
+
+const deleteMessage = async(id)=> {
+  
+  try {
+    setopenLoad(true)
+  setloading(true)
+    const response = await fetch(`/api/delete_sms/${id}`,{
+      method: "DELETE"
+    })
+    if(response.ok) {
+      setSms(sms.filter((my_message)=> my_message.id !==  id))
+      setopenDeleteMessage(true)
+      setopenLoad(false)
+      setloading(false)
+      setisOpenDelete(false)
+      
+    } else {
+      setopenLoad(false)
+      setisOpenDelete(false)
+      setloading(false)
+    }
+  } catch (error) {
+    setopenLoad(false)
+    setloading(false)
+  }
+}
 const controller = new AbortController();
 const id = setTimeout(() => controller.abort(), 9000)
 
@@ -92,13 +133,14 @@ useEffect(() => {
                 
                       const DeleteButton = ({id}) => (
                         <img src="/images/logo/6217227_bin_fly_garbage_trash_icon.png"  
-                         className='w-8 h-8 cursor-pointer' alt="delete" />
+                         className='w-8 h-8 cursor-pointer' alt="delete" onClick={handleDeleteOpen}/>
                       )
   return (
-
+    
 <>
-
-<SmsForm  isOpen={isOpen} setIsOpen={setIsOpen}/>
+<DeleteMessageAlert openDeleteMessage={openDeleteMessage} handleCloseDeleteMessage={handleCloseDeleteMessage}/>
+<DeleteSms   deleteMessage={deleteMessage}  openLoad={openLoad} loading={loading} isOpenDelete={isOpenDelete} setisOpenDelete={setisOpenDelete} id={message.id} />
+<SmsForm  isOpen={isOpen} setIsOpen={setIsOpen} message={message} setMessage={setMessage}/>
 
     <ThemeProvider theme={materialuitheme}>
 
@@ -175,7 +217,7 @@ useEffect(() => {
       
 
 
-
+onRowClick={handleRowClick}
       actions={[
         {
           icon: () => <div   onClick={handleAddButton}  className='bg-teal-700 p-2 w-14 rounded-lg'><AddIcon

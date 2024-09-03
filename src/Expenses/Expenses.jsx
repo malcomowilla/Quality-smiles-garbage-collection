@@ -78,7 +78,7 @@ const Collections = () => {
       
         materialuitheme  } = useApplicationSettings()
   return (
-    <ThemeProvider theme={materialuitheme ? darkTheme : lightTheme}>
+    <ThemeProvider theme={materialuitheme}>
 
 
 

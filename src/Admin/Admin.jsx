@@ -7,11 +7,14 @@ import { motion } from "framer-motion"
 import openAccessDenied from '../access_denied/AccessDenied'
 import { useAuth } from '../settings/AuthSettings'; // Adjust path as needed
 import {useEffect, useCallback} from 'react'
+import LoginSuccessAlert from '../Alert/LoginSuccessAlert'
+
 
 
 const Admin = () => {
 const {setIsUserLoggedIn} = useAuth()
-const { seeSidebar, setSeeSideBar, setSmsBalance } = useApplicationSettings()
+const { seeSidebar, setSeeSideBar, setSmsBalance,openLoginSuccess,
+  handleCloseLoginSuccess } = useApplicationSettings()
 
 
 
@@ -62,6 +65,10 @@ const getSmsBalance  = useCallback(
      }
   }
   return (
+
+    <>
+
+    <LoginSuccessAlert  handleCloseLoginSuccess={handleCloseLoginSuccess}  openLoginSuccess={openLoginSuccess}/>
     <div  className='h-screen bg-black p-4 dark:bg-white   overflow-x-hidden'>
       
       <motion.div variants={variantDiv} transition={{duration:0.3, ease: "easeInOut",
@@ -89,6 +96,8 @@ const getSmsBalance  = useCallback(
 </motion.div>
       
       </div>
+
+      </>
   )
 }
 

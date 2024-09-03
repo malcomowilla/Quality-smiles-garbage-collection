@@ -6,9 +6,17 @@ import Alert from '@mui/material/Alert';
  function ProviderDeleteAlert ({openDeleteProviderAlert, handleCloseDeleteProviderAlert}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openDeleteProviderAlert} autoHideDuration={6000} onClose={handleCloseDeleteProviderAlert}>
+      <Snackbar open={openDeleteProviderAlert}    anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseDeleteProviderAlert}>
         <Alert
           onClose={handleCloseDeleteProviderAlert}
           severity="success"

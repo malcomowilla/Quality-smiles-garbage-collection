@@ -8,7 +8,7 @@ import Backdrop from '@mui/material/Backdrop';
 import TemplateAlert from '../Alert/TemplateAlert'
 import {  ThemeProvider } from '@mui/material';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
-
+import SmsTemplateDeniedAlert from '../Alert/SmsTemplateDeniedAlert'
 
 
 
@@ -42,10 +42,22 @@ const [templateForm, setTemplateForm] = useState(templateData)
 const [loading, setloading] = useState(false)
 const [openLoad, setOpenLoad] = useState(false);
 const [openTemplateAlert, setopenTemplateAlert] = useState(false)
+const [openTemplateError, setopenTemplateError]= useState(false)
+
+
+
+
+
+
+const handleCloseTemplateError = ()=> {
+  setopenTemplateError(false)
+}
+
+
+
 
 
 const { materialuitheme, 
- 
  } = useApplicationSettings();
 
 
@@ -137,6 +149,10 @@ useEffect(() => {
         body: JSON.stringify(templateForm)
       })
       const newData = await response.json()
+
+      if (response.status === 403) {
+        setopenTemplateError(true)
+      }
       if (response.ok) {
         setopenTemplateAlert(true)
         const admin_otp_confirmation_template = newData.admin_otp_confirmation_template
@@ -169,7 +185,7 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
   return (
 
     <>
-
+<SmsTemplateDeniedAlert openTemplateError={openTemplateError}  handleCloseTemplateError={handleCloseTemplateError}/>
 <TemplateAlert  openTemplateAlert={openTemplateAlert} handleCloseTemplateAlert={handleCloseTemplateAlert}/>
 
 {loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -287,8 +303,11 @@ name='service_provider_confirmation_code_template'/>
 
 
     <div className="flex gap-2 p-3">
-<button type='submit'  disabled={loading} className="btn hover:text-white ">save settings</button>
-
+<button   type='submit'  disabled={loading} className="px-6 py-2 font-medium bg-black text-white w-fit transition-all 
+shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]
+rounded-md">
+        Save Settings
+      </button>
        
         </div>
 </form>

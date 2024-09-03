@@ -6,9 +6,17 @@ import Alert from '@mui/material/Alert';
  function CustomerOtpAlertError ({openOtpError ,handleCloseOtpError}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openOtpError} autoHideDuration={6000} onClose={handleCloseOtpError}>
+      <Snackbar open={openOtpError} anchorOrigin={{ vertical, horizontal }}   autoHideDuration={6000} onClose={handleCloseOtpError}>
         <Alert
           onClose={openOtpError}
           severity="error"

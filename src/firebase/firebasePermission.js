@@ -1,0 +1,61 @@
+// src/requestPermission.js
+import { messaging, getToken , onMessage} from './firebase';
+
+export const requestPermission = async () => {
+
+  try {
+    // Request permission to show notifications
+    const permission = await Notification.requestPermission();
+    console.log('permsission=>',  permission)
+
+
+
+
+
+
+
+
+    if (permission === 'granted') {
+      const fcm_token = await getToken(messaging, {
+        vapidKey: 'BMwmnsHPoV7uo2r0qzq2wcfpYqUpgOj7SLPCLaqQRs7nGUCaxKygcTuqoHX5vbL6w-d413bfQmZ0sT2Xl_35dks'
+      });
+
+      
+
+
+
+
+
+
+      if (fcm_token) {
+        console.log('Device token:', fcm_token);
+        // Send the token to your server to store it and use it for sending notifications
+        sendTokenToServer(fcm_token);
+      } else {
+        console.log('No registration token available. Request permission to generate one.');
+      }
+    } else {
+      console.log('Notification permission denied.');
+    }
+  } catch (error) {
+    console.error('An error occurred while retrieving token. ', error);
+  }
+};
+const sendTokenToServer = async (fcm_token) => {
+  try {
+    const response = await fetch('/api/save_fcm_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fcm_token})
+    });
+    if (response.ok) {
+      console.log('Token saved successfully.');
+    } else {
+      console.log('Failed to save the token.');
+    }
+  } catch (error) {
+    console.error('Failed to send token to server:', error);
+  }
+};

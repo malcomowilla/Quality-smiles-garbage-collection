@@ -5,10 +5,18 @@ import Alert from '@mui/material/Alert';
 
  function SubLocationDeleteAlert({openDeleteSubLocationAlert, handleCloseDeleteSubLocationAlert}) {
  
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+
+  const {vertical, horizontal} = state
 
   return (
     <div>
-      <Snackbar open={openDeleteSubLocationAlert} autoHideDuration={6000} onClose={handleCloseDeleteSubLocationAlert}>
+      <Snackbar open={openDeleteSubLocationAlert}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseDeleteSubLocationAlert}>
         <Alert
           onClose={handleCloseDeleteSubLocationAlert}
           severity="success"

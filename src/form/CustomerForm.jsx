@@ -8,6 +8,8 @@ import { Button,  } from "flowbite-react";
 import CustomerConfirmationAlert from '../Alert/CustomerConfirmationAlert'
 import CustomerConfirmAlertError from '../Alert/CustomerConfirmAlertError'
 import { BiLogOut } from "react-icons/bi";
+import { SiMoneygram } from "react-icons/si";
+import { motion } from "framer-motion"
 
 
 const CustomerForm = () => {
@@ -161,7 +163,21 @@ if (response.ok) {
    <CustomerConfirmAlertError openConfirmAlertError={openConfirmAlertError}
     handleCloseConfirmAlertError={handleCloseConfirmAlertError}
    />
+  
 <section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+
+  <Link to='/customer-payment'>
+<motion.div whileHover={{
+    scale: 1.2,
+    transition: { duration: 0.5 },
+
+    
+  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 border-green-800
+    ml-4  text-black cursor-pointer   w-[120px] gap-x-4  playwrite-de-grund rounded-md'>
+      <SiMoneygram className='text-green-700'/>
+      To Up   </motion.div> </Link>
+
+
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
 
@@ -194,8 +210,8 @@ if (response.ok) {
 </div> */}
         <div className='mt-9 flex gap-x-[50px]'>
 
-<div className='text-black text-xl cursor-pointer playwrite-de-grund p-3'>
-            <BiLogOut onClick={handleLogout}/>
+<div className='text-black text-xl cursor-pointer playwrite-de-grund p-3' onClick={handleLogout}>
+            <BiLogOut />
             <p>Logout</p>
             </div>
        

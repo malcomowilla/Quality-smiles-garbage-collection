@@ -6,9 +6,18 @@ import Alert from '@mui/material/Alert';
  function StoreManagerUpdateAlert({openUpdateStoreManager, handleCloseUpdateStoreManager}) {
  
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openUpdateStoreManager} autoHideDuration={6000} onClose={handleCloseUpdateStoreManager}>
+      <Snackbar open={openUpdateStoreManager}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseUpdateStoreManager}>
         <Alert
           onClose={handleCloseUpdateStoreManager}
           severity="success"

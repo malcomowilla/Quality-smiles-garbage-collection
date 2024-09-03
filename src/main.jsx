@@ -4,6 +4,11 @@ import App from './App.jsx'
 import './index.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ApplicationSettings from './settings/ApplicationSettings'
+import { BrowserRouter as Router } from 'react-router-dom';
+
+
+
+
 
 const theme = createTheme({
   palette: {
@@ -11,15 +16,14 @@ const theme = createTheme({
 })
 ReactDOM.createRoot(document.getElementById('root')).render(
 
-  <React.StrictMode>
-           <ApplicationSettings>
-
       <ThemeProvider theme={theme}>
-
+        <Router>
+      <ApplicationSettings>
     <App />
+    </ApplicationSettings>
+    </Router>
     </ThemeProvider >
     
-    </ApplicationSettings>
     
-  </React.StrictMode>,
+    
 )

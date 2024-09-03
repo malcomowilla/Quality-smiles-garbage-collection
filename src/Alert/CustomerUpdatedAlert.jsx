@@ -5,10 +5,18 @@ import Alert from '@mui/material/Alert';
 
  function CustomerUpdatedAlert ({openUpdated, handleCloseUpdated, updatedMessage}) {
  
+ 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
 
   return (
     <div>
-      <Snackbar open={openUpdated} autoHideDuration={6000} onClose={handleCloseUpdated}>
+      <Snackbar open={openUpdated}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseUpdated}>
         <Alert
           onClose={handleCloseUpdated}
           severity="success"

@@ -1,15 +1,16 @@
 import { useState, createContext, useContext,  useEffect, useCallback } from "react"
 
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
-import {useNavigate, redirect} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import dayjs from 'dayjs';
 
 
 const GeneralSettingsContext = createContext(null)
 
 
-
 const ApplicationSettings = ({children}) => {
+  const navigate = useNavigate()
+
   const [phone, setPhone] = useState('');
 
 const settingsFormDataInitialValue = {
@@ -17,7 +18,16 @@ const settingsFormDataInitialValue = {
   minimum_digits: '',
   
   use_auto_generated_number: false,
-  send_sms_and_email: false
+  send_sms_and_email: false,
+  send_email: false,
+  enable_2fa: false
+}
+
+
+const ticketNumberFormDataInitialValue = {
+  prefix: '',
+  minimum_digits: '',
+  
 }
 
 
@@ -26,7 +36,10 @@ const settingsFormDataInitialValueForPrvider = {
   minimum_digits: '',
   send_sms_and_email_for_provider: false,
 
-  use_auto_generated_number_for_service_provider: false
+  use_auto_generated_number_for_service_provider: false,
+  send_email_for_provider: false,
+  enable_2fa_for_service_provider: false
+
 }
 
 
@@ -37,7 +50,10 @@ const resetPasswordInitialValue = {
 
 const storeMnagerFormData = {
   prefix: '',
-  minmum_digits: ''
+  minmum_digits: '',
+  send_manager_number_via_sms: false,
+  send_manager_number_via_email: false,
+  enable_2fa_for_store_manager: false
 
 } 
 
@@ -61,6 +77,18 @@ const customerData = {
 }
 
     const signupFormDataInitialValue ={
+      user_name: '',
+      password: '',
+      password_confirmation: '',
+      email: '',
+      phone_number: '',
+      otp: ''
+    }
+
+
+
+
+    const signinFormDataInitialValue ={
       user_name: '',
       password: '',
       password_confirmation: '',
@@ -131,7 +159,17 @@ const customerData = {
 
 
     const adminDataSettings = {
-      login_with_otp: false
+      login_with_otp: false,
+      enable_2fa_for_admin: false,
+      login_with_web_auth: false,
+      login_with_otp_email:  false,
+      send_password_via_email: false,
+      send_password_via_sms: false,
+      check_is_inactive: false,
+      check_inactive_hrs: '',
+      check_inactive_days: '',
+      check_inactive_minutes: ''
+
     } 
 
     
@@ -142,6 +180,7 @@ const customerData = {
 const [imgIcon, setImgIcon] = useState(false)
 const [isSeenPassWord,  setIsSeenPassword] = useState(false)
 const [signupFormData, setSignupFormData] = useState(signupFormDataInitialValue)
+const [signinFormData, setSigninFormData] = useState(signinFormDataInitialValue)
 const [isloading, setloading] = useState(false)
 const [open, setOpen] = useState(false);
 const [registrationError, setRegistrationError] = useState('')
@@ -192,6 +231,62 @@ const [adminPermission, setAdminPermission] = useState({})
 const [user, setUser] = useState('')
 const [canreadSetting, setCanReadSetting] = useState('')
   const [canManageSetting, setCanManageSetting] = useState('')
+const [canManageSms, setCanManageSms] = useState('')
+const [canReadSms, setCanReadSms] = useState('')
+const [canManageSmsTemplates, setCanManageSmsTemplates] = useState('')
+const [canReadSmsTemplates, setCanReadSmsTemplates] = useState('')
+const [currentUser, setCurrentUser] = useState('')
+const [settingsTicket,  setsettingsTicket] = useState(ticketNumberFormDataInitialValue)
+ const [user_name, setUserName] = useState('')
+ const [id, setAdminId] = useState(null)
+ const [imagePreview, setImagePreview] = useState(null)
+const [openLoginSuccess, setopenLoginSuccess] = useState(false)
+const [openLogoutSuccess, setopenLogoutSuccess] = useState(false)
+ const [canReadLocation, setCanReadLocation] = useState('')
+ const [canManageLocation,setCanManageLocation] = useState('')
+ const [canReadSubLocation, setCanReadSubLocation] = useState('')
+ const [canManageSubLocation, setCanManageSubLocation] = useState('')
+ const [canReadStore, setCanReadStore] = useState('')
+ const [canManageStore, setCanManageStore] = useState('')
+ const [canManageStoreManager, setCanManageStoreManager] = useState('')
+ const [canReadStoreManager, setCanReadStoreManager]= useState('')
+ const [canManageCustomers, setCanManageCustomers] = useState('')
+ const [canReadCustomers, setCanReadCustomers] = useState('')
+ const [canManageServiceProviders, setCanManageServiceProviders] = useState('')
+ const [canReadServiceProviders, setCanReadServiceProviders] = useState('')
+ const [canManageTickets, setCanManageTickets] = useState('')
+ const [canReadTickets, setCanReadTickets] = useState('')
+ const [canManageCalendar, setCanManageCalendar] = useState('')
+const [canReadCalendar, setCanReadCalendar] = useState('') 
+
+
+
+const handleCloseLogoutSuccess = ()=>{
+  setopenLogoutSuccess(false)
+}
+ 
+ const handleCloseLoginSuccess = ()=>{
+  setopenLoginSuccess(false)
+ }
+
+ const formData = {
+  email: '',
+  password: '',
+  profile_image: imagePreview,
+  user_name: '',
+  phone_number: '',
+  
+  }
+
+ const [updateFormData, setUpdateFormData] = useState(formData)
+
+const storeManagerFormData = {
+  number_of_bags_delivered: '',
+  number_of_bags_received: ''
+
+}
+
+const [storeManagerSet, setStoreManagerSet] = useState(storeManagerData)
 
 
  const [admin, setAdmin] = useState(() => {
@@ -347,18 +442,62 @@ const handleFormDataChangeForStoreManager = (e)=> {
 }
 
 
-
     
-const handleFormDataChangeForAdmin = (e)=> {
+const handleFormDataChangeForTickets = (e)=> {
   const {type, checked, name, value} = e.target
-  const capitalize_prefix = capitalizePrefix(value) 
+  const capitalize_prefix = capitalizePrefix(value)
+  setsettingsTicket((prevData)=> (
+  // {...prevData, [name]: type === 'checkbox' ?  checked : capitalize_prefix }
+  {...prevData, [name]: capitalize_prefix}
 
-  setAdminFormSettings((prevData)=> (
-  {...prevData, [name]: type === 'checkbox' ?  checked : capitalize_prefix }
 ))
-
 }
 
+// check_inactive_hrs: '',
+// check_inactive_days: '',
+
+// check_inactive_minutes: ''
+
+
+const handleFormDataChangeForAdmin = (e) => {
+  const { type, checked, name, value } = e.target;
+
+  // Log the value to the console
+  console.log('value', value);
+
+  setAdminFormSettings((prevData) => {
+    let updatedData = { ...prevData };
+    let updatedSettings = { ...prevData, [name]: value };
+
+console.log('check_inactive_hrs', updatedData .check_inactive_hrs)
+    // Handle specific cases for check_inactive_minutes, check_inactive_hrs, and check_inactive_days
+    if (name === 'check_inactive_minutes') {
+      updatedSettings.check_inactive_days = ''
+      updatedSettings.check_inactive_hrs = ''
+      
+    } else if (name === 'check_inactive_hrs') {
+      
+        updatedSettings.check_inactive_minutes = ''
+        updatedSettings.check_inactive_days = ''
+      
+    } else if (name === 'check_inactive_days') {
+        updatedSettings.check_inactive_minutes = ''
+        updatedSettings.check_inactive_hrs = ''
+      
+    }
+
+    // Update the value for the changed field
+    updatedSettings[name] = type === 'checkbox' ? checked : value;
+
+    // Update enable_2fa_for_admin based on the checked value
+   
+
+    console.log('enaaaable 2fa true or false=>', updatedData.enable_2fa_for_admin);
+    console.log("is it true or false=>", checked);
+
+    return updatedSettings;
+  });
+};
 
 
 const convertToKenyanFormat = (number) => {
@@ -385,6 +524,20 @@ const handleChangePhoneNumber = (e)=> {
 }
 
 
+
+
+const handleChangePhoneNumberSignin = (e)=> {
+  const {name, value} = e.target
+
+  if (value.length <= 13) {
+    const kenyanFormat = convertToKenyanFormat(value)
+  setSigninFormData({... signinFormData, [name]: kenyanFormat})
+  }
+  
+
+
+}
+
 const handleChangeResetPasswordPhoneNumber = (e)=> {
   const {name, value} = e.target
 
@@ -402,7 +555,6 @@ const handleChangeResetPassword = (e) => {
   setResetPasswordForm({... resetPasswordForm, [name]: value})
 }
 
-
       const handleFormDataChange = (e)=> {
 const {name, value} = e.target
 
@@ -410,13 +562,15 @@ setSignupFormData({... signupFormData, [name]: value})
       }
 
 
-  useEffect(() => {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-     setTheme('dark')
-    } else {
-     setTheme('light')
-    }
-   }, [setTheme]);
+
+      const handleFormDataChangeSignin = (e)=> {
+        const {name, value} = e.target
+        console.log('writing email=>', name)
+        setSigninFormData((prevData)=> ({...prevData, [name]: value}))
+        // setSigninFormData({... signinFormData, [name]: value})
+        
+              }
+
 
 
    useEffect(() => {
@@ -435,6 +589,24 @@ setSignupFormData({... signupFormData, [name]: value})
       phone_number: phone,
     }));
   }, [phone]);
+
+
+
+
+
+
+
+
+
+const handleChangeStoreSet = (e)=> {
+  const {name, value} = e.target
+  setStoreManagerSet((prev)=> ({
+    ...prev, [name]: value
+  }))
+}
+
+
+
 
 
 
@@ -500,9 +672,19 @@ const darkTheme = createTheme({
 
 
 
+  useEffect(() => {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+     
+     setMaterialuiTheme(darkTheme)
+     setTheme('dark')
+    } else {
+     setTheme('light')
+    }
+   }, [])
+
 
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 9000);
+  // const id = setTimeout(() => controller.abort(), 9000);
   
 
 
@@ -640,6 +822,20 @@ const darkTheme = createTheme({
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+console.log('admin_id', id)
+
 const fetchCurrentUser = 
 useCallback(
   async() => {
@@ -651,11 +847,33 @@ useCallback(
           });
           const data = await response.json();
           if (response.ok) {
-            console.log('Fetched user data:', data.user.can_read_settings);
+            console.log('Fetched user data:', data.user);
             setUser(data.user.role);
+            setAdminId(data.user.id)
             setCanReadSetting(data.user.can_read_settings)
-            setCanManageSetting(data.user.can_manage_settings
-            )
+            setCanManageSetting(data.user.can_manage_settings)
+            setCanManageCalendar(data.user.can_manage_calendar)
+            setCanReadCalendar(data.user.can_read_calendar)
+            setCanManageTickets(data.user.can_manage_tickets)
+            setCanReadStoreManager(data.user.can_read_store_manager)
+            setCanManageStoreManager(data.user.can_manage_store_manager)
+            setCanReadTickets(data.user.can_read_tickets)
+            setCanManageServiceProviders(data.user.can_manage_service_provider)
+            setCanReadServiceProviders(data.user.can_read_service_provider)
+            setCanManageCustomers(data.user.can_manage_customers)
+            setCanReadCustomers(data.user.can_read_customers)
+            setCurrentUser(data.user)
+            setCanManageStore(data.user.can_manage_store)
+            setCanReadStore(data.user.can_read_store)
+            setCanManageLocation(data.user.can_manage_location)
+            setCanReadLocation(data.user.can_read_location)
+            setCanManageSubLocation(data.user.can_manage_sub_location)
+            setCanReadSubLocation(data.user.can_read_sub_location)
+            setUserName(data.user.user_name)
+            setCanManageSmsTemplates(data.user.can_manage_sms_templates)
+            setCanReadSmsTemplates(data.user.can_read_sms_templates)
+            setCanReadSms(data.user.can_read_sms)
+            setCanManageSms(data.can_manage_sms)
 
             // setUser(data.user);
           } else {
@@ -666,19 +884,93 @@ useCallback(
           setUser(null);
         }
   },
-  [setUser],
+  [],
 )
-
-
-
-
-
 
 
 
 useEffect(() => {
   fetchCurrentUser()
-}, [fetchCurrentUser,user]);
+}, [fetchCurrentUser]);
+
+
+const handlegetstoreManagerSettings = useCallback(
+  
+  async()=> {
+    const storeManager  = JSON.parse(localStorage.getItem('store_manager_settings'))
+      
+     try {
+       const response = await fetch(`/api/get_store_manager`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       // const minimum_digits = newData.minimum_digits
+     
+     
+       const {prefix, minimum_digits, 
+        } = newData[0]
+       const send_manager_number_via_email = storeManager.send_manager_number_via_email
+       const send_manager_number_via_sms = storeManager.send_manager_number_via_sms
+       const enable_2fa_for_store_manager  = storeManager.enable_2fa_for_store_manager 
+
+       setstoreManagerSettings((prev)=> ({
+        ...prev,
+        prefix,  minimum_digits,
+        send_manager_number_via_email, send_manager_number_via_sms,enable_2fa_for_store_manager 
+       }))
+
+       } else {
+       console.log('failed to fetch')
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[setstoreManagerSettings]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetstoreManagerSettings()
+}, [handlegetstoreManagerSettings,setstoreManagerSettings]);
+
+
+
+
+
+// useEffect(() => {
+//   // Listen for changes in the authentication state
+
+
+// if (currentUser) {
+//       navigate('/admin/customers')
+//     }      
+ 
+
+
+//   // Clean up the subscription when the component unmounts
+// }, [navigate, currentUser]); 
+
+
+
+
+
   return (
 
 <GeneralSettingsContext.Provider value={{isSeen, setIsSeen,seeSidebar, setSeeSideBar, theme, setTheme, 
@@ -701,7 +993,15 @@ useEffect(() => {
   setResetPasswordForm,handleChangeResetPasswordPhoneNumber, handleChangeResetPassword,openAccessDenied, setopenopenAccessDenied,
   openAccessDenied2, setopenopenAccessDenied2,openAccessDenied3, setopenopenAccessDenied3,admin, setAdmin,smsBalance, 
   setSmsBalance,seelocation, setseelocation,adminPermission, setAdminPermission,setUser,user,
-  canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting
+  canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting, canReadSms, canManageSms,canManageSmsTemplates,
+  canReadSmsTemplates,currentUser, setCurrentUser,fetchCurrentUser,settingsTicket,setsettingsTicket,handleFormDataChangeForTickets,
+  storeManagerSet, setStoreManagerSet, handleChangeStoreSet,signinFormData, setSigninFormData,
+  handleFormDataChangeSignin,user_name,id,imagePreview, setImagePreview,updateFormData, setUpdateFormData,openLoginSuccess,
+   setopenLoginSuccess,handleCloseLoginSuccess,openLogoutSuccess, setopenLogoutSuccess,
+    handleCloseLogoutSuccess,handleChangePhoneNumberSignin,canReadCalendar,canManageCalendar,canReadTickets,canManageTickets,
+    canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,canManageStoreManager,
+    canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation
+
 
 
 
@@ -715,4 +1015,5 @@ useEffect(() => {
 }
 
 export default ApplicationSettings
-export const useApplicationSettings = (()=> useContext(GeneralSettingsContext))
+ const useApplicationSettings = (()=> useContext(GeneralSettingsContext))
+export {useApplicationSettings}                                                                                                                                                                                                                                                                                                                                                                                                                                                 

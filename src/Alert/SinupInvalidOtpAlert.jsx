@@ -6,9 +6,16 @@ import Alert from '@mui/material/Alert';
 export default function SinupInvalidOtpAlert({openOtpInvalid, handleCloseOtpInvalid}) {
   
 
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
   return (
     <div>
-      <Snackbar  open={openOtpInvalid} autoHideDuration={6000} onClose={handleCloseOtpInvalid}>
+      <Snackbar  open={openOtpInvalid}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseOtpInvalid}>
         <Alert
           onClose={handleCloseOtpInvalid}
           severity="error"

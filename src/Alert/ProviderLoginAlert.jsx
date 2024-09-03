@@ -7,9 +7,19 @@ import Alert from '@mui/material/Alert';
  function  ProviderLoginAlert ({openProviderLoginAlert, handleCloseProviderLoginAlert}) {
  
 
+
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openProviderLoginAlert} autoHideDuration={6000} onClose={handleCloseProviderLoginAlert}>
+      <Snackbar open={openProviderLoginAlert}  anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseProviderLoginAlert}>
         <Alert
           onClose={handleCloseProviderLoginAlert}
           severity="error"

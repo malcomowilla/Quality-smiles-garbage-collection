@@ -7,9 +7,18 @@ import Alert from '@mui/material/Alert';
  function EmailSentForgotPasswordAlert ({openEmailSent, handleCloseEmailSent}) {
  
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openEmailSent} autoHideDuration={9000} onClose={handleCloseEmailSent}>
+      <Snackbar open={openEmailSent} anchorOrigin={{ vertical, horizontal }}  autoHideDuration={9000} onClose={handleCloseEmailSent}>
         <Alert
           onClose={handleCloseEmailSent}
           severity="success"

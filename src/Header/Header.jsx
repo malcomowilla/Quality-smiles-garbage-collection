@@ -5,10 +5,16 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkLight from '../dark_light_button/DarkLight'
 import Profile from '../profile/Profile'
 import {useState} from 'react'
+
+
+
 const Header = () => {
   const [open, setOpen] = useState(false);
 
-  const { seeSidebar, setSeeSideBar, handleThemeSwitch, theme, icon, setIcon, smsBalance, setSmsBalance } = useApplicationSettings()
+  const { seeSidebar, setSeeSideBar, handleThemeSwitch, theme, icon, setIcon, smsBalance, setSmsBalance,
+    user_name
+   }
+   = useApplicationSettings()
 
 
 
@@ -22,7 +28,7 @@ const Header = () => {
       <div className='group'>
 
         <img src="/images/logo/icons8-menu-100.png" onClick={()=> setSeeSideBar(!seeSidebar)} className='w-10 h-10' alt="menu" />
-      <p className='font-extrabold   dark:text-black text-white   text-xl'><span>Welcome Malcom Owilla</span></p>
+      <p className='font-extrabold   dark:text-black text-white   text-xl'><span>Welcome {user_name}</span></p>
 <p className=' dark:text-black text-white'>Here’s what’s happening with your store today.
 </p>
       </div>

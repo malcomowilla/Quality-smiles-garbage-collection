@@ -7,9 +7,18 @@ import Alert from '@mui/material/Alert';
  }) {
 
 
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
+  const {vertical, horizontal} = state
+
   return (
     <div>
-      <Snackbar open={openOfflineAlert} autoHideDuration={6000} onClose={handleCloseOfflineAlert}>
+      <Snackbar open={openOfflineAlert}     anchorOrigin={{ vertical, horizontal }}      autoHideDuration={6000} onClose={handleCloseOfflineAlert}>
         <Alert
           onClose={handleCloseOfflineAlert}
           severity="error"

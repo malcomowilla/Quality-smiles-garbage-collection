@@ -63,7 +63,18 @@ Are You Sure You Want To Delete This Store?
 
 <div className="flex gap-8">
 
-           <button
+<button  onClick={()=> setisOpenDelete(false)}  className="px-6 py-2 font-medium bg-black rounded-md text-white w-fit 
+transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+  
+      Cancel
+      </button>
+
+           <button  disabled={loading} onClick={handleDeleteStoreManager}   className="px-6 py-2 font-medium text-red-700 bg-white rounded-md 
+            w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+               {loading && <ImSpinner9 className={`${loading && 'animate-spin'}`}/> }
+        Delete
+      </button>
+           {/* <button
            disabled={loading}
              onClick={handleDeleteStoreManager}
              className="btn btn-active "
@@ -79,7 +90,7 @@ Are You Sure You Want To Delete This Store?
              className="btn btn-active "
            >
                Cancel
-           </button>
+           </button> */}
          </div>
 
      

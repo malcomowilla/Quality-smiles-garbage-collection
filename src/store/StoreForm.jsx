@@ -204,7 +204,7 @@ setStoreForm((prevData) => (
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-gradient-to-br from-teal-600 to-teal-600 text-white p-6 rounded-lg w-full
+          className="bg-white text-black p-6 rounded-lg w-full
            max-w-lg shadow-xl cursor-default relative overflow-hidden"
         >
                       <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
@@ -218,7 +218,7 @@ setStoreForm((prevData) => (
 
 <form className="max-w-sm mx-auto" onSubmit={handleAddStore} >
 <div className="mb-5">
-  <label  className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Total Amount Of bags</label>
+  <label  className="block  mb-2 text-sm playwrite-de-grund  text-black">Total Amount Of bags</label>
   <input     type="number" name="amount_of_bags" value={amount_of_bags}  className="input border-black focus:border-black
     focus:ring-black input-lg w-full 
    bg-transparent"   onChange={handleChange}  />
@@ -230,7 +230,7 @@ setStoreForm((prevData) => (
   <>
   
   <div className="mb-5">
-  <label className="block mb-2 text-sm playwrite-de-grund  dark:text-white">Store Number</label>
+  <label className="block mb-2 text-sm playwrite-de-grund  text-black">Store Number</label>
   <input  value={store_number}  onChange={handleChange} type="text" name="store_number"  className="input 
    border-black focus:border-black 
   input-lg w-full  bg-transparent"   />
@@ -254,7 +254,7 @@ setStoreForm((prevData) => (
 
 
 <div className="relative w-full mb-5">
-<label  className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Pick Sub Location</label>
+<label  className="block  mb-2 text-sm playwrite-de-grund  text-black">Pick Sub Location</label>
 
       <input
         type="text"
@@ -262,7 +262,7 @@ setStoreForm((prevData) => (
         value={sub_location}
         onChange={handleChange}
         onFocus={() => setOpen(true)}
-        className="select w-full bg-transparent border-black focus:border-black select-lg text-white p-2 cursor-text"
+        className="select w-full bg-transparent border-black focus:border-black select-lg text-black p-2 cursor-text"
       />
       {open && sublocations.length > 0 && (
         <div className="absolute top-full left-0 w-full bg-black border border-black mt-1 z-10 max-h-40 overflow-y-auto">
@@ -283,7 +283,7 @@ setStoreForm((prevData) => (
 
 
     <div className="relative w-full mb-5">
-<label  className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Pick Location</label>
+<label  className="block  mb-2 text-sm playwrite-de-grund  text-black">Pick Location</label>
 
       <input
         type="text"
@@ -291,10 +291,10 @@ setStoreForm((prevData) => (
         value={location}
         onChange={handleChange}
         onFocus={() => setOpen2(true)}
-        className="select w-full bg-transparent border-black focus:border-black select-lg text-white p-2 cursor-text"
+        className="select w-full bg-transparent border-black focus:border-black select-lg text-black p-2 cursor-text"
       />
       {open2 && locations.length > 0 && (
-        <div className="absolute top-full left-0 w-full bg-black border border-black mt-1 z-10 max-h-40 overflow-y-auto">
+        <div className="absolute top-full left-0 w-full bg-white border border-black mt-1 z-10 max-h-40 overflow-y-auto">
           {locations.map((place, index) => (
             <div
               key={index}
@@ -316,6 +316,31 @@ setStoreForm((prevData) => (
 
 
 <div className="flex gap-8 p-4 py-8">
+
+
+<button className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+        Hover me
+      </button>
+
+
+
+<button   type='submit'  disabled={loading} className="px-6 py-2 font-medium bg-green-500 rounded-md
+ text-white w-fit transition-all shadow-[3px_3px_0px_black] 
+hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+   {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
+        Submit
+      </button>
+
+
+      <button   onClick={handleCloseSubLocationForm} className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all 
+      shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] rounded-md hover:translate-y-[3px]">
+        Cancel
+      </button>
+
+
+
+{/* 
+
             <button type="submit" disabled={loading} className="btn btn-active"> 
 
             {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
@@ -330,7 +355,7 @@ setStoreForm((prevData) => (
               >
                   Cancel
 
-              </button>
+              </button> */}
             </div>
 </form>
 
