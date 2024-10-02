@@ -22,6 +22,13 @@ import AccessDenied from '../access_denied/AccessDenied'
 import { IoCheckmarkOutline } from "react-icons/io5";
 import CloseIcon from '@mui/icons-material/Close';
 import StoreManagerUpdate from '../Alert/StoreManagerUpdate'
+import {useNavigate} from 'react-router-dom'
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
+
+
 
 
 const StoreManager = () => {
@@ -40,6 +47,29 @@ const [open, setOpen] = useState(false);
 const [open2, setOpen2] = useState(false);
 const [openLoad, setopenLoad] = useState(false)
 const [openStoreManagerUpdate, setopenStoreManagerUpdate] = useState()
+
+const navigate = useNavigate()
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+
+
+
+const defaultOptions2 = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
 
 const handleCloseStoreManagerUpdate = ()=>{
   setopenStoreManagerUpdate(false)
@@ -103,6 +133,12 @@ useCallback(
       clearTimeout(id);
 
       const newData = await response.json()
+
+
+      if (response.status === 401) {
+        navigate('/signin')
+      }
+
       if (response.status === 403) {
         // setopenopenAccessDenied(true)
       }
@@ -268,6 +304,17 @@ const handleAddButton = ()=> {
 
     <>
    
+
+
+   {loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
+
+
    {openAccessDenied ? (
     <AccessDenied />
    ) : 
@@ -300,7 +347,20 @@ setisOpenDelete={setisOpenDelete}/>
     <MaterialTable
    
       columns={[
-        { title: "Number Of Bags Received", field: "number_of_bags_received" },
+        { title: "Number Of Bags Received", field: "number_of_bags_received",
+          render: (rowData) => 
+            <>
+{rowData.number_of_bags_received === 'null' ||rowData.number_of_bags_received === null 
+|| rowData.number_of_bags_received === '' ? (
+  <Lottie  options={defaultOptions2} height={70} width={70}/>
+
+
+): 
+
+rowData.number_of_bags_received}
+
+            </>
+         },
 
 
         {
@@ -320,7 +380,21 @@ setisOpenDelete={setisOpenDelete}/>
 
           {
 title: "Date Received",
-field: "formatted_received_date"
+field: "formatted_received_date",
+render: (rowData) => {
+  return (
+    <>
+{rowData.formatted_received_date === null || rowData.formatted_received_date === 'null'
+
+|| rowData.formatted_received_date === '' ? (
+  <Lottie options={defaultOptions2} width={70} height={70}/>
+
+
+): rowData.formatted_received_date}
+
+    </>
+  )
+}
           },
 
           {

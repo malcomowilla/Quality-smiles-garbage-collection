@@ -15,6 +15,10 @@ import {
   import { LiaEdit } from "react-icons/lia";
   import { CiLogout } from "react-icons/ci";
 
+  import Avatar from '@mui/material/Avatar';
+  import Stack from '@mui/material/Stack';
+  import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+
 //   import { IconType } from "react-icons";
 // onClick={() => setOpen((pv) => !pv)}
 
@@ -23,8 +27,109 @@ const navigate = useNavigate()
 const [isOpenEditProfile, setisOpenEditProfile] = useState(false)
 
 const {id, imagePreview, setUpdateFormData, updateFormData, setImagePreview, user_name, user,
-setopenLogoutSuccess
+setopenLogoutSuccess,
+handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,
+    setopenLoginSuccess,
+    materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+       setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,adminFormSettings,setopenLogoutSession
 } = useApplicationSettings()
+
+
+const {enable_2fa_for_admin_passkeys} = adminFormSettings
+
+
+
+
+// const storedDataJson = localStorage.getItem("admin settings");
+// const storedDa = storedDataJson ? JSON.parse(storedDataJson) : {};         
+  
+// const enable_2fa_for_admin_passkeys = storedDa.enable_2fa_for_admin_passkeys
+
+
+console.log('enable_2fa_for_admin_passkeys profile=>', enable_2fa_for_admin_passkeys)
+
+
+
+
+
+
+const handlegetAdminSettings = useCallback(
+  async()=> {
+     
+       
+
+     try {
+       const response = await fetch(`/api/allow_get_admin_settings`, {
+       method: 'GET',
+
+       
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       const login_with_otp = newData[0].login_with_otp 
+       const login_with_web_auth = newData[0].login_with_web_auth
+       const login_with_otp_email = newData[0].login_with_otp_email
+       const send_password_via_email = newData[0].send_password_via_email
+       const send_password_via_sms = newData[0].send_password_via_sms
+       const check_is_inactive = newData[0].check_is_inactive
+       const check_inactive_hrs = newData[0].check_inactive_hrs
+       const check_inactive_minutes = newData[0].check_inactive_minutes
+       const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
+       const enable_2fa_for_admin_passkeys = newData[0].enable_2fa_for_admin_passkeys
+       const check_inactive_days = newData[0].check_inactive_days
+     
+      //  const {login_with_otp} = newData[0]
+      console.log('enable_2fa_for_admin_passkeys2', enable_2fa_for_admin_passkeys)
+       setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
+        login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
+        check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
+        check_inactive_days
+       }))
+     
+       
+       } else {
+       console.log('failed to fetch')
+       setOpenOfflineError(true)
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetAdminSettings()
+}, [handlegetAdminSettings]);
+
+
+
+
+
+
+
+
+
+
 
 
     const logout = async ()=> {
@@ -34,9 +139,26 @@ setopenLogoutSuccess
         })
     if (response.ok) {
       // navigate('/signin')
-      navigate('/signin')
+      if (enable_2fa_for_admin_passkeys === 'true' || enable_2fa_for_admin_passkeys === true) {
+        navigate('/signup2fa_passkey')
+        
+      }else(
+        navigate('/signin')
+      )
+      // toast.error(
+      //   <div>
+      //     <p className='playwrite-de-grund font-extrabold text-xl'>Upcoming Event
+      //       <div> <span className='font-thin flex gap-3'>
+         
+      //         </span></div></p>
+      //   </div>,
+       
+      // );
       localStorage.removeItem('acha umbwakni');
       setopenLogoutSuccess(true)
+      setopenLogoutSession(true)
+     
+      
     
     } else {
       console.log('failed to logout')
@@ -99,7 +221,58 @@ setopenLogoutSuccess
 
 
 
-console.log('user role', user)
+
+
+
+
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
+
+
+
+
+
+function stringAvatar(name) {
+
+  const nameParts = name.split(' ').filter(Boolean)
+
+
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: nameParts.length > 1  ? 
+`${nameParts[0][0]}${nameParts[1][0]}` 
+     : nameParts.length === 1
+     ? `${nameParts[0][0]}` 
+     : '?',  // Fallback
+    
+  //   `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+  }
+}
+
+
+
+
+
+
     return (
 
     <>
@@ -110,7 +283,19 @@ console.log('user role', user)
         
         <div className='flex gap-x-2   max-sm:fixed max-sm:top-[169px] max-sm:right-[60px]' 
          onClick={() => setOpen((pv) => !pv)}>
-        <img src={imagePreview}  className='w-[55px] h-[55px] rounded-full shadow-xl' alt="profile-picture" />
+
+<Avatar style={{width: 60, height: 60}}    {...stringAvatar(user_name)} />
+
+
+{/* 
+<div className="avatar placeholder online">
+  <div className="bg-teal-600 text-white w-16 rounded-full">
+    <span className="text-3xl">D</span>
+  </div>
+</div> */}
+        {/* <img src={imagePreview}  className='w-[55px] h-[55px] rounded-full shadow-xl' alt="profile-picture" /> */}
+
+        
         <div className='text-wrap xl:block max-sm:block md:max-sm:hidden max-md:block max-sm:text-sm '>
         <p className='dark:text-black text-white font-extrabold '>{user_name}</p>
     <p className='dark:text-black text-white'>{user === 'super_administrator' ? 'SuperAdmin' : null}</p>

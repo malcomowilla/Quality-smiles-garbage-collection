@@ -13,9 +13,20 @@ import DeleteUser from './DeleteUser'
 import UserDeleteAlert from '../Alert/UserDeleteAlert'
 import { CgTemplate } from "react-icons/cg";
 import { PiTicket } from "react-icons/pi";
+import {useNavigate} from 'react-router-dom'
+import Lottie from 'react-lottie';
+import EmptyBox from '../animation/empty_box.json'
+import QuestionMarkAnimation from '../animation/question_mark.json'
+
+
+
 
 
 const ManageUsers = () => {
+
+const navigate = useNavigate()
+ 
+
 
   const [isOpen, setIsOpen] = useState(false)
 const [loading, setloading] = useState(false)
@@ -96,6 +107,19 @@ const [seeStrictEmailError, setSeeStrictEmailError] = useState(false)
 const [openLoad, setOpenLoad] = useState(false);
 const [roleError, setRoleError] = useState('')
 const [seeRoleError, setSeeRoleError] = useState(false)
+
+
+
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
 
 
 const handleCloseUserAddAlert = ()=> {
@@ -208,6 +232,11 @@ useCallback(
       //   setopenopenAccessDenied3(true)
         
       // }
+
+
+      if (response.status === 401) {
+        navigate('/signin')
+      }
       if (response.ok) {
         setUsers(newData)
 
@@ -428,18 +457,31 @@ const handleAddUser = async (e) => {
     <ThemeProvider theme={materialuitheme}>
 
 
-
-
+{/* 
+    ||  rowData.phone_number === '' &&  <Lottie className='relative z-50' options={defaultOptions}
+   height={70} width={70} />   || rowData.phone_number === null &&  <Lottie className='relative z-50'
+    options={defaultOptions}
+   height={70} width={70} /> */}
     <div style={{ maxWidth: "100%" }}>
     <MaterialTable
    
       columns={[
         { title: "Name", field: "user_name" },
-        { title: "Phone Number", field: "phone_number", align: 'left' },
+        { title: "Phone Number", field: "phone_number", align: 'left',
 
-        {
-          title: "Type",
-          field: "role",
+          render: (rowData)=> 
+            <>
+               {rowData.phone_number === 'null' || rowData.phone_number === ''
+               || rowData.phone_number === null
+               ?  <Lottie className='relative z-50' options={defaultOptions}
+               height={70} width={70} /> : rowData.phone_number
+                
+
+
+}
+
+
+            </>
         },
         
        
@@ -453,6 +495,9 @@ const handleAddUser = async (e) => {
             field: "Action",
             render: (rowData) => 
 
+
+
+              
               <>
               <Box sx={{
                 display: 'flex',

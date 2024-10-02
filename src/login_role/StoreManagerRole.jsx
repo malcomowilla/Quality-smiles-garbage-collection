@@ -1,7 +1,7 @@
 
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import {Link, useNavigate} from "react-router-dom";
-import {useState, useEffect} from 'react'
+import {useState, useEffect,useCallback} from 'react'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -15,24 +15,108 @@ import StoreManagerLoginAlertErrorOffline  from '../Alert/StoreManagerLoginAlert
 import StoreManagerInvalidManagerNumber  from '../Alert/StoreManagerInvalidManagerNumber'
 import StoreManagerInvalidOtpAlert from '../Alert/StoreManagerInvalidOtpAlert'
 import { GoPerson } from "react-icons/go";
+import StoreManagerLogout from '../Alert/StoreManagerLogout'
+import StoreManagerOtpEmail from '../Alert/StoreManagerOtpEmail'
+
+
+// openOtpEmailSent, handleCloseOtpEmailSent StoreManagerOtpEmail
 
 
  function StoreManagerRole() {
   const navigate = useNavigate()
   const [loading, setloading] = useState(false)
   const [seeManagerNumber, setseeManagerNumber] = useState(false)
-  const {storeManagerLogin, setStoreManagerLogin, setstoreManager, storeManagerSettings, sendManagerNumberViaSms } = useApplicationSettings()
+  const {storeManagerLogin, setStoreManagerLogin, setstoreManager, 
+    storeManagerSettings, sendManagerNumberViaSms,setopenStoreManagerLogin,
+    openStoreManagerLogout, handleCloseStoreManagerLogout,
+    materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+    seeSettings3, setSeeSettings3,  setsettingsformData,  handleCustomerFormDataChange,
+    settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+     handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+     seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,
+     setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+     settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
+  } = useApplicationSettings()
+
+const {send_manager_number_via_sms, send_manager_number_via_email, 
+  enable_2fa_for_store_manager
+} = storeManagerSettings
+
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [openOtp, setopenOtp] = useState(false)
   const [openProviderLoginAlert, setopenProviderLoginAlert] = useState(false)
 const [openProviderInvalidCode, setopenProviderInvalidCode] = useState(false)
 const [openProviderInvalidOtp, setopenProviderInvalidOtp] = useState(false)
+const [openOtpEmailSent, setopenOtpEmailSent] = useState(false)
+
+const handleCloseOtpEmailSent = ()=>{
+  setopenOtpEmailSent(false) 
+}
 
 
 
+const controller = new AbortController();
+const id = setTimeout(() => controller.abort(), 9000);
 
 
+const handlegetstoreManagerSettings = useCallback(
+  
+  async()=> {
+    const storeManager  = JSON.parse(localStorage.getItem('store_manager_settings'))
+      
+     try {
+       const response = await fetch(`/api/allow_get_settings_for_store_manager`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+
+       if (response.status === 401) {
+        navigate('/signin')
+      }
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       // const minimum_digits = newData.minimum_digits
+     
+     
+       const {prefix, minimum_digits,send_manager_number_via_email,send_manager_number_via_sms, enable_2fa_for_store_manager
+        } = newData[0]
+      //  const send_manager_number_via_email = storeManager.send_manager_number_via_email
+      //  const send_manager_number_via_sms = storeManager.send_manager_number_via_sms
+      //  const enable_2fa_for_store_manager  = storeManager.enable_2fa_for_store_manager 
+console.log('enable_2fa_for_store_manager', enable_2fa_for_store_manager)
+       setstoreManagerSettings((prev)=> ({
+        ...prev,
+        prefix,  minimum_digits,
+        send_manager_number_via_email, send_manager_number_via_sms,enable_2fa_for_store_manager 
+       }))
+
+       } else {
+       console.log('failed to fetch')
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetstoreManagerSettings()
+}, [handlegetstoreManagerSettings,setstoreManagerSettings]);
 
 
 
@@ -102,14 +186,14 @@ const handleCloseProviderInvalidCode = (event, reason) => {
 
 
 
-  const storedDataInJson = localStorage.getItem('store_manager_settings')
-const storedData = storedDataInJson ? JSON.parse(storedDataInJson) : {}
+//   const storedDataInJson = localStorage.getItem('store_manager_settings')
+// const storedData = storedDataInJson ? JSON.parse(storedDataInJson) : {}
 
 
-const enable_2fa_for_store_manager = storedData.enable_2fa_for_store_manager
-const send_manager_number_via_email = storedData.send_manager_number_via_email
-const send_manager_number_via_sms = storedData.send_manager_number_via_sms
-console.log('send_manager_number_via_email=>',storedData.send_manager_number_via_email)
+// const enable_2fa_for_store_manager = storedData.enable_2fa_for_store_manager
+// const send_manager_number_via_email = storedData.send_manager_number_via_email
+// const send_manager_number_via_sms = storedData.send_manager_number_via_sms
+// console.log('send_manager_number_via_email=>',storedData.send_manager_number_via_email)
 
 
   const handleVerifyOtp = async (e) => {
@@ -132,7 +216,8 @@ console.log('send_manager_number_via_email=>',storedData.send_manager_number_via
         
         setloading(false);
         localStorage.setItem('store manager', true);
-
+        navigate('/store_manager');
+        setopenStoreManagerLogin(true)
   
       } else {
         console.log('failed')
@@ -182,15 +267,25 @@ setopenProviderLoginAlert(true)
     
       if (response.ok) {
         setloading(false)
-        
+        // setopenOtpEmailSent
 if (enable_2fa_for_store_manager == true) {
   setOtpSent(true);
+
+  if (send_manager_number_via_email === true || send_manager_number_via_email === 'true') {
+    setopenOtpEmailSent(true)
+  }
+
+  if (send_manager_number_via_sms === true || send_manager_number_via_sms === 'true') {
+    setopenOtp(true)
+  }
 } else if (enable_2fa_for_store_manager == false) {
-  navigate('/store_manager');
   localStorage.setItem('store manager', true);
+  navigate('/store_manager');
+  setopenStoreManagerLogin(true)
+  
 }
         setstoreManager(true)
-        setopenOtp(true)
+        
     
     
       } else {
@@ -243,6 +338,13 @@ if (enable_2fa_for_store_manager == true) {
   return (
 
     <>
+
+<StoreManagerOtpEmail handleCloseOtpEmailSent={handleCloseOtpEmailSent}
+ openOtpEmailSent={openOtpEmailSent}
+/>
+
+    <StoreManagerLogout openStoreManagerLogout={openStoreManagerLogout} handleCloseStoreManagerLogout={handleCloseStoreManagerLogout}
+    />
 <StoreManagerOtp openOtp={openOtp} handleCloseOtp={handleCloseOtp}/>
 <StoreManagerLoginAlertErrorOffline  openProviderLoginAlert={openProviderLoginAlert} handleCloseProviderLoginAlert={handleCloseProviderLoginAlert}/>
 < StoreManagerInvalidManagerNumber  openProviderInvalidCode={openProviderInvalidCode}
@@ -279,7 +381,10 @@ if (enable_2fa_for_store_manager == true) {
 <TextInput name="otp"  value={otp}  onChange={(e) => setOtp(e.target.value)}
 type={seeManagerNumber ? 'password' : 'text'} 
  required shadow  
-className='w-full pr-[-8px]' />
+
+
+ style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+/>
 
   <div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
   flex items-center pr-1 cursor-pointer'>
@@ -352,7 +457,10 @@ Login With Your Management Number</h2>
 <TextInput name="manager_number"  value={storeManagerLogin.manager_number}    onChange={handleChange} 
 type={seeManagerNumber ? 'password' : 'text'} 
 required shadow  
-className='w-full pr-[-8px]' />
+
+
+style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+/>
 
 <div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
 flex items-center pr-1 cursor-pointer'>
@@ -432,7 +540,10 @@ Login With Your Management Number
 <TextInput name="manager_number"  value={storeManagerLogin.manager_number}    onChange={handleChange} 
 type={seeManagerNumber ? 'password' : 'text'} 
 required shadow  
-className='w-full pr-[-8px]' />
+
+
+style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+/>
 
 <div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
 flex items-center pr-1 cursor-pointer'>

@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
+import { IoSettingsOutline } from "react-icons/io5";
 
 
 
@@ -32,13 +33,21 @@ const MySettings = () => {
        handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
-       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,seeSettings7, setSeeSettings7,
+       handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings
      } = useApplicationSettings();
 
 
 const { login_with_otp, login_with_web_auth, login_with_otp_email, send_password_via_sms,
-  send_password_via_email,check_is_inactive,check_inactive_days,check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes
+  send_password_via_email,check_is_inactive,check_inactive_days,check_inactive_hrs,
+  enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys
 } = adminFormSettings
+
+
+const {
+
+  start_in_minutes,
+        start_in_hours} = calendarSettings
 
 
 // const {send_manager_number_via_email , send_manager_number_via_sms, enable_2fa_for_store_manager} = storeManagerSettings
@@ -55,7 +64,8 @@ const [isloading, setisloading] = useState({
   loading3: false,
   loading4: false,
   loading5: false,
-  loading6: false
+  loading6: false,
+  loading7: false,
   
 
 })
@@ -102,7 +112,6 @@ const [isloading, setisloading] = useState({
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 9000);
     
-  
   
   
   
@@ -176,65 +185,97 @@ const [isloading, setisloading] = useState({
   
   
   
-    const handlegetcustomerSettings = useCallback(
-      async()=> {
-           const storedData = JSON.parse(localStorage.getItem("customer settings"));
+  //   const handlegetcustomerSettings = useCallback(
+  //     async()=> {
+  //          const storedData = JSON.parse(localStorage.getItem("customer settings"));
          
-           const requestParams = {
-             use_auto_generated_number:storedData.use_auto_generated_number,
-             send_sms_and_email:storedData.send_sms_and_email,
-             send_email: storedData.send_email,
-             enable_2fa: storedData.enable_2fa
+  //          const requestParams = {
+  //            use_auto_generated_number:storedData.use_auto_generated_number,
+  //            send_sms_and_email:storedData.send_sms_and_email,
+  //            send_email: storedData.send_email,
+  //            enable_2fa: storedData.enable_2fa
               
            
-           };
-         try {
-           const response = await fetch(`/api/get_customer_settings?${new URLSearchParams(requestParams)}`, {
-           method: 'GET',
-           signal: controller.signal,  
+  //          };
+  //        try {
+  //          const response = await fetch(`/api/get_customer_settings?${new URLSearchParams(requestParams)}`, {
+  //          method: 'GET',
+  //          signal: controller.signal,  
   
-           headers: {
-             "Content-Type"  : 'application/json'
-           },
-           })
+  //          headers: {
+  //            "Content-Type"  : 'application/json'
+  //          },
+  //          })
   
-        clearTimeout(id);
+  //       clearTimeout(id);
 
   
-           const newData = await response.json()
-           if (response.ok) {
-           // const use_auto_generated_number = newData.use_auto_generated_number
-           // const prefix = newData.prefix
-           // const minimum_digits = newData.minimum_digits
+  //          const newData = await response.json()
+  //          if (response.ok) {
+  //          // const use_auto_generated_number = newData.use_auto_generated_number
+  //          // const prefix = newData.prefix
+  //          // const minimum_digits = newData.minimum_digits
          
          
-           const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
-            enable_2fa, enable_2fa_for_service_provider} = newData[0]
-           setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
-            send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
+  //          const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
+  //           enable_2fa, enable_2fa_for_service_provider} = newData[0]
+  //          setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
+  //           send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
            
-           })
+  //          })
            
-           } else {
-           console.log('failed to fetch')
-           }
-           } catch (error) {
-           console.log(error)
-           setOpenOfflineError(true)
+  //          } else {
+  //          console.log('failed to fetch')
+  //          }
+  //          } catch (error) {
+  //          console.log(error)
+  //          setOpenOfflineError(true)
            
-           }
-         },
+  //          }
+  //        },
      
-  []
-  )
+  // []
+  // )
   
   
       
     
-    useEffect(() => {
-      handlegetcustomerSettings()
-    }, [handlegetcustomerSettings, setsettingsformData]);
+  //   useEffect(() => {
+  //     handlegetcustomerSettings()
+  //   }, [handlegetcustomerSettings, setsettingsformData]);
   
+const handleGetCalendarSettings = useCallback(
+  async() => {
+    try {
+      const response = await fetch('/api/get_calendar_settings')
+      const newData = await response.json()
+      if (response.ok) {
+        console.log('data',newData)
+        // const start_in_minutes = newData.start_in_minutes
+        //   const start_in_hours = newData.start_in_hours
+
+          const {start_in_hours,  start_in_minutes} = newData[0]
+          setCalendarSettings((prevData)=>  ({...prevData, start_in_minutes,
+            start_in_hours
+             }))
+      } else {
+        console.log('error fetching calendar settings')
+        setOpenOfflineError(true)
+      }
+    } catch (error) {
+      console.log('error fetching calendar settings', error)
+      setOpenOfflineError(true)
+    }
+  },
+  [],
+)
+
+
+
+useEffect(() => {
+  handleGetCalendarSettings()
+}, [handleGetCalendarSettings]);
+
 
 
 
@@ -250,7 +291,8 @@ const [isloading, setisloading] = useState({
             send_password_via_email:storedData.send_password_via_email,
             send_password_via_sms:storedData.send_password_via_sms,
             check_is_inactive: storedData.check_is_inactive,
-            enable_2fa_for_admin: storedData.enable_2fa_for_admin
+            enable_2fa_for_admin: storedData.enable_2fa_for_admin,
+            enable_2fa_for_admin_passkeys: storedData.enable_2fa_for_admin_passkeys 
            
            };
 
@@ -280,12 +322,15 @@ const [isloading, setisloading] = useState({
            const check_inactive_hrs = newData[0].check_inactive_hrs
            const check_inactive_minutes = newData[0].check_inactive_minutes
            const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
+           const enable_2fa_for_admin_passkeys = newData[0].enable_2fa_for_admin_passkeys
+           const check_inactive_days = newData[0].check_inactive_days
          
           //  const {login_with_otp} = newData[0]
           
            setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
             login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
-            check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes
+            check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
+            check_inactive_days
            }))
          
            
@@ -316,6 +361,49 @@ const [isloading, setisloading] = useState({
 
 
 
+    const handleUpdateCalendarSettings = async (e) => {
+      setisloading({...isloading, loading7: true})
+      setOpenLoad(true)
+      e.preventDefault()
+      try {
+        const response = await fetch('/api/create_calendar_settings', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(calendarSettings)
+
+        })
+
+        if (response.status === 403) {
+          setOpenError(true)
+        }
+
+        const newData = await response.json()
+        if (response.ok) {
+          // console.log('calendarSettings', newData)
+          setisloading({...isloading, loading7: false})
+          setOpenLoad(false)
+          setOpen(true)
+
+          const start_in_minutes = newData.start_in_minutes
+          const start_in_hours = newData.start_in_hours
+          setCalendarSettings((prevData)=>  ({...prevData, start_in_minutes,
+            start_in_hours
+             }))
+
+             
+        } else {
+          console.log('error creating calendar settings')
+          setisloading({...isloading, loading7: false})
+          setOpenLoad(false)
+        }
+      } catch (error) {
+        console.log('error creating calendar settings', error)
+        setisloading({...isloading, loading7: false})
+        setOpenLoad(false)
+      }
+    } 
 
 
 
@@ -410,6 +498,7 @@ const [isloading, setisloading] = useState({
          const check_inactive_days = newData.check_inactive_days
          const enable_2fa_for_admin = newData.enable_2fa_for_admin
          const check_inactive_minutes = newData.check_inactive_minutes
+         const enable_2fa_for_admin_passkeys = newData.enable_2fa_for_admin_passkeys
 
 
           setOpen(true)
@@ -418,7 +507,8 @@ const [isloading, setisloading] = useState({
           // setloading(false)
           setAdminFormSettings((prevData)=>  ({...prevData, login_with_otp,login_with_web_authn,
             login_with_otp_email,send_password_via_email,send_password_via_sms,
-            check_inactive_hrs, check_inactive_days,check_is_inactive,enable_2fa_for_admin,check_inactive_minutes
+            check_inactive_hrs, check_inactive_days,check_is_inactive,enable_2fa_for_admin,check_inactive_minutes,
+            enable_2fa_for_admin_passkeys
              }))
 
 
@@ -428,7 +518,7 @@ const [isloading, setisloading] = useState({
 
              localStorage.setItem('admin settings', JSON.stringify({login_with_otp, login_with_web_authn,
               login_with_otp_email,send_password_via_email,send_password_via_sms,check_inactive_hrs,
-              check_is_inactive,enable_2fa_for_admin,
+              check_is_inactive,enable_2fa_for_admin,enable_2fa_for_admin_passkeys,
               check_inactive_days
              }))
           console.log('admin_data:',newData)
@@ -889,6 +979,14 @@ const defaultOptions = {
   }
 
 
+
+{isloading.loading7 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
 <div id="accordion-open" data-accordion="open" className='mt-9'>
   <SettingsAlert open={open} handleClose={handleClose}/>
   <SettingsAlertError openError={openError} handleCloseError={handleCloseError}/>
@@ -903,10 +1001,7 @@ const defaultOptions = {
       dark:border-gray-700 dark:text-gray-900 hover:dark:text-white hover:text-black hover:bg-gray-100
        dark:hover:bg-gray-800 gap-3"
        data-accordion-target="#accordion-open-body-1" aria-expanded="true" aria-controls="accordion-open-body-1">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor"
-       viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8
-        0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 
-        0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"></path></svg> Admin Registration</span>
+      <span className="flex items-center"><IoSettingsOutline className='p-1 text-3xl'/> Admin Registration</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -930,38 +1025,46 @@ const defaultOptions = {
     <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />}
      label="Require Email At Signup" />
 
-     <Tooltip title={<p className='text-lg'>require your users to login with two factor authentication </p>}>
+     <Tooltip title={<p className='text-lg'>send a one time password via sms when an admin logs in via two
+       factor authentication </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
          checked={login_with_otp} color="default"/>} 
-      label="enable 2FA for admins(sms)" name='login_with_otp' />
+      label="during two factor authentication login send otp(one time password) via sms" name='login_with_otp' />
 </Tooltip>
 
 
-<Tooltip title={<p className='text-lg'>require your users to login with two factor authentication </p>}>
+<Tooltip title={<p className='text-lg'>send a one time password via email when an admin logs in via two
+  factor authentication </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
          checked={login_with_otp_email} color="default"/>} 
-      label="enable 2FA for admins(email)" name='login_with_otp_email' />
+      label="during two factor authentication login send otp(one time password) via email" name='login_with_otp_email' />
 </Tooltip>
 
 
 <Tooltip title={<p className='text-lg'>enable two factor authentication for admin </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
          checked={enable_2fa_for_admin} color="default"/>} 
-      label="enable 2FA for admins" name='enable_2fa_for_admin' />
+      label="enable 2FA (two factor authentication) for admins (password + otp verification)" name='enable_2fa_for_admin' />
+</Tooltip>
+
+
+<Tooltip title={<p className='text-lg'>enable two factor authentication for admin </p>}>
+      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
+      checked={enable_2fa_for_admin_passkeys} onChange={handleFormDataChangeForAdmin}
+         color="default"/>} 
+      label="enable 2FA (two factor authentication) for admins (password + passkeys)" 
+      
+      name='enable_2fa_for_admin_passkeys'
+      />
 </Tooltip>
 
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox
       checked={check_is_inactive} onChange={handleFormDataChangeForAdmin} color="default" />} 
-      label="Logout  after a period of inactivity"  name='check_is_inactive' />
+      label="Logout  an admin after a period of inactivity"  name='check_is_inactive' />
 
 
 
 
-<Tooltip title={<p className='text-lg'>emails with .co.ke will be rejected, for example  otoshisan@arigato.co.ke </p>} arrow>
-    
-    
-<FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />} 
-      label="Use Strict Email Validation"  /> </Tooltip>
 
 </ThemeProvider >
 
@@ -998,7 +1101,7 @@ xs: '30%'
 },
 }}
           id="outlined-multiline-flexible"
-          label="Logout User after a period of inactivity(hrs)"
+          label="Logout Admin after a period of inactivity(hrs)"
 
 type='number'
 name='check_inactive_hrs'
@@ -1030,7 +1133,7 @@ xs: '30%'
 },
 }}
           id="outlined-multiline-flexible"
-          label="Logout User after a period of inactivity(days)"
+          label="Logout Admin after a period of inactivity(days)"
 value={check_inactive_days}
 onChange={handleFormDataChangeForAdmin}
 name='check_inactive_days'
@@ -1059,7 +1162,7 @@ xs: '30%'
 },
 }}
           id="outlined-multiline-flexible"
-          label="Logout User after a period of inactivity(minutes)"
+          label="Logout Admin after a period of inactivity(minutes)"
 value={check_inactive_minutes}
 onChange={handleFormDataChangeForAdmin}
 name='check_inactive_minutes'
@@ -1073,28 +1176,26 @@ type='number'
         </Box>
         <ThemeProvider theme={materialuitheme}>
 
-        <Tooltip title={<p className='text-lg'>send  email to admin after they get invited to the sytem</p>}>
+        <Tooltip title={<p className='text-lg'>send  password via email to a user after they get invited to the sytem</p>}>
         <FormControlLabel   name='send_password_via_email' className='dark:text-black'  control={<Checkbox color="default"
         checked={send_password_via_email} onChange={handleFormDataChangeForAdmin}/>} 
-        label="Send Password Via Email After Admin Registration" />
+        label="Send Invite To User Via Email" />
        </Tooltip>
 
 
-       <Tooltip title={<p className='text-lg'>send  sms to admin after they get invited to the sytem</p>}>
+       <Tooltip title={<p className='text-lg'>send  password via sms to a user after they get invited to the sytem</p>}>
         <FormControlLabel  className='dark:text-black'  name='send_password_via_sms' control={<Checkbox color="default"
         checked={send_password_via_sms} onChange={handleFormDataChangeForAdmin}/>} 
-        label="Send Password Via Sms After Admin Registration" />
+        label="Send Invite To User Via Sms" />
        </Tooltip>
 
 
 
-       <Tooltip title={<p className='text-lg'>users will be prompted/asked to enter their pin number,
-         faceid,touchid (biometrics) from their 
-        phone for them to be be authenticated with the system
+       <Tooltip title={<p className='text-lg'>users will be invited to the system via email and they will use passkeys during authentication(login)
        </p>}>
         <FormControlLabel  className='dark:text-black' name='login_with_web_auth'  control={<Checkbox color="default"
         onChange={handleFormDataChangeForAdmin}  checked={login_with_web_auth}/>  } 
-        label="Invite users with passkeys" />
+        label="Invite users with email(users will be invited to the system via passkeys)" />
        </Tooltip>
 
        </ThemeProvider >
@@ -1129,10 +1230,7 @@ type='number'
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor" viewBox="0 0 20 20"
-       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 
-       1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-        clipRule="evenodd"></path></svg>Customer Account</span>
+      <span className="flex items-center">   <IoSettingsOutline className='p-1 text-3xl'/>  Customer Account</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -1171,23 +1269,37 @@ checked={settingsformData.use_auto_generated_number}
  As Customer Code"  name='use_auto_generated_number'/>
 
 
+
+<Tooltip title={<p className='text-lg'>Here the customers  will receive 
+  the customer code after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms
+       </p>}>
 <FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
  checked={settingsformData.send_sms_and_email} onChange={handleCustomerFormDataChange}
-/>}   name='send_sms_and_email'    label="Send Customer Code Once Account 
-Is Created Is Created(Sms)"  />
+/>}   name='send_sms_and_email'    label="Send Customer Code Once a Customer 
+Is Created(Sms)"  />
 
-
+</Tooltip >
 
 <FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
  checked={settingsformData.enable_2fa} onChange={handleCustomerFormDataChange}
-/>}   name='enable_2fa'    label="Enable 2FA for customer login"  />
+/>}   name='enable_2fa'    label="Enable 2FA(Two Factor Authentication) for customer login(otp verification)"  />
 
 
 
+<Tooltip title={<p className='text-lg'>Here the customers  will receive 
+  the customer code after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login authenticating two times instead of once,all this will be done via email
+       </p>}>
 <FormControlLabel name='send_email'  className='dark:text-black' checked={settingsformData.send_email} control={<Checkbox  color="default" 
   onChange={handleCustomerFormDataChange}
-/>}      label="Send Customer Code Once Account 
-Is Created Is Created(Email)"  />
+/>}      label="Send Customer Code Once a Customer 
+Is Created(email)"  />
+</Tooltip>
+
+
 
 
 </FormGroup>
@@ -1246,10 +1358,9 @@ Is Created Is Created(Email)"  />
      dark:focus:ring-gray-800 dark:border-gray-700 dark:hover:text-white hover:bg-gray-100 
      dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-3" aria-expanded="false" 
      aria-controls="accordion-open-body-3">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0" fill="currentColor" viewBox="0 0 20 20"
-       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0
-        00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 
-        0 100-2 1 1 0 000 2z" clipRule="evenodd"></path></svg>Service Provider Account?</span>
+      <span className="flex items-center">
+      <IoSettingsOutline className='p-1 text-3xl'/>
+        Service Provider Account?</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
       </svg>
@@ -1280,27 +1391,42 @@ Is Created Is Created(Email)"  />
 
 <FormControlLabel name='enable_2fa_for_service_provider'  className=' dark:text-black'
  
-       label="enable 2FA for service provider"
+       label="enable 2FA for service provider (Two Factor Authentication)"
        control={<Checkbox color="default"  onChange={handleCustomerFormDataChangeForProvider}
         checked={settingsformDataForProvider.enable_2fa_for_service_provider}/>}
       />
 
 
-
+<Tooltip title={<p className='text-lg'>
+  Here the service providers  will receive 
+  the service provider code after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login authenticating two times instead of once,all this will be done via email
+  </p>}>
 <FormControlLabel name='send_email_for_provider'   className=' dark:text-black' 
        label="Send Service Provider
-      Code Once Account Is Created Is Created(Email)"
+      Code Once Service Provider Has Been Created(Email)"
        control={<Checkbox color="default" onChange={handleCustomerFormDataChangeForProvider} 
        checked={settingsformDataForProvider.send_email_for_provider}/>}
       />
+</Tooltip>
 
+
+
+
+<Tooltip title={<p className='text-lg'>Here the service providers  will receive 
+  the service provider code after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms
+  </p>}>
       <FormControlLabel  className=' dark:text-black' control={<Checkbox  color="default"   
        onChange={handleCustomerFormDataChangeForProvider}
       checked={settingsformDataForProvider.send_sms_and_email_for_provider
       }
       />} label="Send Service Provider
-      Code Once Account Is Created Is Created(SMS)" name='send_sms_and_email_for_provider' />
-   
+      Code Once Service Provider Has Been Created(SMS)" name='send_sms_and_email_for_provider' />
+   </Tooltip>
+
       
       </FormGroup>
   <Stack direction='row'  className='myTextField'  sx={{
@@ -1325,7 +1451,7 @@ Is Created Is Created(Email)"  />
            }}>
    
             
-   <TextField  name='prefix'      value={settingsformDataForProvider.prefix}  onChange={handleCustomerFormDataChangeForProvider}
+   <TextField  name='prefix'   value={settingsformDataForProvider.prefix}  onChange={handleCustomerFormDataChangeForProvider}
      className='myTextField '
              label='Service Provider Code No Prefix' ></TextField>
            
@@ -1359,10 +1485,7 @@ Is Created Is Created(Email)"  />
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor" viewBox="0 0 20 20"
-       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 
-       1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-        clipRule="evenodd"></path></svg>Store Number?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>  Store Number?</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -1451,10 +1574,7 @@ Is Created Is Created(Email)"  />
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor" viewBox="0 0 20 20"
-       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 
-       1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-        clipRule="evenodd"></path></svg>Store Manager?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>     Store Manager?</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -1472,28 +1592,35 @@ Is Created Is Created(Email)"  />
 
 
    <ThemeProvider theme={materialuitheme}>
-   <Tooltip title={<p className='text-lg'>choose this if you want store managers to receive manager number via sms  </p>}>
+   <Tooltip title={<p className='text-lg'>Here the storemanagers  will receive 
+  the manager number after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms </p>}>
       <FormControlLabel  className='dark:text-black text-white'   control={<Checkbox 
       onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.send_manager_number_via_sms}
           color="default"/>} 
-      label="Send Manager Number and otp via sms" name='send_manager_number_via_sms' />
+      label="Send Manager Number Once StoreManager Has Been Created(SMS)"
+ name='send_manager_number_via_sms' />
 </Tooltip>
 
 
-<Tooltip title={<p className='text-lg'>choose this if you want store managers to receive manager number via email  </p>}>
+<Tooltip title={<p className='text-lg'>Here the storemanagers  will receive 
+  the manager number after their account has been created to use for loging into their account, but 
+  if two factor authentication (otp verification) is enabled then he will receive additional details
+   (one time password) inorder to login hence authenticating two times instead of once,all this will be done via email </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
       checked={storeManagerSettings.send_manager_number_via_email} onChange={handleFormDataChangeForStoreManager}
           color="default"/>} 
-      label="Send Manager Number and otp via email" name='send_manager_number_via_email' />
+      label="Send Manager Number Once StoreManager Has Been Created(Email)" name='send_manager_number_via_email' />
 </Tooltip>
 
 
 
-<Tooltip title={<p className='text-lg'>use two factor authentication for store manager login </p>}>
+<Tooltip title={<p className='text-lg'>use two factor authentication for store manager login (password plus otp) </p>}>
       <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
       onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.enable_2fa_for_store_manager}
           color="default"/>} 
-      label="enable 2FA for store manager" name='enable_2fa_for_store_manager' />
+      label="enable 2FA for store manager(otp verification)" name='enable_2fa_for_store_manager' />
 </Tooltip>
 
 
@@ -1571,10 +1698,7 @@ Is Created Is Created(Email)"  />
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center"><svg className="w-5 h-5 me-2 shrink-0 hover:text-white  " fill="currentColor" viewBox="0 0 20 20"
-       xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 
-       1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-        clipRule="evenodd"></path></svg>Ticket Number?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>  Ticket Number?</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -1642,6 +1766,103 @@ Is Created Is Created(Email)"  />
  shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
   hover:translate-y-[3px] rounded-md">
     {isloading.loading6 &&  <ImSpinner9 className={` ${isloading.loading6 && 'animate-spin'  }   `} /> } 
+        UPDATE SETTINGS
+      </button>
+        </div>
+
+        </ThemeProvider>
+
+  </motion.div>
+  </form>
+
+
+
+
+  <h2 id="accordion-open-heading-2">
+    <button type="button"   onClick={()=> setSeeSettings7(!seeSettings7)} className="flex items-center justify-between w-full p-5 
+    
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
+    hover:dark:text-white hover:text-black
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/> Calendar?</span>
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+       fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
+      </svg>
+    </button>
+  </h2>
+
+
+
+
+
+  <form onSubmit={handleUpdateCalendarSettings}>
+
+
+  <motion.div  variants={variantDiv} transition={{duration:0.5, ease: "easeInOut",
+  }} initial='hidden' animate={seeSettings7 ? "visible" : "hidden"} id="accordion-open-body-2"   className={''} 
+  aria-labelledby="accordion-open-heading-2">
+
+
+   <ThemeProvider theme={materialuitheme}>
+
+
+  <FormGroup>
+          
+
+
+
+
+</FormGroup>
+        </ThemeProvider>
+
+<ThemeProvider theme={materialuitheme}>
+
+<p className='text-black p-3 font-light edu_ustralia_font text-lg tracking-widest'>
+  Notify Admin Before An Event Starts (notify 30,10,2, 10,minutes or hrs before an event starts)</p>
+        <Stack direction='column'  className='myTextField'  sx={{
+           
+        '& .MuiTextField-root': { m: 1, width: '90ch',  marginTop: '30px',  '& label.Mui-focused': {
+          color: 'black',
+          fontSize: '16px'
+          },
+      '& .MuiOutlinedInput-root': {
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          borderColor: "black",
+          borderWidth: '3px',
+          },
+       '&.Mui-focused fieldset':  {
+          borderColor: 'black', 
+          
+        }
+      } },
+      }}   spacing={{
+          xs: 1,
+          sm: 2
+        }}>
+
+          <TextField  
+          value={start_in_minutes}
+          name='start_in_minutes'
+          onChange={handleFormDataChangeForCalendar}
+          label='Minutes' 
+          type='number'
+           ></TextField>
+
+          <TextField  
+          onChange={handleFormDataChangeForCalendar}
+          value={start_in_hours} 
+          name='start_in_hours'
+           className='myTextField'   
+             type='number'  label='Hours' ></TextField>
+
+        </Stack>
+        <div className='p-5'>
+        <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+ shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+  hover:translate-y-[3px] rounded-md">
+    {isloading.loading7 &&  <ImSpinner9 className={` ${isloading.loading7 && 'animate-spin'  }   `} /> } 
         UPDATE SETTINGS
       </button>
         </div>

@@ -14,6 +14,9 @@ import { FaHandPointRight } from "react-icons/fa6";
 import StoreManagerErrorLogin from '../Alert/StoreManagerErrorLogin'
 import StoreManagerDelivered from '../Alert/StoreManagerDelivered'
 import StoreManagerDeliveredError from '../Alert/StoreManagerDeliveredError'
+import StoreManagerLogin from '../Alert/StoreManagerLogin'
+
+
 
 
 
@@ -21,7 +24,8 @@ const StoreManagerForm = () => {
 const navigate = useNavigate()
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
         customerLatitude, customer, setCustomer, setCustomerLatitude, storeManagerSet, setStoreManagerSet,
-        handleChangeStoreSet} = useApplicationSettings()
+        handleChangeStoreSet,openStoreManagerLogin, handleCloseStoreManagerLogin,setopenStoreManagerLogout
+      } = useApplicationSettings()
        
          
         const [open, setOpen] = useState(false);
@@ -115,7 +119,7 @@ const handleLogout = async() => {
 if (response.ok) {
   navigate('/store_manager_role')
   localStorage.removeItem('store manager');
-
+  setopenStoreManagerLogout(true)
 } else {
   console.log('failed')
 }
@@ -128,6 +132,11 @@ if (response.ok) {
   return (
 
    <>
+
+
+<StoreManagerLogin  openStoreManagerLogin={openStoreManagerLogin}
+ handleCloseStoreManagerLogin={handleCloseStoreManagerLogin}/>
+
    <StoreManagerErrorLogin openStoreManagerError={openStoreManagerError}
     handleCloseStoreManagerError={handleCloseStoreManagerError} />
 
@@ -136,7 +145,7 @@ if (response.ok) {
   
   <StoreManagerDelivered openStoreManagerSucess={openStoreManagerSucess}
     handleCloseStoreManagerSucess={handleCloseStoreManagerSucess} />
-<section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+<section className="bg-white  h-screen flex items-center">
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
 
@@ -144,7 +153,7 @@ if (response.ok) {
 <div className='flex justify-center'>
         
         <div className=''>
-            <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full' alt="quality-smiles" />
+            <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-2xl' alt="quality-smiles" />
         </div>
             </div>
 <div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
@@ -169,10 +178,13 @@ if (response.ok) {
       
       <div>
         <div className=" block playwrite-de-grund">
-          <Label htmlFor="repeat-password" value="Number Of Bags Delivered" />
+          <Label htmlFor="repeat-password" value="Number Of Bags Delivered"  style={{ color: 'black'}}/>
         </div>
         <TextInput id="repeat-password"  className='py-3' type="text" name='number_of_bags_delivered'
-         value={storeManagerSet.number_of_bags_delivered} onChange={handleChangeStoreSet} shadow />
+         value={storeManagerSet.number_of_bags_delivered} onChange={handleChangeStoreSet} shadow 
+         
+         style={{backgroundColor: 'white', color: 'black'}}
+         />
       </div>
       </div>
 

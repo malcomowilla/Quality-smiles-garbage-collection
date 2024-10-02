@@ -16,7 +16,8 @@ import Alert from '@mui/material/Alert';
   const {vertical, horizontal} = state
   return (
     <div>
-      <Snackbar open={openAdditionProvider}   anchorOrigin={{ vertical, horizontal }} autoHideDuration={6000} onClose={handleCloseAdditionProvider}>
+      <Snackbar open={openAdditionProvider}   anchorOrigin={{ vertical, horizontal }} 
+      autoHideDuration={6000} onClose={handleCloseAdditionProvider}>
         <Alert
           onClose={handleCloseAdditionProvider}
           severity="success"

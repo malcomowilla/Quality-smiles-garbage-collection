@@ -9,6 +9,14 @@ import {Link} from 'react-router-dom'
 import { motion } from "framer-motion"
 import {useState, useEffect, useCallback} from 'react'
 import { FcSms } from "react-icons/fc";
+import Lottie from 'react-lottie';
+import ChatAnimation from '../animation/chats2.json'
+import { BsChatSquareText } from "react-icons/bs";
+import Avatar from '@mui/material/Avatar';
+
+
+
+
 
 const Sidebar = () => {
    const variantUl = {
@@ -20,6 +28,7 @@ const Sidebar = () => {
       },
     
 
+      
 
       visible: {
         opacity: 1,
@@ -41,20 +50,82 @@ const Sidebar = () => {
         
          width: '256px'
        }
+
+
+       
     }
     
+
     
    const {isSeen, setIsSeen, seeSidebar, setSeeSideBar,seelocation, user, setUser,
       canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting,canReadSms, canManageSms,
       canReadCalendar,canManageCalendar,canReadTickets,canManageTickets,
     canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,canManageStoreManager,
     canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation,
-      imagePreview
+      imagePreview, user_name
 
     } = useApplicationSettings()
 
 
-   
+   console.log('user name', user_name)
+  const defaultOptions = {
+   loop: true,
+   autoplay: true, 
+   animationData: ChatAnimation,
+   rendererSettings: {
+     preserveAspectRatio: 'xMidYMid slice'
+   }
+ };
+
+
+
+
+
+
+ function stringToColor(string) {
+   let hash = 0;
+   let i;
+ 
+   /* eslint-disable no-bitwise */
+   for (i = 0; i < string.length; i += 1) {
+     hash = string.charCodeAt(i) + ((hash << 5) - hash);
+   }
+ 
+   let color = '#';
+ 
+   for (i = 0; i < 3; i += 1) {
+     const value = (hash >> (i * 8)) & 0xff;
+     color += `00${value.toString(16)}`.slice(-2);
+   }
+   /* eslint-enable no-bitwise */
+ 
+   return color;
+ }
+ 
+ function stringAvatar(name) {
+
+   const nameParts = name.split(' ').filter(Boolean)
+
+
+   return {
+     sx: {
+       bgcolor: stringToColor(name),
+     },
+     children: nameParts.length > 1  ? 
+`${nameParts[0][0]}${nameParts[1][0]}` 
+      : nameParts.length === 1
+      ? `${nameParts[0][0]}` 
+      : '?',  // Fallback
+     
+   //   `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+   }
+ }
+
+
+
+
+
+
 
   return (
 
@@ -72,8 +143,8 @@ const Sidebar = () => {
      dark:bg-teal-800 scrollbar-thin overflow-y-auto">
 
       <div className='p-3 flex justify-between text-white'>
-      <img src={imagePreview} className='w-[60px] h-[60px] rounded-full shadow-xl' alt="quality-smiles-logo" />
-
+      {/* <img src={imagePreview} className='w-[60px] h-[60px] rounded-full shadow-xl' alt="quality-smiles-logo" /> */}
+      <Avatar {...stringAvatar(user_name.toString())}   style={{width: 60, height: 60}}/>
       <MenuOpenSharpIcon  onClick={()=> setSeeSideBar(!seeSidebar)} style={{ width: '40px', height: '40px' }}/>
       </div>
       <div className='mt-4'>
@@ -124,13 +195,22 @@ const Sidebar = () => {
                  ): null}
                  
 
-                  <li>
-                     <a href="#" className="flex  gap-x-2 items-center w-full p-2  transition duration-75 rounded-lg 
-                     pl-11 group hover:bg-neutral-300
-                     hover:bg-opacity-25 text-white ">
-                              <img src="/images/logo/icons8-task-48.png" alt="task" className='w-8 h-8' />
+               
 
-                        Tasks</a>
+
+                  <li >
+                  <Link to='/admin/chat-messaging'     
+                    className="flex items-center gap-x-4  w-full p-1 transition duration-75 
+                   rounded-lg pl-11 group hover:bg-neutral-300
+                   hover:bg-opacity-25 text-white ">
+{/* 
+<Lottie style={{display: 'flex', justifyItems: 'center',  justifyContent: 'center', }} 
+  options={defaultOptions} width={30} height={30}/> */}
+  <BsChatSquareText className='w-8 h-8' />
+<p>Chats</p>
+                     </Link>
+
+                     
                   </li>
 
                  
@@ -477,7 +557,8 @@ null
 
 
          
-      { user === 'super_administrator' || user == 'administrator'  || canreadSetting  === true  || canManageSetting == true ? (
+      { user === 'super_administrator'  
+       || canreadSetting  === true  || canManageSetting == true ? (
          <>
 
 <div className='translate-y-[10px] '>

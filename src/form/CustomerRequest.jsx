@@ -102,7 +102,7 @@ const confirmRequest = async(e)=> {
    <CustomerRequestError  handleCloseRequestError={handleCloseRequestError} openRequestError={openRequestError} />
 
 
-<section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+<section className="bg-white   h-screen flex items-center">
 <Link to='/customer-payment'>
 <motion.div whileHover={{
     scale: 1.2,

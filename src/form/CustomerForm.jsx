@@ -10,12 +10,18 @@ import CustomerConfirmAlertError from '../Alert/CustomerConfirmAlertError'
 import { BiLogOut } from "react-icons/bi";
 import { SiMoneygram } from "react-icons/si";
 import { motion } from "framer-motion"
+import CustomerLogin from '../Alert/CustomerLogin'
 
+
+// openLoginCustomerSuccessfully,handleCloseLoginCustomerSuccessfully}
 
 const CustomerForm = () => {
 const navigate = useNavigate()
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
-        customerLatitude, customer, setCustomer, setCustomerLatitude} = useApplicationSettings()
+        customerLatitude, customer, setCustomer, setCustomerLatitude, openLogoutCustomerSucessfully,
+        handleCloseLogoutCustomerSuccessfully,setopenLogoutCustomerSucessfully,openLoginCustomerSuccessfully,
+        handleCloseLoginCustomerSuccessfully
+      } = useApplicationSettings()
        
          
         const [open, setOpen] = useState(false);
@@ -124,6 +130,7 @@ const handleLogout = async() => {
     })
 if (response.ok) {
   navigate('/customer_role')
+  setopenLogoutCustomerSucessfully(true)
   localStorage.removeItem('customer');
 
 } else {
@@ -156,6 +163,12 @@ if (response.ok) {
 
 
    <>
+
+
+
+
+   <CustomerLogin  openLoginCustomerSuccessfully={openLoginCustomerSuccessfully} 
+    handleCloseLoginCustomerSuccessfully={handleCloseLoginCustomerSuccessfully}/>
    <CustomerConfirmationAlert openConfirmationAlert={openConfirmationAlert}
      handleCloseConfirmationAlert={handleCloseConfirmationAlert}
 />
@@ -164,7 +177,22 @@ if (response.ok) {
     handleCloseConfirmAlertError={handleCloseConfirmAlertError}
    />
   
-<section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+<section className="bg-white  h-screen grid grid-auto-fit items-center">
+<div className='p-9'>
+  <Link to='/customer-ticket-status'>
+<motion.button whileHover={{
+    scale: 1.2,
+    transition: { duration: 0.5 },
+
+    
+  }} className='bg-yellow-600 rounded-md text-sm  p-1'>
+  <p className='text-white'>
+    <img src="/images/logo/support_customer.png" className='w-8 h-8' alt="support-ticket" />
+    Support Ticket</p>
+</motion.button>
+</Link>
+
+
 
   <Link to='/customer-payment'>
 <motion.div whileHover={{
@@ -172,12 +200,12 @@ if (response.ok) {
     transition: { duration: 0.5 },
 
     
-  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 border-green-800
+  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 mt-4 border-green-800
     ml-4  text-black cursor-pointer   w-[120px] gap-x-4  playwrite-de-grund rounded-md'>
       <SiMoneygram className='text-green-700'/>
       To Up   </motion.div> </Link>
 
-
+</div>
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
 

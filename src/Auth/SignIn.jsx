@@ -1,5 +1,5 @@
 import {Link, useNavigate} from  'react-router-dom'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
@@ -16,31 +16,43 @@ import SinupInvalidOtpAlert from '../Alert/SinupInvalidOtpAlert'
 import {useAuth} from '../settings/AuthSettings'
 import LogoutSuccess from '../Alert/LogoutSuccess'
 import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
+import OtpSentEmailAlert from '../Alert/OtpSentEmailAlert'
+import LogoutSession from '../Alert/LogoutSession'
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
 
+// openLogoutSession, handleCloseLogoutSession,LogoutSession
+// OtpSentEmailAlert openOtpSentEmailAlert, handleCloseOtpSentEmailAlert
 
-
-// OtpSentSmsAlert openOtpSentAlert, handleCloseOtpSentAlert
-
-
+// localStorage.setItem('logoutMessage', true)
 
 const SignIn = () => {
 
   const {isSeenPassWord,  setIsSeenPassword,  setPhone, phone,isloading, signinFormData,
     handleFormDataChangeSignin,
     seeError, setSeeError, registrationError,
-    setRegistrationError,
+    setRegistrationError,imagePreview,
     setloading, adminFormSettings, handleChangePhoneNumber, admin, setAdmin,adminPermission, 
     setAdminPermission, fetchCurrentUser, setTheme,  openLogoutSuccess,handleCloseLogoutSuccess,
-    handleChangePhoneNumberSignin,
-
-    setopenLoginSuccess,user
+    handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,setUpdateFormData,setImagePreview,
+    setopenLoginSuccess,user,updateFormData,
+    // 
+    // 
  } = useApplicationSettings()
 
 
+ console.log('adminset',adminFormSettings)
+
+ const [openLogoutSession, setopenLogoutSession] = useState(false)
 
 
 
+ const handleCloseLogoutSession = () => {
+   setopenLogoutSession(false)
+ }
+const {login_with_otp, login_with_web_auth, login_with_otp_email,
+  enable_2fa_for_admin
+} = adminFormSettings
 
 const {setUser, isUserLogedIn, setIsUserLoggedIn} = useAuth()
 // const {login_with_otp, login_with_web_auth} = adminFormSettings
@@ -61,19 +73,33 @@ const {setUser, isUserLogedIn, setIsUserLoggedIn} = useAuth()
 const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
 const [openOtpSentAlert, setopenOtpSentAlert] = useState(false)
+const [openOtpSentEmailAlert, setopenOtpSentEmailAlert] = useState(false)
+
+const  handleCloseOtpSentEmailAlert = ()=>{
+  setopenOtpSentEmailAlert(false)
+}
+
+
+
+
+
 
 const handleCloseOtpSentAlert = ()=> {
   setopenOtpSentAlert(false)
 }
 
-const storedDataJson = localStorage.getItem("admin settings");
-const storedData = storedDataJson ? JSON.parse(storedDataJson) : {};         
-  const login_with_otp = storedData.login_with_otp 
- const login_with_web_auth = storedData.login_with_web_authn 
-const login_with_otp_email = storedData.login_with_otp_email  
-const enable_2fa_for_admin = storedData.enable_2fa_for_admin
 
- console.log('login with otp:',login_with_otp)
+
+// const storedDataJson = localStorage.getItem("admin settings");
+// const storedData = storedDataJson ? JSON.parse(storedDataJson) : {};         
+//   const login_with_otp = storedData.login_with_otp 
+//  const login_with_web_auth = storedData.login_with_web_authn 
+// const login_with_otp_email = storedData.login_with_otp_email  
+// const enable_2fa_for_admin = storedData.enable_2fa_for_admin
+// const enable_2fa_for_admin_passkeys = storedData.enable_2fa_for_admin_passkeys
+
+
+
 
 const  handleCloseOtpInvalid = ()=> {
   setopenOtpInvalid(false)
@@ -154,7 +180,8 @@ useEffect(() => {
       credentials: 'include', // Include cookies in the request
   
       
-      body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp, enable_2fa_for_admin}),
+      body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp, enable_2fa_for_admin,
+         login_with_otp_email}),
   
     },
   
@@ -176,12 +203,31 @@ useEffect(() => {
     
 
 
+
+
+    
+
 if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
+  if (login_with_otp_email === true || login_with_otp_email === 'true')  {
+    setopenOtpSentEmailAlert(true)
+  }
+
+  if (login_with_otp === true || login_with_otp === 'true') {
+    
+    setopenOtpSentAlert(true)
+  } 
+    
+  
   setotpSent(true)
-  setopenOtpSentAlert(true)
   localStorage.setItem('acha umbwakni', false);
+
+  
 } else if(enable_2fa_for_admin === false || enable_2fa_for_admin === undefined || enable_2fa_for_admin === null
    || enable_2fa_for_admin === 'false') {
+
+
+
+
   navigate('/admin/dashboard')
   localStorage.setItem('acha umbwakni', true);
 setopenLoginSuccess(true)
@@ -191,7 +237,7 @@ fetchCurrentUser()
       )
       setAdminPermission(actualUserDataInJson.can_manage_settings
       )
-}
+} 
 
 
 
@@ -215,7 +261,6 @@ fetchCurrentUser()
     // setSigninFormData('')
   }
   }
-
 
 
 
@@ -256,7 +301,7 @@ fetchCurrentUser()
       // const actualUserDataInJson = await users.json
       setloading(false)
     console.log(actualUserDataInJson)
-
+    localStorage.setItem('acha umbwakni', true);
     fetchCurrentUser()
     setTheme("light")
     setopenLoginSuccess(true)
@@ -290,10 +335,63 @@ fetchCurrentUser()
     setSeeError(false)
   }
   }
+
+
+
+
+
+
+
+
+  const storedData = JSON.parse(localStorage.getItem("ojijo"));
+    
+  const fetchUpdatedProfile = useCallback(
+    
+     
+    async() => {
+      const requestParams = {
+              id:storedData.id,
+            
+            }
+      
+
+      const url = "/api/allow_get_updated_admin?" + new URLSearchParams(requestParams)
+      const response = await fetch(url)
+      const newData = await response.json()
+      console.log('updated admin', newData)
+  try {
+    const {email, user_name, phone_number, profile_image } = newData
+    
+    if (response.ok) {
+      setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
+      // setUpdateFormData((prev)=> (
+      //   {...prev, email, phone_number, user_name }
+      // ))
+      setImagePreview(newData.profile_image)
+      console.log(`get updated adminn${newData.profile_image_url}`)
+    } else {
+      console.log('error geting updated admin')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+  
+    },
+    [],
+  )
+  
+  useEffect(() => {
+    fetchUpdatedProfile()
+    
+  }, [fetchUpdatedProfile]);
+
   return (
     <>
 
+<ToastContainer position='top-center' transition={Slide} autoClose={false}/>
 
+<LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
+<OtpSentEmailAlert  openOtpSentEmailAlert={openOtpSentEmailAlert}  handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert}/>
     <OtpSentSmsAlert handleCloseOtpSentAlert={handleCloseOtpSentAlert}   openOtpSentAlert={openOtpSentAlert}
     />
     <LogoutSuccess openLogoutSuccess={openLogoutSuccess} handleCloseLogoutSuccess={handleCloseLogoutSuccess} />
@@ -314,6 +412,8 @@ fetchCurrentUser()
     
      </Backdrop>
   }
+
+  
   
   {done  &&  <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     
@@ -384,7 +484,8 @@ passwordValue.set(e.target.value)
              <div className='flex justify-center'>
              <button type='submit' className="btn btn-outline btn-success ">Login
            
-           <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
+           <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`} 
+            alt="reload" />
            </button>  
              </div>
 
@@ -576,6 +677,7 @@ Go Back
 ): <>
 
 
+
 {isloading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
   
   <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
@@ -596,6 +698,7 @@ Go Back
               <div className='mb-9'>
               <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
             <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
+            {/* <img className="w-20 h-20 mr-2   rounded-full" src={imagePreview} alt="logo"/> */}
            <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
         </a>
               </div>
@@ -623,6 +726,8 @@ Go Back
                         <label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
                          text-gray-900 ">Your email</label>
                            <div className='absolute self-end bottom-0 p-2'>
+
+                            
                       <img src="/images/logo/icons8-gmail-100.png"  className='w-8 h-8' alt="gmail" />
 
                       </div>
@@ -676,7 +781,7 @@ block w-full p-2.5  focus:border-green-700
 
 ): '' }
                    
-
+                   {/* type={isSeenPassWord  ? 'password' : 'text'} */}
                     <div className='flex flex-col relative'>
                     <div className='absolute self-end bottom-0 p-2 text-white'  onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
                   <ion-icon  name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
@@ -687,7 +792,7 @@ block w-full p-2.5  focus:border-green-700
   }}   onChange={(e)=>{
     handleFormDataChangeSignin(e)
     passwordValue.set(e.target.value)
-  }} value={password} type={isSeenPassWord  ? 'password' : 'text'} name="password" id="password"className=" border 
+  }} value={password} type='password' name="password" id="password"className="border 
    focus:border-2
                           text-white  handlee-regular   transition-all duration-1000 sm:text-lg rounded-lg 
                           focus:ring-green-400 bg-transparent

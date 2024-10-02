@@ -5,6 +5,7 @@ import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { BiLogOut } from "react-icons/bi";
 import ServiceProviderConfirmationAlert from '../Alert/ServiceProviderConfirmationAlert'
 import  ServiceProviderConfirmationAlertError  from '../Alert/ServiceProviderConfirmationAlertError'
+import ServiceProviderLogin from '../Alert/ServiceProviderLogin'
 
 
 
@@ -20,7 +21,8 @@ const [openProviderConfirmationError, setopenProviderConfirmationError] = useSta
 const navigate = useNavigate()
 
 const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
-  customerLatitude,  setCustomerLatitude} = useApplicationSettings()
+  customerLatitude,  setCustomerLatitude,setopenServiceProviderLogoutSuccesful,
+  openServiceProviderLoginSuccesful, handleCloseServiceProviderLoginSuccesful} = useApplicationSettings()
  
    
 
@@ -65,9 +67,14 @@ e.preventDefault()
         credentials: 'include'
   
       })
+
+
+
+      
   if (response.ok) {
     navigate('/service_provider_role')
     localStorage.removeItem('service provider');
+    setopenServiceProviderLogoutSuccesful(true)
   
   } else {
     console.log('failed')
@@ -144,26 +151,31 @@ useEffect(() => {
 
     return (
      <>
-     
+     <ServiceProviderLogin openServiceProviderLoginSuccesful={openServiceProviderLoginSuccesful} 
+   
+   handleCloseServiceProviderLoginSuccesful={handleCloseServiceProviderLoginSuccesful}
+   />
   <ServiceProviderConfirmationAlert  handleCloseopenProviderDelivered={handleCloseopenProviderDelivered}  
   openProviderDelivered={openProviderDelivered}/>
   <ServiceProviderConfirmationAlertError openProviderConfirmationError={openProviderConfirmationError}  
   handleCloseProviderConfirmationError={handleCloseProviderConfirmationError} />
 
 
-  <section className="bg-white dark:bg-gray-900 h-screen flex justify-center items-center">
+  <section className="bg-white  h-screen flex justify-center items-center">
+  
   
   
   <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-
-  <div className=' text-black mb-10 playwrite-de-grund sm:text-5xl max-sm:text-4xl   tracking-widest'>
+    <div className='flex justify-center'> <img src="/images/logo/logo-small.png"
+     className='w-20 h-20 rounded-full shadow-2xl' alt="quality-smiles" /> </div>
+  <div className=' text-black mb-10 playwrite-de-grund sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
                  Quality Smiles
         </div>
   <div className='flex justify-between'>
-    <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white playwrite-de-grund"> Confirm Plastic Bag Given  </h2>
+    <h2 className="mb-4 text-xl font-bold text-gray-900  playwrite-de-grund"> Confirm Plastic Bag Given  </h2>
 <div>
     
-    <img src="/images/logo/logo-small.png" className='w-10 h-10 rounded-full' alt="quality-smiles" />
+    {/* <img src="/images/logo/logo-small.png" className='w-10 h-10 rounded-full' alt="quality-smiles" /> */}
 </div>
     </div>
       <form  onSubmit={confirmDelivery}>

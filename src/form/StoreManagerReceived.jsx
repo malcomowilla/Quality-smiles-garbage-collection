@@ -100,7 +100,7 @@ handleCloseStoreManagerReceived={handleCloseStoreManagerReceived}/>
 <StoreManagerReceivedError  openStoreManagerError={openStoreManagerError} 
 handleCloseStoreManagerError={handleCloseStoreManagerError}
 />
-<section className="bg-white  dark:bg-gray-900 h-screen flex items-center">
+<section className="bg-white  h-screen flex items-center">
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
 
@@ -108,7 +108,7 @@ handleCloseStoreManagerError={handleCloseStoreManagerError}
 <div className='flex justify-center'>
         
         <div className=''>
-            <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full' alt="quality-smiles" />
+            <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-2xl' alt="quality-smiles" />
         </div>
             </div>
 <div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
@@ -133,10 +133,11 @@ handleCloseStoreManagerError={handleCloseStoreManagerError}
       
       <div>
         <div className="block playwrite-de-grund">
-          <Label htmlFor="repeat-password" value="Number Of Bags Received" />
+          <Label htmlFor="repeat-password" value="Number Of Bags Received" style={{ color: 'black'}} />
         </div>
         <TextInput className='py-4'  type="text" onChange={handleChangeStoreSet} 
-         value={storeManagerSet.number_of_bags_received}  name='number_of_bags_received'  shadow />
+         value={storeManagerSet.number_of_bags_received}  name='number_of_bags_received'
+         style={{backgroundColor: 'white', color: 'black'}}  shadow />
       </div>
       </div>
 

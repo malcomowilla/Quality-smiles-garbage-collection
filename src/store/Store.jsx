@@ -13,8 +13,9 @@ import StoreAlertError from '../Alert/StoreAlertError'
 import DeleteStore  from './DeleteStore'
 import StoreDeleteAlert from '../Alert/StoreDeleteAlert'
 import AccessDenied from '../access_denied/AccessDenied'
-
-
+import {useNavigate} from 'react-router-dom'
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie'
 
 
 const Store = () => {
@@ -30,8 +31,16 @@ const [isOpenDelete, setisOpenDelete] = useState(false)
 const [openDeleteAlert, setopenDeleteAlert] = useState(false)
 
 
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
 
-
+const navigate = useNavigate()
 
 const handleCloseDeleteAlert = ()=> {
   setopenDeleteAlert(false)
@@ -82,6 +91,11 @@ useCallback(
       clearTimeout(id);
 
       const newData = await response.json()
+
+
+      if (response.status === 401) {
+        navigate('/signin')
+      }
       if (response.status === 403) {
         // setopenopenAccessDenied3(true)
         
@@ -271,9 +285,33 @@ const handleAddButton = ()=> {
    
       columns={[
         { title: "Location", field: "location" },
-        { title: "Management Number", field: "manager_number" },
+        { title: "Management Number", field: "manager_number",
 
-        { title: "Sub Location", field: "sub_location" },
+          render: (rowData)=> 
+            <>
+{rowData.managger_number === 'null' || rowData.managger_number === null ||
+ rowData.managger_number === ''  ? (
+  <Lottie  options={defaultOptions} width={70} height={70}/>
+ ): <Lottie  options={defaultOptions} width={70} height={70}/> }
+
+            </>
+         },
+
+        { title: "Sub Location", field: "sub_location", 
+          render: (rowData)=> 
+            <>
+{rowData.sub_location === 'null' || rowData.sub_location === null 
+|| rowData.sub_location === ''  ?  (
+  <Lottie options={defaultOptions}  width={70} height={70}/>
+): ''}
+
+
+
+
+
+
+            </>
+         },
 
         {
             title: "Amount Of Bags",

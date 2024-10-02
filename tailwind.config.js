@@ -55,6 +55,7 @@ export default {
     require('daisyui'),
     require('tailwind-scrollbar'),
     require('flowbite/plugin'),
+    require('@shrutibalasa/tailwind-grid-auto-fit'),
     flowbite.plugin(),
 
 

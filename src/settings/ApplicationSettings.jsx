@@ -3,6 +3,8 @@ import { useState, createContext, useContext,  useEffect, useCallback } from "re
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useNavigate} from 'react-router-dom'
 import dayjs from 'dayjs';
+import { createConsumer } from '@rails/actioncable';
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
 
 const GeneralSettingsContext = createContext(null)
@@ -29,7 +31,6 @@ const ticketNumberFormDataInitialValue = {
   minimum_digits: '',
   
 }
-
 
 const settingsFormDataInitialValueForPrvider = {
   prefix: '',
@@ -161,6 +162,7 @@ const customerData = {
     const adminDataSettings = {
       login_with_otp: false,
       enable_2fa_for_admin: false,
+      enable_2fa_for_admin_passkeys: false,
       login_with_web_auth: false,
       login_with_otp_email:  false,
       send_password_via_email: false,
@@ -169,8 +171,14 @@ const customerData = {
       check_inactive_hrs: '',
       check_inactive_days: '',
       check_inactive_minutes: ''
-
     } 
+
+
+
+    const calendarSettingsData = {
+      start_in_minutes: '',
+      start_in_hours: ''
+    }
 
     
     const [isSeen, setIsSeen] = useState(false)
@@ -191,7 +199,7 @@ const [seeSettings2, setSeeSettings2] = useState(false)
 const [seeSettings3, setSeeSettings3] = useState(false)
 const [seeSettings4, setSeeSettings4] = useState(false)
 const [seeSettings5, setSeeSettings5] = useState(false)
-
+const [seeSettings7, setSeeSettings7] = useState(false)
 const [settingsformData, setsettingsformData] = useState(settingsFormDataInitialValue)
 const [settingsformDataForProvider, setsettingsforProvider] = useState(settingsFormDataInitialValueForPrvider)
 const [openOfflineError, setOpenOfflineError] = useState(false)
@@ -258,7 +266,68 @@ const [openLogoutSuccess, setopenLogoutSuccess] = useState(false)
  const [canReadTickets, setCanReadTickets] = useState('')
  const [canManageCalendar, setCanManageCalendar] = useState('')
 const [canReadCalendar, setCanReadCalendar] = useState('') 
+const [openLocationAlertError, setopenLocationAlertError] = useState(false)
+const [openLogoutCustomerSucessfully, setopenLogoutCustomerSucessfully] = useState(false)
+const [openLoginCustomerSuccessfully, setopenLoginCustomerSuccessfully] = useState(false)
+const [openServiceProviderLogoutSuccesful, setopenServiceProviderLogoutSuccesful] = useState(false)
+const [openServiceProviderLoginSuccesful, setopenServiceProviderLoginSuccesful] = useState(false)
+const [openStoreManagerLogin, setopenStoreManagerLogin] = useState(false)
+const [openStoreManagerLogout, setopenStoreManagerLogout] = useState(false)
+const [signedUpPassKey, setSignedUpPassKey] = useState(false)
+const [checkEmail, setCheckEmail] = useState(null)
+const [calendarSettings, setCalendarSettings] = useState(calendarSettingsData)
+const [logoutMessage, setlogoutmessage] = useState(false)
+const [openLogoutSession, setopenLogoutSession] = useState(false)
 
+
+
+const handleCloseLogoutSession = () => {
+  setopenLogoutSession(false)
+}
+
+
+const handleCloseStoreManagerLogout = ()=> {
+  setopenStoreManagerLogout(false)
+}
+
+
+
+
+const handleCloseStoreManagerLogin = ()=> {
+  setopenStoreManagerLogin(false)
+}
+
+
+
+
+const handleCloseServiceProviderLoginSuccesful = ()=>  {
+  setopenServiceProviderLoginSuccesful(false)
+}
+
+
+
+
+
+
+
+
+
+const handleCloseServiceProviderLogoutSuccesful = ()=> {
+  setopenServiceProviderLogoutSuccesful(false)
+}
+
+
+
+
+
+const handleCloseLoginCustomerSuccessfully = ()=> {
+  setopenLoginCustomerSuccessfully(false)
+}
+
+
+const handleCloseLogoutCustomerSuccessfully = ()=> {
+  setopenLogoutCustomerSucessfully(false) 
+}
 
 
 const handleCloseLogoutSuccess = ()=>{
@@ -418,6 +487,7 @@ setsettingsformData((prevData)=> (
 }
 
 
+
       
 const handleCustomerFormDataChangeForProvider = (e)=> {
   const {type, checked, name, value} = e.target
@@ -453,14 +523,42 @@ const handleFormDataChangeForTickets = (e)=> {
 ))
 }
 
-// check_inactive_hrs: '',
-// check_inactive_days: '',
 
-// check_inactive_minutes: ''
+
+
+// start_in_minutes
+//       start_in_hours
+
+
+const handleFormDataChangeForCalendar = (e) => {
+  const { type, name, value } = e.target;
+
+  setCalendarSettings((prevData) => {
+    let updatedSettings = { ...prevData, [name]: value };
+
+if (name === 'start_in_minutes') {
+  updatedSettings.start_in_hours = ''
+}
+
+if (name === 'start_in_hours') {
+  updatedSettings.start_in_minutes = ''
+}
+
+return updatedSettings
+
+  })
+
+
+  
+}
+
 
 
 const handleFormDataChangeForAdmin = (e) => {
   const { type, checked, name, value } = e.target;
+
+
+  // login_with_otp
 
   // Log the value to the console
   console.log('value', value);
@@ -475,8 +573,10 @@ console.log('check_inactive_hrs', updatedData .check_inactive_hrs)
       updatedSettings.check_inactive_days = ''
       updatedSettings.check_inactive_hrs = ''
       
+
+
+
     } else if (name === 'check_inactive_hrs') {
-      
         updatedSettings.check_inactive_minutes = ''
         updatedSettings.check_inactive_days = ''
       
@@ -484,6 +584,19 @@ console.log('check_inactive_hrs', updatedData .check_inactive_hrs)
         updatedSettings.check_inactive_minutes = ''
         updatedSettings.check_inactive_hrs = ''
       
+    }else if (name === 'enable_2fa_for_admin'){
+      updatedSettings.login_with_otp_email = true
+      updatedSettings.enable_2fa_for_admin_passkeys = false
+      
+      
+    }else if (name === 'login_with_otp'){
+      updatedSettings.enable_2fa_for_admin = true
+      updatedSettings.enable_2fa_for_admin_passkeys = false
+    }else if (name === 'login_with_otp_email'){
+      updatedSettings.enable_2fa_for_admin = true
+    }else  if (name === 'enable_2fa_for_admin_passkeys'){
+      updatedSettings.enable_2fa_for_admin = false
+      updatedSettings.login_with_otp = false
     }
 
     // Update the value for the changed field
@@ -492,8 +605,7 @@ console.log('check_inactive_hrs', updatedData .check_inactive_hrs)
     // Update enable_2fa_for_admin based on the checked value
    
 
-    console.log('enaaaable 2fa true or false=>', updatedData.enable_2fa_for_admin);
-    console.log("is it true or false=>", checked);
+    console.log("is it true or false=>", name );
 
     return updatedSettings;
   });
@@ -674,16 +786,112 @@ const darkTheme = createTheme({
 
   useEffect(() => {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    const dark_theme = localStorage.getItem('theme_normal')
+    if (dark_theme  === 'dark') {
+      setMaterialuiTheme(darkTheme)
+      setTheme('dark')
+    }
      
-     setMaterialuiTheme(darkTheme)
-     setTheme('dark')
+     
     } else {
-     setTheme('light')
+      const dark_theme = localStorage.getItem('theme_normal')
+      if (dark_theme  === 'light') {
+        setTheme('light')
+      }
+    
     }
    }, [])
 
 
   const controller = new AbortController();
+
+
+
+
+
+
+
+  const getLocation = 
+  useCallback(
+    async() => {
+  
+      try {
+        const response = await fetch('/api/get_locations', {
+          signal: controller.signal,  
+  
+        })
+        clearTimeout(id);
+  
+        const newData = await response.json()
+  
+        if (response.status === 401) {
+          if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+            toast.error(
+              <div>
+                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                  <div> <span className='font-thin flex gap-3'>
+               
+                    </span></div></p>
+              </div>,
+             
+            );
+            navigate('/signup2fa_passkey')
+            setopenLogoutSession(true)
+         
+          }else{
+            toast.error(
+              <div>
+                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                  <div> <span className='font-thin flex gap-3'>
+               
+                    </span></div></p>
+              </div>,
+             
+            );
+             navigate('/signin')
+             setopenLogoutSession(true)
+             
+         
+          }
+        }
+  
+        if (response.status === 403) {
+          setopenLocationAlertError(true)
+          // setopenopenAccessDenied(true)
+          setseelocation(false)
+  
+  
+        }
+        if (response.ok) {
+          setlocations(newData)
+          console.log('customer data', newData)
+          setseelocation(true)
+        } else {
+          console.log('error')
+          setseelocation(true)
+          
+        }
+      } catch (error) {
+        console.log(error)
+        setopenLocationAlertError(true)
+        setseelocation(true)
+  
+      }
+    },
+    [],
+  )
+  
+  
+  
+  useEffect(() => {
+    getLocation()
+  }, [getLocation]);
+
+
+
+
+
+
   // const id = setTimeout(() => controller.abort(), 9000);
   
 
@@ -847,7 +1055,8 @@ useCallback(
           });
           const data = await response.json();
           if (response.ok) {
-            console.log('Fetched user data:', data.user);
+            console.log('Fetched user data:', data.user.user_name);
+            setCheckEmail(data.user.email)
             setUser(data.user.role);
             setAdminId(data.user.id)
             setCanReadSetting(data.user.can_read_settings)
@@ -874,7 +1083,7 @@ useCallback(
             setCanReadSmsTemplates(data.user.can_read_sms_templates)
             setCanReadSms(data.user.can_read_sms)
             setCanManageSms(data.can_manage_sms)
-
+console.log('my ',data)
             // setUser(data.user);
           } else {
             setUser(null);
@@ -908,6 +1117,19 @@ const handlegetstoreManagerSettings = useCallback(
          "Content-Type"  : 'application/json'
        },
        })
+
+
+       if (response.status === 401) {
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          navigate('/signup2fa_passkey')
+          setopenLogoutSession(true)
+        }else{
+           navigate('/signin')
+           setopenLogoutSession(true)
+       
+        }
+       
+      }
 
 
 
@@ -952,6 +1174,244 @@ useEffect(() => {
 
 
 
+useEffect(() => {
+  const handleStorageChange = (event) => {
+    console.log('event key', event)
+    if (event.key === 'acha umbwakni') {
+      const acha_umbwakni = localStorage.getItem('acha umbwakni');
+      if (!acha_umbwakni || acha_umbwakni === 'null') {
+        // If the value is removed or set to null, navigate to the signin page
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          navigate('/signup2fa_passkey')
+        }else{
+          navigate('/signin');
+        }
+        
+      }
+    }
+  };
+
+  // Listen for changes in localStorage across tabs
+  window.addEventListener('storage', handleStorageChange);
+
+
+
+  // Clean up the event listener when the component unmounts
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+  };
+}, [navigate]);
+
+
+
+
+
+const handlegetAdminSettings = useCallback(
+  async()=> {
+       const storedData = JSON.parse(localStorage.getItem("admin settings"));
+     
+       const requestParams = {
+        login_with_otp:storedData.login_with_otp,
+        login_with_web_auth:storedData.login_with_web_authn,
+        login_with_otp_email:storedData.login_with_otp_email,
+        send_password_via_email:storedData.send_password_via_email,
+        send_password_via_sms:storedData.send_password_via_sms,
+        check_is_inactive: storedData.check_is_inactive,
+        enable_2fa_for_admin: storedData.enable_2fa_for_admin,
+        enable_2fa_for_admin_passkeys: storedData.enable_2fa_for_admin_passkeys 
+       
+       };
+
+     try {
+       const response = await fetch(`/api/get_settings_for_admin?${new URLSearchParams(requestParams)}`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+    clearTimeout(id);
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       const login_with_otp = newData[0].login_with_otp 
+       const login_with_web_auth = newData[0].login_with_web_auth
+       const login_with_otp_email = newData[0].login_with_otp_email
+       const send_password_via_email = newData[0].send_password_via_email
+       const send_password_via_sms = newData[0].send_password_via_sms
+       const check_is_inactive = newData[0].check_is_inactive
+       const check_inactive_hrs = newData[0].check_inactive_hrs
+       const check_inactive_minutes = newData[0].check_inactive_minutes
+       const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
+       const enable_2fa_for_admin_passkeys = newData[0].enable_2fa_for_admin_passkeys
+       const check_inactive_days = newData[0].check_inactive_days
+     
+      //  const {login_with_otp} = newData[0]
+      
+       setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
+        login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
+        check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
+        check_inactive_days
+       }))
+     
+       
+       } else {
+       console.log('failed to fetch')
+       setOpenOfflineError(true)
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetAdminSettings()
+}, [handlegetAdminSettings]);
+
+
+
+
+
+const handlegetcustomerSettings = useCallback(
+  async()=> {
+       const storedData = JSON.parse(localStorage.getItem("customer settings"));
+     
+       const requestParams = {
+         use_auto_generated_number:storedData.use_auto_generated_number,
+         send_sms_and_email:storedData.send_sms_and_email,
+         send_email: storedData.send_email,
+         enable_2fa: storedData.enable_2fa
+          
+       
+       };
+     try {
+       const response = await fetch(`/api/get_customer_settings?${new URLSearchParams(requestParams)}`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+    clearTimeout(id);
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       // const minimum_digits = newData.minimum_digits
+     
+     
+       const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
+        enable_2fa, enable_2fa_for_service_provider} = newData[0]
+       setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
+        send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
+       
+       })
+       
+       } else {
+       console.log('failed to fetch')
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetcustomerSettings()
+}, [handlegetcustomerSettings, setsettingsformData]);
+
+
+
+
+
+
+const handlegetproviderSettings  = useCallback(
+              
+  async()=> {
+  const storedData = JSON.parse(localStorage.getItem("provider settings"));
+
+  const requestParams = {
+    use_auto_generated_number_for_service_provider:storedData.use_auto_generated_number_for_service_provider,
+    send_sms_and_email_for_provider:storedData.send_sms_and_email_for_provider,
+    enable_2fa_for_service_provider:storedData.enable_2fa_for_service_provider,
+    send_email_for_provider: storedData.send_email_for_provider,
+    
+  
+  };
+try {
+  const response = await fetch(`/api/get_provider_settings?${new URLSearchParams(requestParams)}`, {
+  method: 'GET',
+  signal: controller.signal,  
+
+  headers: {
+    "Content-Type"  : 'application/json'
+  },
+  
+  
+  })
+
+  clearTimeout(id);
+
+  const newData = await response.json()
+  if (response.ok) {
+  // const use_auto_generated_number = newData.use_auto_generated_number
+  // const prefix = newData.prefix
+  // const minimum_digits = newData.minimum_digits
+  setOpenOfflineError(false)
+
+
+  const {prefix, minimum_digits,  use_auto_generated_number_for_service_provider, 
+    send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = newData[0]
+  setsettingsforProvider({...settingsformData, prefix,  minimum_digits, 
+     use_auto_generated_number_for_service_provider, send_sms_and_email_for_provider,
+     send_email_for_provider,enable_2fa_for_service_provider
+  
+  })
+  
+  } else {
+  console.log('failed to fetch')
+  setOpenOfflineError(false)
+
+  }
+  } catch (error) {
+  console.log(error)
+  setOpenOfflineError(true)
+  
+  }
+},
+  
+        []
+      )
+
+
+
+  useEffect(() => {
+    handlegetproviderSettings()
+  }, [handlegetproviderSettings, setsettingsforProvider])
 
 
 // useEffect(() => {
@@ -969,41 +1429,196 @@ useEffect(() => {
 
 
 
+const handlegetstoreManagerSettingsAllow = useCallback(
+  
+  async()=> {
+    const storeManager  = JSON.parse(localStorage.getItem('store_manager_settings'))
+      
+     try {
+       const response = await fetch(`/api/allow_get_settings_for_store_manager`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+
+
+
+
+       if (response.status === 401) {
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          navigate('/signup2fa_passkey')
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+          setopenLogoutSession(true)
+        }else{
+           navigate('/signin')
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        setopenLogoutSession(true)
+        }
+       
+      }
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       // const minimum_digits = newData.minimum_digits
+     
+     
+       const {prefix, minimum_digits,send_manager_number_via_email,send_manager_number_via_sms, enable_2fa_for_store_manager
+        } = newData[0]
+      //  const send_manager_number_via_email = storeManager.send_manager_number_via_email
+      //  const send_manager_number_via_sms = storeManager.send_manager_number_via_sms
+      //  const enable_2fa_for_store_manager  = storeManager.enable_2fa_for_store_manager 
+console.log('enable_2fa_for_store_manager', enable_2fa_for_store_manager)
+       setstoreManagerSettings((prev)=> ({
+        ...prev,
+        prefix,  minimum_digits,
+        send_manager_number_via_email, send_manager_number_via_sms,enable_2fa_for_store_manager 
+       }))
+
+       } else {
+       console.log('failed to fetch')
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetstoreManagerSettingsAllow()
+}, [handlegetstoreManagerSettingsAllow ,setstoreManagerSettings]);
+
+
+
+
+    const storedData = JSON.parse(localStorage.getItem("ojijo"));
+    
+    const fetchUpdatedProfile = useCallback(
+      
+       
+      async() => {
+        const requestParams = {
+                id:storedData.id,
+              
+              }
+        
+
+        const url = "/api/updated_admin?" + new URLSearchParams(requestParams)
+        const response = await fetch(url)
+        const newData = await response.json()
+        console.log('updated admin', newData)
+    try {
+      const {email, user_name, phone_number, profile_image } = newData
+      
+      if (response.ok) {
+        setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
+        // setUpdateFormData((prev)=> (
+        //   {...prev, email, phone_number, user_name }
+        // ))
+        setImagePreview(newData.profile_image)
+        console.log(`get updated adminn${newData.profile_image_url}`)
+      } else {
+        console.log('error geting updated admin')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    
+      },
+      [],
+    )
+    
+    useEffect(() => {
+      fetchUpdatedProfile()
+      
+    }, [fetchUpdatedProfile]);
+  
+
+
+    // const URL = 'ws://localhost:4000/cable';
+    // const consumer = createConsumer(URL);
+    const cable = createConsumer("ws://localhost:4000/cable");
+
+  //   useEffect(() => {
+  //    const subscription = cable.subscriptions.create("AdminStatusChannel", {
+  //      received(data) {
+  //        console.log("User status updated:", data);
+  //        // Update your frontend state or UI based on received data
+  //      }
+  //    });
+ 
+  //    return () => {
+  //      subscription.unsubscribe();
+  //    };
+  //  }, [cable.subscriptions]);
+
+    
+    
+
+
+
+
+
+
 
 
   return (
 
 <GeneralSettingsContext.Provider value={{isSeen, setIsSeen,seeSidebar, setSeeSideBar, theme, setTheme, 
-  handleThemeSwitch, icon, setIcon, imgIcon, setImgIcon, isSeenPassWord,  setIsSeenPassword, signupFormData, setSignupFormData,
-  handleFormDataChange, phone, setPhone, isloading, setloading, open, setOpen,handleClose, registrationError,materialuitheme,
+  handleThemeSwitch, icon, setIcon, imgIcon, setImgIcon, isSeenPassWord,  setIsSeenPassword, signupFormData,
+   setSignupFormData,
+  handleFormDataChange, phone, setPhone, isloading, setloading, open, setOpen,handleClose, registrationError
+  ,materialuitheme,
    setRegistrationError, seeError, setSeeError,seeSettings1, setSeeSettings1,seeSettings2, setSeeSettings2,
    setMaterialuiTheme, darkTheme, lightTheme, seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,
-   handleCustomerFormDataChange, settingsformDataForProvider, setsettingsforProvider, handleCustomerFormDataChangeForProvider,
+   handleCustomerFormDataChange, settingsformDataForProvider, setsettingsforProvider, 
+   handleCustomerFormDataChangeForProvider,
    openOfflineError, setOpenOfflineError, customers, setGetCustomers, customerformData, setcustomerformData,
    seeCustomerCode, setSeeCustomerCode,
-   updatedMessage, setUpdatedMessage, providerformData,  setproviderformData,providers, setGetProviders,updatedMessageProvider,
+   updatedMessage, setUpdatedMessage, providerformData,  setproviderformData,providers, setGetProviders,
+   updatedMessageProvider,
     setUpdatedMessageProvider,seeProviderCode, setProviderCode,customerLongitude, setCustomerLongitude,
-  customerLatitude, setCustomerLatitude,plusCode, setPlusCode, customerLoginData, setCustomerLoginData,customer, setCustomer,
+  customerLatitude, setCustomerLatitude,plusCode, setPlusCode, customerLoginData, setCustomerLoginData,customer, 
+  setCustomer,
   providerLoginData, setproviderLoginData, serviceProvider, setserviceProvider,locationForm, setLocationForm,locations, 
   setlocations, sublocations, setSubLocations,sublocationForm, setSubLocationForm,settingsForStore, setsettingsForStore,
   handleStoreFormDataChange,seeSettings4, setSeeSettings4,storeForm, setStoreForm, storeManagerForm, setStoreManagerForm,
   seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager, storeManagerSettings, setstoreManagerSettings,
   storeManagerLogin, setStoreManagerLogin,storeManager, setstoreManager, otpSent, setotpSent
   ,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,handleChangePhoneNumber,resetPasswordForm, 
-  setResetPasswordForm,handleChangeResetPasswordPhoneNumber, handleChangeResetPassword,openAccessDenied, setopenopenAccessDenied,
+  setResetPasswordForm,handleChangeResetPasswordPhoneNumber, handleChangeResetPassword,openAccessDenied,
+   setopenopenAccessDenied,
   openAccessDenied2, setopenopenAccessDenied2,openAccessDenied3, setopenopenAccessDenied3,admin, setAdmin,smsBalance, 
   setSmsBalance,seelocation, setseelocation,adminPermission, setAdminPermission,setUser,user,
   canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting, canReadSms, canManageSms,canManageSmsTemplates,
   canReadSmsTemplates,currentUser, setCurrentUser,fetchCurrentUser,settingsTicket,setsettingsTicket,handleFormDataChangeForTickets,
   storeManagerSet, setStoreManagerSet, handleChangeStoreSet,signinFormData, setSigninFormData,
   handleFormDataChangeSignin,user_name,id,imagePreview, setImagePreview,updateFormData, setUpdateFormData,openLoginSuccess,
-   setopenLoginSuccess,handleCloseLoginSuccess,openLogoutSuccess, setopenLogoutSuccess,
+   setopenLoginSuccess,handleCloseLoginSuccess,openLogoutSuccess, setopenLogoutSuccess,logoutMessage, setlogoutmessage,
     handleCloseLogoutSuccess,handleChangePhoneNumberSignin,canReadCalendar,canManageCalendar,canReadTickets,canManageTickets,
     canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,canManageStoreManager,
-    canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation
-
-
-
+    canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation,
+    openLocationAlertError, setopenLocationAlertError,openLogoutCustomerSucessfully,handleCloseLogoutCustomerSuccessfully,
+    setopenLogoutCustomerSucessfully,openLoginCustomerSuccessfully,handleCloseLoginCustomerSuccessfully,
+    setopenLoginCustomerSuccessfully,openServiceProviderLogoutSuccesful, handleCloseServiceProviderLogoutSuccesful,
+    setopenServiceProviderLogoutSuccesful,openServiceProviderLoginSuccesful, handleCloseServiceProviderLoginSuccesful,
+    setopenServiceProviderLoginSuccesful,openStoreManagerLogin, handleCloseStoreManagerLogin ,setopenStoreManagerLogin,
+    openStoreManagerLogout, handleCloseStoreManagerLogout,setopenStoreManagerLogout,signedUpPassKey, setSignedUpPassKey,
+    checkEmail,seeSettings7, setSeeSettings7, handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
+    openLogoutSession, handleCloseLogoutSession
 
   }}>
 

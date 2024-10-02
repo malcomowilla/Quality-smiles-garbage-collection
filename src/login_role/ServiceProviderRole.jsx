@@ -1,7 +1,6 @@
-
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import {Link, useNavigate} from "react-router-dom";
-import {useState, useEffect} from 'react'
+import {useState, useEffect,useCallback} from 'react'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -11,6 +10,10 @@ import  ProviderInvalidCodeAlert from '../Alert/ProviderInvalidCodeAlert'
 import  ProviderInvalidOtpAlert from '../Alert/ProviderInvalidOtpAlert'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { GoPerson } from "react-icons/go";
+import ServiceProviderLogout from '../Alert/ServiceProviderLogout'
+import ProviderOtpSentEmailAlert from '../Alert/ProviderOtpSentEmailAlert'
+
+
 
 
  function ServiceProviderRole() {
@@ -18,24 +21,42 @@ import { GoPerson } from "react-icons/go";
   const [loading, setloading] = useState(false)
   const [seeProviderCode, setSeeProviderCode] = useState(false)
   const {providerLoginData, setproviderLoginData, serviceProvider, setserviceProvider
-    ,settingsformDataForProvider } = useApplicationSettings()
+    ,settingsformDataForProvider,openServiceProviderLogoutSuccesful,handleCloseServiceProviderLogoutSuccesful,
+    setopenServiceProviderLoginSuccesful,settingsformData,
+    materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+    seeSettings3, setSeeSettings3,  setsettingsformData,  handleCustomerFormDataChange,
+ setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+     handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+     seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+     setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+     settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets } 
+    = useApplicationSettings()
+
+
+
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [openOtp, setopenOtp] = useState(false)
   const [openProviderLoginAlert, setopenProviderLoginAlert] = useState(false)
 const [openProviderInvalidCode, setopenProviderInvalidCode] = useState(false)
 const [openProviderInvalidOtp, setopenProviderInvalidOtp] = useState(false)
+const [openProviderOtpSentEmailAlert, setopenProviderOtpSentEmailAlert] = useState(false)
 
 
+// settingsformDataForProvider,enable_2fa_for_service_provider
 
 
-// const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
+const handleCloseProviderOtpSentEmailAlert = ()=>{
+  setopenProviderOtpSentEmailAlert(false) 
+}
 
-const storedData = JSON.parse(localStorage.getItem('provider settings'))
+const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
+console.log('enable_2fa_for_service_provider',enable_2fa_for_service_provider)
+// const storedData = JSON.parse(localStorage.getItem('provider settings'))
 
-const send_sms_and_email_for_provider = storedData.send_sms_and_email_for_provider
-const send_email_for_provider = storedData.send_email_for_provider
-const enable_2fa_for_service_provider = storedData.enable_2fa_for_service_provider
+// const send_sms_and_email_for_provider = storedData.send_sms_and_email_for_provider
+// const send_email_for_provider = storedData.send_email_for_provider
+// const enable_2fa_for_service_provider = storedData.enable_2fa_for_service_provider
 
 const  handleCloseProviderInvalidOtp = (event, reason)=> {
 
@@ -72,6 +93,76 @@ const handleCloseProviderInvalidCode = (event, reason) => {
   }
 
 
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 9000);
+
+
+  const handlegetproviderSettings  = useCallback(
+              
+    async()=> {
+    const storedData = JSON.parse(localStorage.getItem("provider settings"));
+  
+    const requestParams = {
+      use_auto_generated_number_for_service_provider:storedData.use_auto_generated_number_for_service_provider,
+      send_sms_and_email_for_provider:storedData.send_sms_and_email_for_provider,
+      enable_2fa_for_service_provider:storedData.enable_2fa_for_service_provider,
+      send_email_for_provider: storedData.send_email_for_provider,
+      
+    
+    };
+  try {
+    const response = await fetch(`/api/allow_get_settings_for_provider?${new URLSearchParams(requestParams)}`, {
+    method: 'GET',
+    signal: controller.signal,  
+  
+    headers: {
+      "Content-Type"  : 'application/json'
+    },
+    
+    
+    })
+  
+    clearTimeout(id);
+  
+    const newData = await response.json()
+    if (response.ok) {
+    // const use_auto_generated_number = newData.use_auto_generated_number
+    // const prefix = newData.prefix
+    // const minimum_digits = newData.minimum_digits
+    setOpenOfflineError(false)
+  
+  
+    const {prefix, minimum_digits,  use_auto_generated_number_for_service_provider, 
+      send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = newData[0]
+    setsettingsforProvider({...settingsformData, prefix,  minimum_digits, 
+       use_auto_generated_number_for_service_provider, send_sms_and_email_for_provider,
+       send_email_for_provider,enable_2fa_for_service_provider
+    
+    })
+    
+    } else {
+    console.log('failed to fetch')
+    setOpenOfflineError(false)
+  
+    }
+    } catch (error) {
+    console.log(error)
+    setOpenOfflineError(true)
+    
+    }
+  },
+    
+          []
+        )
+  
+  
+  
+    useEffect(() => {
+      handlegetproviderSettings()
+    }, [handlegetproviderSettings, setsettingsforProvider])
+  
+
+
 
 
   const handleGoBack = (e) => {
@@ -104,6 +195,7 @@ const handleCloseProviderInvalidCode = (event, reason) => {
       if (response.ok) {
         navigate('/service-provider');
         setloading(false);
+        setopenServiceProviderLoginSuccesful(true)
   
       } else {
         console.log('failed')
@@ -159,11 +251,24 @@ setopenProviderLoginAlert(true)
         ) {
           setopenOtp(false)
           navigate('/service-provider')
-        } else {
-          setopenOtp(true)
+          localStorage.setItem('service provider', true);
+          setopenServiceProviderLoginSuccesful(true)
+
+
+        } else  {
+          
+          
+          if (send_email_for_provider === true || send_email_for_provider === 'true') {
+            setopenProviderOtpSentEmailAlert(true)
+          }
+
+
+          if (send_sms_and_email_for_provider === true || send_sms_and_email_for_provider === 'true') {
+            setopenOtp(true)
+          }
+   
         }
-        setopenOtp(true)
-    localStorage.setItem('service provider', true);
+        
     
       } else {
         console.log('failed')
@@ -215,6 +320,16 @@ setopenProviderLoginAlert(true)
   return (
 
     <>
+
+    <ServiceProviderLogout  handleCloseServiceProviderLogoutSuccesful={handleCloseServiceProviderLogoutSuccesful}   
+    
+    openServiceProviderLogoutSuccesful={openServiceProviderLogoutSuccesful}
+
+
+    />
+
+<ProviderOtpSentEmailAlert  openProviderOtpSentEmailAlert={openProviderOtpSentEmailAlert}
+  handleCloseProviderOtpSentEmailAlert={handleCloseProviderOtpSentEmailAlert} />
 <ProviderOtpSentAlert  openOtp={openOtp}  handleCloseOtp={handleCloseOtp}/>
 <ProviderLoginAlert  openProviderLoginAlert={openProviderLoginAlert} handleCloseProviderLoginAlert={handleCloseProviderLoginAlert}/>
 <ProviderInvalidCodeAlert  openProviderInvalidCode={openProviderInvalidCode}
@@ -254,7 +369,9 @@ setopenProviderLoginAlert(true)
  <TextInput name="customer_code"  value={otp}  onChange={(e) => setOtp(e.target.value)}
  type={seeProviderCode ? 'password' : 'text'} 
   required shadow  
- className='w-full pr-[-8px]' />
+  style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+
+  />
  
    <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
    flex items-center pr-1 cursor-pointer'>
@@ -300,7 +417,7 @@ setopenProviderLoginAlert(true)
  
  Login, Into Your Portal</Button>
  {/* <ArrowBackIcon style={{color: 'black'}} onclick={handleGoBack}/> */}
- <Link className='' to='/choose_role'>
+ <Link  to='/choose_role'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link> 
@@ -335,7 +452,9 @@ setopenProviderLoginAlert(true)
  <TextInput name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
  type={seeProviderCode ? 'password' : 'text'} 
  required shadow  
- className='w-full pr-[-8px]' />
+ style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+
+ />
  
  <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
  flex items-center pr-1 cursor-pointer'>
@@ -382,7 +501,7 @@ setopenProviderLoginAlert(true)
  
  Login In </Button>
  
- <Link className='' to='/choose_role'>
+ <Link  to='/choose_role'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link> 
@@ -406,7 +525,7 @@ setopenProviderLoginAlert(true)
  <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
  
  
- Login With Your Service Provider Code2
+ Login With Your Service Provider Code
  <GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
  </h2>
  
@@ -418,10 +537,11 @@ setopenProviderLoginAlert(true)
  
  
  <div  className='relative'>
- <TextInput name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
- type={seeProviderCode ? 'password' : 'text'} 
+ <TextInput  name="provider_code"  value={providerLoginData.provider_code}    onChange={handleChange} 
+ type={seeProviderCode ? 'password' : 'text'}
+ style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
  required shadow  
- className='w-full pr-[-8px]' />
+  />
  
  <div  onClick={()=> setSeeProviderCode(!seeProviderCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
  flex items-center pr-1 cursor-pointer'>
@@ -468,7 +588,7 @@ setopenProviderLoginAlert(true)
  
  Login In </Button>
  
- <Link className='' to='/choose_role'>
+ <Link  to='/choose_role'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link> 

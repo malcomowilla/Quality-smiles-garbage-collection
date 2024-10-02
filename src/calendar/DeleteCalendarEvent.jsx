@@ -14,6 +14,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import { FaRegHandPointLeft } from "react-icons/fa6";
 
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 
 
 
@@ -59,7 +60,7 @@ const [showEvent, setShowEvent] = useState(true)
 
 
 <div className="mb-5 font-thin playwrite-de-grund text-black">
-{start.format('YYYY-MM-DD HH:mm')}- {end.format('YYYY-MM-DD HH:mm')}
+{end.format('YYYY-MM-DD HH:mm A')} {'<=>'} {start.format('YYYY-MM-DD HH:mm A')}
 
 </div>
 
@@ -151,7 +152,14 @@ width: '100%',
 }
 },
     }}  components={['TimePicker', 'TimePicker']}>
-      <DateTimePicker  value={calendarEventForm.start} onChange={(date)=> handleChangeDateTime1(date)}  className='myTextField'
+
+
+
+<DateTimePicker  viewRenderers={{
+    hours: renderTimeViewClock,
+    minutes: renderTimeViewClock,
+    seconds: renderTimeViewClock,
+  }}   value={calendarEventForm.start} onChange={(date)=> handleChangeDateTime1(date)} className='myTextField'
         label="Start"
      
 
@@ -160,7 +168,11 @@ width: '100%',
       
 
       />
-      <DateTimePicker value={calendarEventForm.end} onChange={(date)=> handleChangeDateTime2(date)}   className='myTextField'
+      <DateTimePicker viewRenderers={{
+    hours: renderTimeViewClock,
+    minutes: renderTimeViewClock,
+    seconds: renderTimeViewClock,
+  }}   value={calendarEventForm.end} onChange={(date)=> handleChangeDateTime2(date)} className='myTextField'
       
         label="End"
         // minDate={dayjs(new Date())}
@@ -173,6 +185,9 @@ width: '100%',
 
        
       />
+
+
+
     </DemoContainer>
     </div>
               <div className="flex gap-2 p-3 mt-3">

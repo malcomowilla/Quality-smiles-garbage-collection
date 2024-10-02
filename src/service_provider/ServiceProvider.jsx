@@ -17,7 +17,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import AccessDenied from '../access_denied/AccessDenied'
 import {useNavigate} from 'react-router-dom'
-
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
 
 
 const ServiceProvider = () => {
@@ -43,6 +46,7 @@ const [seeEmailError, setSeeEmailError] = useState(false)
 const [phoneNumberError, setPhoneNumberError] = useState('')
 const [seePhoneNumberError, setSeePhoneNumberError] = useState(false)
 const [openAcessDenied, setOpenAcessDenied] = useState(false)
+const [openLoad, setopenLoad] = useState(false)
 
 
 
@@ -62,6 +66,26 @@ const handleOpenRowForm = ()=> {
 
 }
 
+
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+
+const defaultOptions2 = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
 
 
 const handleCloseDeleteProviderAlert = ()=> {
@@ -217,6 +241,7 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
 
     try {
       setloading(true)
+      setopenLoad(true)
       const url = providerformData.id ? `/api/update_service_provider/${providerformData.id}` : '/api/create_service_provider';
       const method = providerformData.id ? 'PATCH' : 'POST';
 
@@ -224,6 +249,7 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
       method: method,
       headers: {
 'Content-Type': 'application/json'
+
       },
       body: JSON.stringify({...providerformData, send_sms_and_email_for_provider, send_email_for_provider,
         enable_2fa_for_service_provider
@@ -241,6 +267,8 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
         setSeePhoneNumberError(false)
         if (providerformData.id) {
           setloading(false)
+          setopenLoad(false)
+          setopenLoad(false)
           setopenUpdatedProvider(true)
           // Update existing package in tableData
           setGetProviders(providers.map(item => (item.id === providerformData.id ? newData.service_provider : item)));
@@ -251,7 +279,7 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
         } else {
           setopenAdditionProvider(true)
           setloading(false)
-
+          setopenLoad(false)
           // Add newly created package to tableData
 
           setGetProviders((prevData)=> (
@@ -262,6 +290,7 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
         }
       } else {
         setloading(false)
+        setopenLoad(false)
         setEmailError(newData.errors.email)
         setPhoneNumberError(newData.errors.phone_number)
         console.log('failed')
@@ -274,6 +303,7 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
       console.log(error)
       setProviderCode(false)
       setloading(false)
+      setopenLoad(false)
       setSeeEmailError(false)
       setSeePhoneNumberError(false)
 
@@ -282,6 +312,16 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
 
   return (
 <>
+
+
+
+
+{loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+  
+   </Backdrop>
+}
 
 {openAcessDenied ? (
   <AccessDenied />
@@ -320,8 +360,29 @@ const response = await fetch(`/api/delete_service_providers/${id}`, {
       columns={[
         { title: "Name", field: "name" },
         { title: "Phone Number", field: "phone_number", align: 'left' },
-        { title: "Date Collected", field: "formatted_collected_date", align: 'left' },
-        { title: "Date Delivered", field: "formatted_delivered_date", align: 'left' },
+        { title: "Date Collected", field: "formatted_collected_date", align: 'left',
+
+          render: (rowData) => 
+            <>
+
+    {rowData.formatted_collected_date === null ||  rowData.formatted_collected_date === '' ||
+    rowData.formatted_collected_date === 'null' ? (
+      <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} />
+    ): rowData.formatted_collected_date}
+            </>
+         },
+        { title: "Date Delivered", field: "formatted_delivered_date", align: 'left' ,
+          render: (rowData) => 
+            <>
+{rowData.formatted_delivered_date === null || rowData.formatted_delivered_date === ''  ||  
+rowData.formatted_delivered_date === 'null' ? (
+  <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} />
+
+  
+) :rowData.formatted_delivered_date}
+
+            </>
+        },
 
         {
           title: "Ref No",

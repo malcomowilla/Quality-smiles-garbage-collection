@@ -16,6 +16,12 @@ import TicketDeleteAlert from '../Alert/TicketDeleteAlert'
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { makeStyles } from '@mui/styles';
 import { styled } from '@mui/material/styles';
+import {useNavigate} from 'react-router-dom'
+import dayjs from 'dayjs';
+
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie';
+import TicketAnimation from '../animation/ticket.json'
 
 
 
@@ -53,6 +59,11 @@ const [ticketForm, setTicketForm] = useState({
 })
 
 
+    const navigate = useNavigate()
+ 
+
+
+
 console.log('customer phone number',agentRole)
 const handleCloseDeleteTicketAlert = ()=> {
   setopenDeleteTicketAlert(false)
@@ -71,6 +82,14 @@ const handleCloseCreateTicketAlert = ()=> {
 
 
 
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
 
 
 
@@ -235,6 +254,11 @@ useEffect(() => {
                     clearTimeout(id);
               
                     const newData = await response.json()
+
+                    if (response.status === 401) {
+                      navigate('/signin')
+                    }
+
                     if (response.status === 403) {
                       // setopenopenAccessDenied3(true)
                       
@@ -443,7 +467,13 @@ rounded-md  playwrite-de-grund text-sm w-20 flex justify-center p-1 items-center
         
         {
           title: 'Assigned To',
-          field: 'agent'
+          field: 'agent',
+          render: (rowData) => 
+            <>
+        {rowData.agent === '' || rowData.agent === null || rowData.agent === 'null' ?  (
+          <Lottie options={defaultOptions} width={70} height={70}/>
+        ): rowData.agent}
+            </>
         },
         {
           title: 'Ticket Number',
@@ -460,7 +490,7 @@ rounded-md  playwrite-de-grund text-sm w-20 flex justify-center p-1 items-center
 formatted_date_of_creation
 } </span></p>
 
-<p className=''>Resolved: <span className='font-bold'>{rowData.status === 'Resolved' && updatedDate
+<p className=''>Resolved: <span className='font-bold'>{rowData.status === 'Resolved' && rowData.formatted_date_closed
 } </span> </p>
             </>
         },

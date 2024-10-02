@@ -1,7 +1,7 @@
 
 import { RiArrowGoBackFill } from "react-icons/ri";
 import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import PasswordConfirmationAlert from '../Alert/PasswordConfirmationAlert'
 import PasswordSuccesfulAlert from '../Alert/PasswordSuccesfulAlert'
 import Lottie from 'react-lottie';
@@ -10,7 +10,7 @@ import Backdrop from '@mui/material/Backdrop';
 import AnimationDone from '../animation/done_tick-animation.json'
 import ExpiredPasswordAlert from '../Alert/ExpiredPasswordAlert'
 import FailedPassword from '../Alert/FailedPassword'
-
+import {useApplicationSettings} from '../settings/ApplicationSettings'
 
 
 
@@ -22,7 +22,17 @@ const ResetPassword = () => {
     // const { token } = useParams();
     const { search } = useLocation()
     const token = new URLSearchParams(search).get('token');
+    const {adminFormSettings, materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+       setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets} = useApplicationSettings()
   
+    const {enable_2fa_for_admin_passkeys} = adminFormSettings
+
+
     const [loading, setloading] = useState(false)
     const [password, setPassword] = useState('')
     const [password_confirmation, setpassword_confirmation] = useState('')
@@ -73,6 +83,89 @@ const handleCloseConfirmationAlert = ()=> {
    
 
 
+
+
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 9000);
+    const handlegetAdminSettings = useCallback(
+      async()=> {
+           const storedData = JSON.parse(localStorage.getItem("admin settings"));
+         
+           const requestParams = {
+            login_with_otp:storedData.login_with_otp,
+            login_with_web_auth:storedData.login_with_web_authn,
+            login_with_otp_email:storedData.login_with_otp_email,
+            send_password_via_email:storedData.send_password_via_email,
+            send_password_via_sms:storedData.send_password_via_sms,
+            check_is_inactive: storedData.check_is_inactive,
+            enable_2fa_for_admin: storedData.enable_2fa_for_admin,
+            enable_2fa_for_admin_passkeys: storedData.enable_2fa_for_admin_passkeys 
+           
+           };
+    
+         try {
+           const response = await fetch(`/api/allow_get_admin_settings?${new URLSearchParams(requestParams)}`, {
+           method: 'GET',
+           signal: controller.signal,  
+    
+           headers: {
+             "Content-Type"  : 'application/json'
+           },
+           })
+    
+        clearTimeout(id);
+    
+    
+           const newData = await response.json()
+           if (response.ok) {
+           // const use_auto_generated_number = newData.use_auto_generated_number
+           // const prefix = newData.prefix
+           const login_with_otp = newData[0].login_with_otp 
+           const login_with_web_auth = newData[0].login_with_web_auth
+           const login_with_otp_email = newData[0].login_with_otp_email
+           const send_password_via_email = newData[0].send_password_via_email
+           const send_password_via_sms = newData[0].send_password_via_sms
+           const check_is_inactive = newData[0].check_is_inactive
+           const check_inactive_hrs = newData[0].check_inactive_hrs
+           const check_inactive_minutes = newData[0].check_inactive_minutes
+           const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
+           const enable_2fa_for_admin_passkeys = newData[0].enable_2fa_for_admin_passkeys
+           const check_inactive_days = newData[0].check_inactive_days
+         
+          //  const {login_with_otp} = newData[0]
+          
+           setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
+            login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
+            check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
+            check_inactive_days
+           }))
+         
+           
+           } else {
+           console.log('failed to fetch')
+           setOpenOfflineError(true)
+           }
+           } catch (error) {
+           console.log(error)
+           setOpenOfflineError(true)
+           
+           }
+         },
+     
+    []
+    )
+    
+    
+      
+    
+    useEffect(() => {
+      handlegetAdminSettings()
+    }, [handlegetAdminSettings]);
+    
+
+
+
+
       const handleResetPassword = async(e)=> {
         e.preventDefault()
         try {
@@ -104,8 +197,15 @@ const handleCloseConfirmationAlert = ()=> {
                 setopenPasswordSuccess(true)
                 setTimeout(() => {
                   setDone(true)
+
                   setTimeout(() => {
-                    navigate('/signin')
+
+                    if ( enable_2fa_for_admin_passkeys ===  true  || enable_2fa_for_admin_passkeys === 'true') {
+                      navigate('/signup2fa_passkey')
+                    }else{
+                      navigate('/signin')
+                    }
+                    
                   }, 2000);
                    
                   

@@ -10,7 +10,7 @@ import {  ThemeProvider } from '@mui/material';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
 import SmsTemplateDeniedAlert from '../Alert/SmsTemplateDeniedAlert'
 
-
+  
 
 const templateData = {
   admin_otp_confirmation_template: '' ,
@@ -19,7 +19,9 @@ const templateData = {
   customer_otp_confirmation_template: '',
   user_invitation_template: '',
   service_provider_confirmation_code_template: '',
-  customer_confirmation_code_template: ''
+  customer_confirmation_code_template: '',
+  store_manager_otp_confirmation_template: '',
+  store_manager_manager_number_confirmation_template: ''
 }
 
 
@@ -74,7 +76,8 @@ const handleCloseTemplateAlert = ()=> {
 
 const { admin_otp_confirmation_template,  payment_reminder_template,  
   service_provider_otp_confirmation_template, customer_otp_confirmation_template, user_invitation_template,
-  service_provider_confirmation_code_template, customer_confirmation_code_template} =  templateForm
+  service_provider_confirmation_code_template, customer_confirmation_code_template,
+  store_manager_otp_confirmation_template, store_manager_manager_number_confirmation_template} =  templateForm
 
 
   const handleChange = (e)=> {
@@ -110,12 +113,15 @@ const service_provider_otp_confirmation_template = newData[0].service_provider_o
     const user_invitation_template = newData[0].user_invitation_template
   const service_provider_confirmation_code_template = newData[0].service_provider_confirmation_code_template
   const customer_confirmation_code_template = newData[0].customer_confirmation_code_template
+  const store_manager_otp_confirmation_template = newData[0].store_manager_otp_confirmation_template
+  const store_manager_manager_number_confirmation_template = newData[0].store_manager_manager_number_confirmation_template
         console.log('customer data', newData)
 
 
         setTemplateForm((prevData)=>  ({...prevData, admin_otp_confirmation_template,
           payment_reminder_template,service_provider_otp_confirmation_template,customer_otp_confirmation_template,
-          user_invitation_template,service_provider_confirmation_code_template,customer_confirmation_code_template
+          user_invitation_template,service_provider_confirmation_code_template,customer_confirmation_code_template,
+          store_manager_otp_confirmation_template,store_manager_manager_number_confirmation_template
         }))
       } else {
         console.log('error')
@@ -162,11 +168,14 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
     const user_invitation_template = newData.user_invitation_template
   const service_provider_confirmation_code_template = newData.service_provider_confirmation_code_template
   const customer_confirmation_code_template = newData.customer_confirmation_code_template
+  const store_manager_otp_confirmation_template =  newData[0].store_manager_otp_confirmation_template
+  const store_manager_manager_number_confirmation_template = newData[0].store_manager_manager_number_confirmation_template
 
 
   setTemplateForm((prevData)=>  ({...prevData, admin_otp_confirmation_template,
     payment_reminder_template,service_provider_otp_confirmation_template,customer_otp_confirmation_template,
-    user_invitation_template,service_provider_confirmation_code_template,customer_confirmation_code_template
+    user_invitation_template,service_provider_confirmation_code_template,customer_confirmation_code_template,
+    store_manager_otp_confirmation_template,store_manager_manager_number_confirmation_template
   }))
         setloading(false)
         setOpenLoad(false)
@@ -285,6 +294,30 @@ name='service_provider_confirmation_code_template'/>
       helperText={<p className='text-black text-sm tracking-wider playwrite-de-grund'>place {"{{otp}}"}
        where otp should appear, 
       <span className='font-extrabold'>Message Sent To User  To Confirm OTP For Invitation</span>
+      </p>}
+      />
+
+
+<TextField fullWidth label="Store Manager OTP confirmation" id="fullWidth" multiline  rows={4}  
+      onChange={handleChange}  
+      value={store_manager_otp_confirmation_template} name='store_manager_otp_confirmation_template'
+      helperText={<p className='text-black text-sm tracking-wider playwrite-de-grund'>place {"{{otp}}"}
+       where otp should appear, 
+      <span className='font-extrabold'>Message Sent To Store Manager  To Confirm OTP (one time password) sent
+         to his phone through sms</span>
+      </p>}
+      />
+
+
+
+
+<TextField fullWidth label="Store Manager Manager Number" id="fullWidth" multiline  rows={4}  
+      onChange={handleChange}  
+      value={store_manager_manager_number_confirmation_template} name='store_manager_manager_number_confirmation_template'
+      helperText={<p className='text-black text-sm tracking-wider playwrite-de-grund'>place {"{{manager_number}}"}
+       where manager number should appear, 
+      <span className='font-extrabold'>Message Sent To Store Manager  To Confirm Manager Number  sent
+         to his phone through sms</span>
       </p>}
       />
 

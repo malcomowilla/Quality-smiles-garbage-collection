@@ -15,6 +15,7 @@ import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import UpdateAdminAlert from '../Alert/UpdateAdminAlert'
 import UpdateAdminAlertError from '../Alert/UpdateAdminAlertError'
+import Avatar from '@mui/material/Avatar';
 
 
 
@@ -26,14 +27,16 @@ const EditProfile = ({ isOpenEditProfile, setisOpenEditProfile}) => {
 
 
 
-  const {id, imagePreview, setImagePreview, updateFormData, setUpdateFormData} = useApplicationSettings()
+  const {id, imagePreview, setImagePreview, updateFormData, setUpdateFormData,
+    user_name
+  } = useApplicationSettings()
  
 
 
 
 
 const [imageFile, setImageFile] = useState(null)
-const {user_name, email, phone_number, password} = updateFormData
+const { email, phone_number, password} = updateFormData
 const [openLoad, setopenLoad] = useState(false)
 const [loading, setloading] = useState(false)
 const [openUpdateAdminAlert, setopenUpdateAdminAlert] = useState(false)
@@ -157,6 +160,57 @@ const defaultOptions = {
   }
 };
   
+
+
+
+
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
+
+
+
+
+
+function stringAvatar(name) {
+
+  const nameParts = name.split(' ').filter(Boolean)
+
+
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: nameParts.length > 1  ? 
+`${nameParts[0][0]}${nameParts[1][0]}` 
+     : nameParts.length === 1
+     ? `${nameParts[0][0]}` 
+     : '?',  // Fallback
+    
+  //   `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+  }
+}
+
+
+
+
+
   return (
 
 
@@ -200,7 +254,7 @@ const defaultOptions = {
        <div className="relative z-10">
        <div className="cursor-pointer w-16 h-16 mb-2 rounded-full text-3xl text-black ">
 
-<TbLetterX className=''/>
+<TbLetterX className='' onClick={() => setisOpenEditProfile(false)}/>
            </div>
          <h3 className="text-3xl font-bold  text-center  text-black  playwrite-de-grund mb-2">
            My Profile
@@ -213,8 +267,18 @@ const defaultOptions = {
 <div className="avatar gap-3">
 
   
-  <div className=" w-24 rounded-full border-black border-2  ring-offset-2">
+{/* border-black border-2  */}
 
+  <div className=" w-24 rounded-full 
+   justify-center items-center
+  ring-offset-2" style={{display: 'flex', justifyContent: 'center'}}>
+
+
+
+
+
+
+{/* 
 {imagePreview ? (
   <img src={imagePreview} alt="profile-picture-preview" />
 ): <>
@@ -223,8 +287,9 @@ const defaultOptions = {
     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
      clipRule="evenodd"></path></svg>
 </>
-}
- 
+} */}
+ <Avatar style={{width: 80, height: 80}}   {...stringAvatar(user_name)} />
+
 
   </div>
 
@@ -271,7 +336,7 @@ const defaultOptions = {
 
   }
 }
-}}  label='User Name'  onChange={onChangeImagePreview} name='user_name'  value={user_name} />
+}}  label='User Name'  onChange={onChangeImagePreview} name='user_name'  value={updateFormData.user_name} />
 
 
 

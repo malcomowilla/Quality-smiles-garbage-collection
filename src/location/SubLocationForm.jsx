@@ -84,14 +84,14 @@ setSubLocationForm((prevData) => (
 
 <form className="max-w-sm mx-auto" onSubmit={addSubLocation} >
 <div className="mb-5">
-  <label  className="block  mb-2 text-sm playwrite-de-grund  dark:text-white">Sub Location Name</label>
+  <label  className="block  mb-2 text-sm playwrite-de-grund text-black">Sub Location Name</label>
   <input     type="text" name="name" value={name}  className="input border-black focus:border-black
     focus:ring-black input-lg w-full 
    bg-transparent"   onChange={handleChange}  />
 
 </div>
 <div className="mb-5">
-  <label className="block mb-2 text-sm playwrite-de-grund  dark:text-white">Sub Location Code</label>
+  <label className="block mb-2 text-sm playwrite-de-grund  text-black">Sub Location Code</label>
   <input  value={code}  onChange={handleChange} type="text" name="code"  className="input 
    border-black focus:border-black
   input-lg w-full  bg-transparent"   />

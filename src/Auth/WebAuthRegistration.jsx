@@ -27,11 +27,11 @@ const WebAuthRegistration = () => {
   const { setPhone, phone, isloading,
     
     setloading, 
-     setAdmin,} = useApplicationSettings()
+     setAdmin, adminFormSettings} = useApplicationSettings()
 
 
 
-
+console.log('adminset',adminFormSettings)
 
 
 
@@ -59,7 +59,9 @@ const emailValue = useMotionValue(email)
   const emailWidth = useTransform(emailValue, value => value ? '350px' : '400px');
   const { search } = useLocation()
     const my_email = new URLSearchParams(search).get('email');
+    const my_user_name = new URLSearchParams(search).get('user_name');
     console.log('my email:', my_email)
+    console.log('my username:', my_user_name)
 const  handleCloseOtpInvalid = ()=> {
   setopenOtpInvalid(false)
 }
@@ -113,10 +115,10 @@ async function authenticateWebAuthn(e) {
   setOpenLoad(true);
   setDone(false);
 
-  const response = await fetch('/api/invite_register_with_webauth', {
+  const response = await fetch('/api/webauthn/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ my_email })
+    body: JSON.stringify({ my_email, my_user_name })
   })
 
   const options = await response.json();
@@ -233,7 +235,7 @@ setDone(false)
     const createResponse = await fetch('/api/webauthn/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: credentialJson, my_email })
+      body: JSON.stringify({ credential: credentialJson, my_email, my_user_name })
     });
 
 
@@ -357,6 +359,37 @@ const handleChange = (e)=> {
                             `}
   
                             />
+
+<label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
+                         text-gray-900 ">Your User Name</label>
+                           <div className='absolute self-end bottom-0 p-2'>
+                      <img src="/images/logo/icons8-gmail-100.png"  className='w-8 h-8' alt="gmail" />
+
+                      </div>
+
+                        <motion.input
+                           
+                  onChange={  (e)=> {
+                    handleChange(e)
+                  } }
+                style={{width: emailWidth}} transition={{duration:5, ease: "easeOut",
+  }}    name="user_name"  value={my_user_name} id="user_name" 
+                        className={` border  focus:border-2 
+                          text-black  handlee-regular  transition-all duration-1000 sm:text-lg rounded-lg
+                           focus:ring-green-400 bg-transparent
+                           border-black 
+                           block  p-2.5   focus:border-green-700
+                            `}
+  
+                            />
+
+
+                            
+
+
+
+
+
   
                     </div>
 

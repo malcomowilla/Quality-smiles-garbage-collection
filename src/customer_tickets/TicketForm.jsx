@@ -119,7 +119,7 @@ const TicketForm = ({isOpen, setIsOpen, agentRole, ticketForm, setTicketForm, ha
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-gradient-to-br from-green-600 to-green-600 text-white p-6 rounded-lg w-full
+            className="bg-gradient-to-br from-green-500 to-green-500 text-white p-6 rounded-lg w-full
               shadow-xl cursor-default relative overflow-hidden h-screen"
           >
             <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />

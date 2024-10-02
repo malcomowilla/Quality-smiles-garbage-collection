@@ -73,6 +73,12 @@ import { IoCalendarNumberOutline } from "react-icons/io5";
 import { FaRegHandPointLeft } from "react-icons/fa6";
 import { Notifications } from 'react-push-notification';
 import addNotification from 'react-push-notification';
+import SignIn2FaPasskey from './Auth/SignIn2FaPasskey'
+import TicketStatus from './customer_tickets/TicketStatus'
+import ChatMessaging from './chat/ChatMessaging'
+import { createConsumer } from "@rails/actioncable";
+
+
 
 // const router = createBrowserRouter(
 
@@ -167,7 +173,20 @@ const App = () => {
   const {openAccessDenied, currentUser, id, imagePreview, setImagePreview,
      updateFormData, setUpdateFormData} = useApplicationSettings()
 
+    //  const cable = createConsumer("ws://localhost:4000/cable");
 
+    //  useEffect(() => {
+    //   const subscription = cable.subscriptions.create("AdminStatusChannel", {
+    //     received(data) {
+    //       console.log("User status updated:", data);
+    //       // Update your frontend state or UI based on received data
+    //     }
+    //   });
+  
+    //   return () => {
+    //     subscription.unsubscribe();
+    //   };
+    // }, [cable.subscriptions]);
 
   // const requestParams = {
   //   id:id,
@@ -307,6 +326,7 @@ useEffect(() => {
       <Route path='/kasspas-key' element={<Passkeys />}/>
       <Route path='/kasspass-key-signin' element={<PasskeySignin />}/>
       <Route  path='/web_authn_registration'  element={<WebAuthRegistration  />}/>
+      <Route path='/signup2fa_passkey' element={<SignIn2FaPasskey   />}/>
 
       
 
@@ -329,6 +349,9 @@ useEffect(() => {
 <Route path='/admin/general-settings' element={<GeneralSettings/>}/>
 <Route path='/admin/dashboard' element={<Dashboard/>}/>
 <Route path='/admin/sms' element={<Sms />}/>
+<Route path='/admin/chat-messaging' element={<ChatMessaging />}/>
+
+
 <Route path='/admin/support-tickets' element={<CustomerTickets  />}/>
 <Route path='/admin/collection-confirm' element={<ProviderConfirmation />
 }/>
@@ -354,6 +377,7 @@ useEffect(() => {
 <Route path='/customer' element={<CustomerForm/>}/> 
 <Route path='/customer-request' element={<CustomerRequest/>}/>
 <Route path='/customer-payment' element={<CustomerPayment />}  /> 
+<Route  path='/customer-ticket-status' element={<TicketStatus />}/>
 </Route>
 
 

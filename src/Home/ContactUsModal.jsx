@@ -243,13 +243,15 @@ const Block = ({ className, ...rest }) => {
         <input
           type="email"
           placeholder="Enter your email"
-          className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 transition-colors focus:border-red-300 focus:outline-0"
+          className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 transition-colors
+           focus:border-green-800 focus:outline-0 focus:ring-green-700"
         />
         <button
           type="submit"
-          className="flex items-center gap-2 whitespace-nowrap rounded bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-300"
+          className="flex items-center gap-2 whitespace-nowrap rounded
+           bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-300"
         >
-          <FiMail /> Join Us
+          <FiMail /> Email Us
         </button>
       </form>
     </Block>

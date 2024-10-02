@@ -1,7 +1,7 @@
 
 
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams, useLocation} from "react-router-dom";
 import {useState, useCallback, useEffect} from 'react'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -13,6 +13,7 @@ import CustomerOtpAlertError from '../Alert/CustomerOtpAlertError'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { GoPerson } from "react-icons/go";
 import CustomerOtpSentEmailAlert from '../Alert/CustomerOtpSentEmailAlert'
+import CustomerLogout from '../Alert/CustomerLogout'
 
 
 
@@ -20,7 +21,18 @@ import CustomerOtpSentEmailAlert from '../Alert/CustomerOtpSentEmailAlert'
  function CustomerRole() {
   const [seeCustomerCode, setSeeCustomerCode] = useState(false)
 const navigate = useNavigate()
-const {customerLoginData, setCustomerLoginData, customer, setCustomer, settingsformData} = useApplicationSettings()
+const {customerLoginData, setCustomerLoginData, customer, setCustomer, settingsformData,
+  openLogoutCustomerSucessfully,
+        handleCloseLogoutCustomerSuccessfully,
+        setopenLoginCustomerSuccessfully,
+        materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+      seeSettings3, setSeeSettings3,  setsettingsformData,  handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+       setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
+} = useApplicationSettings()
 const [openOfflineAlert, setOfflineAlert] = useState(false)
 const [loading, setloading] = useState(false)
 const [open, setOpen] = useState(false);
@@ -36,18 +48,87 @@ const handleCloseOtpEmail = ()=>{
   setopenOtpEmail(false)
 }
 
+const { search } = useLocation()
+    const my_customer_code = new URLSearchParams(search).get('my_customer_code');
+
+
+
+const {enable_2fa, send_email,send_sms_and_email} = settingsformData
+console.log('enable_2fa',enable_2fa)
 // const {enable_2fa} = settingsformData
 
-const storedData =  JSON.parse(localStorage.getItem('customer settings'))
-const enable_2fa = storedData.enable_2fa
-const send_email = storedData.send_email
-const send_sms_and_email = storedData.send_sms_and_email
+// const storedData =  JSON.parse(localStorage.getItem('customer settings'))
+// const enable_2fa = storedData.enable_2fa
+// const send_email = storedData.send_email
+// const send_sms_and_email = storedData.send_sms_and_email
+
+
+
+
+
+
+const handlegetcustomerSettings = useCallback(
+  async()=> {
+      
+     try {
+       const response = await fetch(`/api/allow_get_customer_settings`, {
+       method: 'GET',
+       signal: controller.signal,  
+
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+    clearTimeout(id);
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       // const minimum_digits = newData.minimum_digits
+     
+     
+       const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
+        enable_2fa, enable_2fa_for_service_provider} = newData[0]
+        console.log('enable myfa',enable_2fa)
+       setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
+        send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
+       
+       })
+       
+       } else {
+       console.log('failed to fetch')
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetcustomerSettings()
+}, [handlegetcustomerSettings, setsettingsformData]);
+
+
+
+
+
+
 
 
 
 const handleGoBack = (e) => {
   e.preventDefault()
-  navigate(-1);
+  navigate('/choose_role')
 };
 
 
@@ -141,7 +222,8 @@ const handleVerifyOtp = async (e) => {
     if (response.ok) {
       navigate('/customer');
       setloading(false);
-
+      localStorage.setItem('customer', true);
+      setopenLoginCustomerSuccessfully(true)
     } else {
       console.log('failed')
       setloading(false);
@@ -187,7 +269,9 @@ try {
       'Content-Type' : 'application/json'
     },
     credentials: 'include',
-    body: JSON.stringify({...customerLoginData, enable_2fa, send_email, send_sms_and_email})
+    body: JSON.stringify({...customerLoginData, enable_2fa, send_email, send_sms_and_email,
+      my_customer_code
+    })
   })
 
   if (response.ok) {
@@ -203,17 +287,18 @@ try {
       }
 
 if (send_email == false || send_email == 'false' || send_email == undefined) {
-
   setopenOtp(true)
 }
     } else if (enable_2fa == undefined || enable_2fa == null || enable_2fa == false) {
       navigate('/customer')
+      setopenLoginCustomerSuccessfully(true)
+      localStorage.setItem('customer', true);
     }
     
     
 
 setCustomer(true)
-localStorage.setItem('customer', true);
+
 
   } else {
     console.log('failed')
@@ -229,8 +314,11 @@ localStorage.setItem('customer', true);
 } 
    
 
+
   return (
 <>
+<CustomerLogout openLogoutCustomerSucessfully={openLogoutCustomerSucessfully}
+  handleCloseLogoutCustomerSuccessfully={handleCloseLogoutCustomerSuccessfully}/>
 <CustomerOtpSentEmailAlert openOtpEmail={openOtpEmail} handleCloseOtpEmail={handleCloseOtpEmail} />
 <CustomerLoginAlertError  handleClose={handleClose}  open={open}/>
 <CustomerLoginOfflineAlert  openOfflineAlert={openOfflineAlert}  handleCloseOfflineAlert={handleCloseOfflineAlert}/>
@@ -241,7 +329,7 @@ localStorage.setItem('customer', true);
 
 {enable_2fa ? (
   <>
-<div    className='bg-white h-screen flex justify-center items-center'>
+<div    className='bg-white    h-screen flex justify-center items-center'>
             {otpSent ? (
     
 
@@ -267,10 +355,11 @@ localStorage.setItem('customer', true);
       
       
         <div  className='relative'>
-        <TextInput name="customer_code"  value={otp}      onChange={(e) => setOtp(e.target.value)}
+        <TextInput name="customer_code"  value={otp}  onChange={(e) => setOtp(e.target.value)}
       type={seeCustomerCode ? 'password' : 'text'} 
          required shadow  
-        className='w-full pr-[-8px]' />
+          style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}
+         />
       
           <div  onClick={()=> setSeeCustomerCode(!seeCustomerCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
           flex items-center pr-1 cursor-pointer'>
@@ -340,9 +429,10 @@ localStorage.setItem('customer', true);
 
     <div  className='relative'>
     <TextInput name="customer_code" 
+     style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}
      value={customerLoginData.customer_code} onChange={handleChange} type={seeCustomerCode ? 'password' : 'text'} 
      required shadow  
-    className='w-full pr-[-8px]' />
+     />
 
       <div  onClick={()=> setSeeCustomerCode(!seeCustomerCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
       flex items-center pr-1 cursor-pointer'>
@@ -423,9 +513,28 @@ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 
 
   <div  className='relative'>
-  <TextInput name="customer_code"  value={customerLoginData.customer_code} onChange={handleChange} type={seeCustomerCode ? 'password' : 'text'} 
-   required shadow  
-  className='w-full pr-[-8px]' />
+
+    {my_customer_code ? (
+      <TextInput name="customer_code"  value={my_customer_code} onChange={handleChange}
+      type={seeCustomerCode ? 'password' : 'text'} 
+      required shadow  
+      style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}
+      />
+   
+    ): ''}
+
+
+
+{my_customer_code   ? (
+  ''
+): <TextInput name="customer_code"  value={customerLoginData.customer_code  } onChange={handleChange}
+type={seeCustomerCode ? 'password' : 'text'} 
+required shadow  
+style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}
+/>}
+
+
+  
 
     <div  onClick={()=> setSeeCustomerCode(!seeCustomerCode)} className='absolute   inset-y-0 right-0 text-lg text-black 
     flex items-center pr-1 cursor-pointer'>

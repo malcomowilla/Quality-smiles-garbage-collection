@@ -7,9 +7,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
 
+
+
+
 const CustomerRegistrationForm = ({isOpen, setIsOpen, addCustomer, handleCloseRegistrationForm, loading, setloading, emailError, 
   seeEmailError, phoneNumberError, seePhoneNumberError, nameError,seeNameError}) => {
-     const { customerformData, seeCustomerCode, setcustomerformData} = useApplicationSettings()
+     const { customerformData, seeCustomerCode, setcustomerformData,} = useApplicationSettings()
 
   const {name, email, phone_number, customer_code, location, amount_paid, date_registered
   } = customerformData
@@ -116,6 +119,13 @@ const handleChangeDate = (date)=> {
 )
 }
   return (
+
+
+    <>
+
+
+
+
     <AnimatePresence>
     {isOpen && (
       <motion.div
@@ -262,6 +272,7 @@ hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
     )}
   </AnimatePresence>
    
+   </>
   );
 };
 

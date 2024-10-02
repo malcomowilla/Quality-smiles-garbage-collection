@@ -1,5 +1,5 @@
-import {Link, useNavigate} from  'react-router-dom'
-import {useState, useEffect} from 'react'
+import {Link, useNavigate,  useParams, useLocation} from  'react-router-dom'
+import {useState, useEffect, useCallback} from 'react'
 
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
@@ -28,11 +28,23 @@ const PasskeySignin = () => {
   const { setPhone, phone, isloading,
     
     setloading,fetchCurrentUser, 
-     setAdmin,setTheme} = useApplicationSettings()
+     setAdmin,setTheme, setopenLoginSuccess, user, checkEmail, imagePreview,
+     setUpdateFormData,updateFormData,setImagePreview,
+     setAdminPermission,  openLogoutSuccess,handleCloseLogoutSuccess,
+     handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,
+     
+     materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+       seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
+       settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+        handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
+    } = useApplicationSettings()
 
 
 
-
+console.log('my user', user)
 
 
 
@@ -40,11 +52,16 @@ const PasskeySignin = () => {
 const goBack = useNavigate()
   const [done, setDone] = useState(false)
 const [seeError, setSeeError] = useState(false)
+
+
   const adminWebAuthData = {
     email: '',
     user_name: '',
     phone_number: '' 
   }
+
+
+
   const [signupFormData, setsignupFormData] = useState(adminWebAuthData)
   const [registrationError,  setRegistrationError] = useState('')
   const [openLoad, setOpenLoad] = useState(false);
@@ -53,15 +70,18 @@ const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
 const [passkeyError, setpasskeyError] = useState(null)
 const [openPasskeyError, setopenPasskeyError] = useState(false)
-const {email,phone_number, user_name }= signupFormData
-
+const {phone_number,  }= signupFormData
+const email = checkEmail
 const emailValue = useMotionValue(email)
 
   const emailWidth = useTransform(emailValue, value => value ? '350px' : '400px');
   
+const { search } = useLocation()
+const my_user_name = new URLSearchParams(search).get('my_user_name');
 const  handleCloseOtpInvalid = ()=> {
   setopenOtpInvalid(false)
 }
+
 
 
 const handleClosePasskeyError = ()=>{
@@ -98,6 +118,9 @@ const handleGoBack = (e)=> {
 // https://quality-smile-garbabe-collection-backend-1jcd.onrender.com/login-admin
 
 
+const {user_name} = signupFormData
+
+
 
 
 function arrayBufferToBase64Url(buffer) {
@@ -109,6 +132,8 @@ function arrayBufferToBase64Url(buffer) {
   return btoa(binary).replace(/\//g, '_').replace(/\+/g, '-').replace(/=+$/, '');
 }
 
+
+
 async function authenticateWebAuthn(e) {
   e.preventDefault();
   setloading(true);
@@ -118,7 +143,7 @@ async function authenticateWebAuthn(e) {
   const response = await fetch('/api/webauthn/authenticate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, user_name })
+    body: JSON.stringify({ email, user_name, my_user_name  })
   })
 
   const options = await response.json();
@@ -222,7 +247,7 @@ setDone(false)
     const createResponse = await fetch('/api/webauthn/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: credentialJson, email, user_name })
+      body: JSON.stringify({ credential:credentialJson, email, user_name, my_user_name  })
     });
 
 const newData = await createResponse.json()
@@ -232,15 +257,15 @@ const newData = await createResponse.json()
       setOpenLoad(false);
       setloading(false);
       fetchCurrentUser()
-      setAdmin(true)
-      setTheme("light")
-    localStorage.setItem('acha umbwakni', true);
-    setDone(true);
-        setloading(false);
-
-        setTimeout(() => {
-          navigate('/admin/dashboard')
-        }, 1500);
+    setTheme("light")
+    setopenLoginSuccess(true)
+    setTimeout(() => {
+      setDone(true);
+      setloading(false);
+      setTimeout(() => {
+        navigate('/admin/dashboard')
+      }, 2000);
+    }, 2500);
       // setTimeout(() => {
       //   // setDone(true);
       //   // setloading(false);
@@ -268,15 +293,6 @@ const newData = await createResponse.json()
 
 
 
-
-
-
-
-
-
-
-
-
 const handleChange = (e)=> {
   const {name, id, value} = e.target
   setsignupFormData((prevData)=> (
@@ -286,6 +302,45 @@ const handleChange = (e)=> {
 
 
   
+const storedData = JSON.parse(localStorage.getItem("ojijo"));
+    
+const fetchUpdatedProfile = useCallback(
+  
+   
+  async() => {
+    const requestParams = {
+            id:storedData.id,
+          
+          }
+    
+    const url = "/api/allow_get_updated_admin?" + new URLSearchParams(requestParams)
+    const response = await fetch(url)
+    const newData = await response.json()
+    console.log('updated admin', newData)
+try {
+  const {email, user_name, phone_number, profile_image } = newData
+  if (response.ok) {
+    setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
+    // setUpdateFormData((prev)=> (
+    //   {...prev, email, phone_number, user_name }
+    // ))
+    setImagePreview(newData.profile_image)
+    console.log(`get updated adminn${newData.profile_image_url}`)
+  } else {
+    console.log('error geting updated admin')
+  }
+} catch (error) {
+  console.log(error)
+}
+
+  },
+  [],
+)
+
+useEffect(() => {
+  fetchUpdatedProfile()
+  
+}, [fetchUpdatedProfile]);
 
   return (
     <>
@@ -315,12 +370,13 @@ handleClosePasskeyError={handleClosePasskeyError}/>
               <div className='mb-9'>
               <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
             <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
+            {/* <img className="w-20 h-20 mr-2   rounded-full" src={imagePreview} alt="logo"/> */}
            <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
         </a>
               </div>
       
         <h2 className=" text-2xl  leading-tight tracking-tight text-wrap playwrite-de-grund   font-bold mb-4 text-gray-900    ">
-          Sign-In to your account and start managing your organization
+          Sign-In With Passkeys
 
           </h2>
         
@@ -331,7 +387,8 @@ handleClosePasskeyError={handleClosePasskeyError}/>
                     Login Into Your Account 
                 </h1>
                 <div className='flex flex-row '>
-          <p className='text-black playwrite-de-grund text-xl'>Don't have an account? <Link to='/signup'><span className='underline'>Sign Up</span></Link> </p>
+          <p className='text-black playwrite-de-grund text-xl'>Don't have an account?
+             <Link to={`/kasspas-key?my_user_name=${user_name}`}><span className='underline'>Sign Up</span></Link> </p>
 
           </div>
                 <form className="space-y-4 md:space-y-6 " onSubmit={authenticateWebAuthn}>
@@ -387,7 +444,9 @@ handleClosePasskeyError={handleClosePasskeyError}/>
                     
                     <div className="flex items-start">
                         <div className="flex items-center h-5">
-                         <p className='playwrite-de-grund  text-black underline decoration-2 hover:no-underline cursor-pointer'>Recover Your Account</p>
+                         <p className='playwrite-de-grund  text-black underline decoration-2 hover:no-underline
+                          cursor-pointer'>
+                          Recover Your Account</p>
                         
                         </div>
                     </div>

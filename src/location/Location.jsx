@@ -15,17 +15,23 @@ import DeleteLocation  from './DeleteLocation'
 import AccessDenied from '../access_denied/AccessDenied'
 import {useNavigate} from 'react-router-dom'
 import { requestPermission } from '../firebase/firebasePermission';
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie';
+
 
 
 
 const Location = () => {
+  const {
+    materialuitheme,setMaterialuiTheme ,locationForm, setLocationForm, locations, setlocations,
+    openAccessDenied, setopenopenAccessDenied,  setseelocation,openLocationAlertError, setopenLocationAlertError} = useApplicationSettings()
+
 const [isOpen, setIsOpen] = useState(false)
 
 const [loading, setloading] = useState(false)
 const [openAddLocationAlert, setopenAddLocationAlert] = useState(false)
 const [openUpdateLocationAlert, setopenUpdateLocationAlert] = useState(false)
 const [openDeleteLocationAlert, setopenDeleteLocationAlert] = useState(false)
-const [openLocationAlertError, setopenLocationAlertError] = useState(false)
 const [isOpenDelete, setisOpenDelete] = useState(false)
 
 const navigate = useNavigate()
@@ -38,6 +44,19 @@ const navigate = useNavigate()
 //  useEffect(() => {
 //   requestPermission();
 // }, []);
+
+
+
+
+const defaultOptions2 = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
 
 
 const handleCloseDeleteLocationAlert = () => {
@@ -80,10 +99,7 @@ const EditButton = ({rowData}) => (
 
 
 
-    const {
-        materialuitheme,setMaterialuiTheme ,locationForm, setLocationForm, locations, setlocations,
-        openAccessDenied, setopenopenAccessDenied,  setseelocation} = useApplicationSettings()
-
+   
 
         const handleCloseRegistrationForm = (e) => {
           e.preventDefault()
@@ -162,56 +178,6 @@ const id = setTimeout(() => controller.abort(), 9000);
 
 
 
-const getLocation = 
-useCallback(
-  async() => {
-
-    try {
-      const response = await fetch('/api/get_locations', {
-        signal: controller.signal,  
-
-      })
-      clearTimeout(id);
-
-      const newData = await response.json()
-
-      if (response.status === 401) {
-        navigate('/signin')
-
-
-      }
-
-      if (response.status === 403) {
-        setopenLocationAlertError(true)
-        // setopenopenAccessDenied(true)
-        setseelocation(false)
-
-
-      }
-      if (response.ok) {
-        setlocations(newData)
-        console.log('customer data', newData)
-        setseelocation(true)
-      } else {
-        console.log('error')
-        setseelocation(true)
-        
-      }
-    } catch (error) {
-      console.log(error)
-      setopenLocationAlertError(true)
-      setseelocation(true)
-
-    }
-  },
-  [],
-)
-
-
-
-useEffect(() => {
-  getLocation()
-}, [getLocation]);
 
 
 
@@ -219,14 +185,6 @@ useEffect(() => {
   const addLocation = async (e) => {
 
 
-
-  addNotification({
-    title: 'Warning',
-    subtitle: 'This is a subtitle',
-    message: 'This is a very long message',
-    theme: 'darkblue',
-    native: true // when using native, your OS will handle theming.
-});
     e.preventDefault()
 
     try {
@@ -317,7 +275,21 @@ useEffect(() => {
    
       columns={[
         { title: "Location", field: "location_name" , },
-        { title: "Sublocation", field: "Sublocation" },
+        { title: "Sublocation", field: "sublocation_name", 
+          render: (rowData) => 
+            <>
+          {rowData.sublocation_name === 'null' || rowData.sublocation_name === null 
+          || rowData.sublocation_name === '' ? (
+            <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} />
+
+
+
+
+
+
+          ): <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} />}
+            </>
+         },
         { title: "Location Code", field: "location_code",  align: 'left' },
        
         {

@@ -3,6 +3,8 @@
 import {Link} from 'react-router-dom'
 import {Button} from "flowbite-react";
 import { useNavigate } from 'react-router-dom';
+import Lottie from 'react-lottie';
+import NotFoundAnimation from '../animation/not_found.json'
 
 
 
@@ -12,6 +14,18 @@ import { useNavigate } from 'react-router-dom';
 
 const NotFound = () => {
     const navigate = useNavigate();
+
+
+    const defaultOptions = {
+      loop: true,
+      autoplay: true, 
+      animationData: NotFoundAnimation,
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+      }
+    };
+
+
 
 
   const handleClick = (e) => {
@@ -28,12 +42,13 @@ const NotFound = () => {
 
 
     <div className='flex justify-center items-center w-full '>
-<img src="/images/logo/logo-small.png" alt="quality-smiles"  className='w-20 h-20'/>
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
 </div>
     <div className='text-center 
     text-red text-6xl 
-    font-light text-red-700 tracking-wider mt-[100px] playwrite-de-grund'>
-      The page you were looking for doesn't exist (404)
+    font-light text-green-700 tracking-wider mt-[100px] playwrite-de-grund'>
+      Page Not Found <p className='text-red-700'>(404) </p>
         </div>
 <div className='flex items-center justify-center mt-10  playwrite-de-grund'>
 

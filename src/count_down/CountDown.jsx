@@ -28,7 +28,7 @@ const CountdownItem = ({ unit, text }) => {
           {time}
         </span>
       </div>
-      <span className="text-xs font-light text-slate-500 md:text-sm lg:text-base">
+      <span className="text-xs font-light text-black md:text-sm lg:text-base playwrite-de-grund">
         {text}
       </span>
     </div>

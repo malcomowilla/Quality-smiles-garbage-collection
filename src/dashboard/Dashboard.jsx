@@ -9,6 +9,14 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis,AreaChart,Area ,Tooltip, L
 const CustomizedDot = (props) => {
   const { cx, cy, stroke, payload, value } = props;
 
+
+
+
+
+
+
+
+  
   if (value > 2500) {
     return (
       <svg x={cx - 10} y={cy - 10} width={20} height={20} fill="green" viewBox="0 0 1024 1024">
@@ -182,3 +190,7 @@ const Cards = ({ title, subtitle, Icon, to }) => {
 };
 
 export default Dashboard;
+
+
+
+

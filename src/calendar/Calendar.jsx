@@ -18,9 +18,15 @@ import CalendarEventUpdate from '../Alert/CalendarEventUpdate'
 import CalendarEventDeleteAlert from '../Alert/CalendarEventDeleteAlert'
 import { requestPermission } from '../firebase/firebasePermission';
 import addNotification from 'react-push-notification';
+import {useNavigate} from 'react-router-dom'
 
 
 const Calendar = () => {
+
+const navigate = useNavigate()
+
+
+
 const eventForm = {
 title: '',
 start: dayjs(new Date()),
@@ -122,6 +128,10 @@ const handleGetCalendarEvents = useCallback(
     try {
       const response = await fetch('/api/get_calendar_events')
       const newData = await response.json()
+
+      if (response.status === 401) {
+        navigate('/signin')
+      }
       if (response.json) {
         setCalendarEvent(newData)
         
@@ -142,6 +152,13 @@ useEffect(() => {
 }, [handleGetCalendarEvents]);
 
 
+
+
+
+// const acha_umbwakni = localStorage.getItem("acha umbwakni");
+// const storedDataacha_umbwakni = acha_umbwakni ? JSON.parse(acha_umbwakni) : {}; 
+
+//  console.log('acha umbwakni:',storedDataacha_umbwakni)
 
 
 
@@ -283,17 +300,6 @@ try {
 
 }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -526,7 +532,7 @@ events={calendarEvents}
   // ]}
 />
 </div>
-    <div id="draggable-el" className="ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-green-600">
+    {/* <div id="draggable-el" className="ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-green-600">
             <h1 className="font-bold text-lg text-center playwrite-de-grund text-black">Drag Events</h1>
             {events.map(event => (
               <div
@@ -538,7 +544,7 @@ events={calendarEvents}
                 {event.title}
               </div>
             ))}
-          </div>
+          </div> */}
           </div>
     </>
   )

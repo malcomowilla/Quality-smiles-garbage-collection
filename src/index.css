@@ -4,6 +4,51 @@
 
 
 
+.bg-chat-image::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/images/background_chat_wallpaper.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* filter: blur(14px); */
+
+  z-index: -1; 
+}
+
+
+.kalam-light {
+  font-family: "Kalam", cursive;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.kalam-regular {
+  font-family: "Kalam", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+.edu_ustralia_font {
+  font-family: "Edu AU VIC WA NT Guides", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+
+.kalam-bold {
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  font-style: normal;
+}
 
 
 

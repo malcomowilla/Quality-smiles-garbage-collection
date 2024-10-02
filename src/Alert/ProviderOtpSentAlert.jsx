@@ -24,8 +24,8 @@ import Alert from '@mui/material/Alert';
           variant="filled"
           sx={{ width: '100%' }}
         >
-          
-        OTP sent to your sms
+                  An OTP was just sent to your phone number please check your phone
+
         </Alert>
       </Snackbar>
     </div>

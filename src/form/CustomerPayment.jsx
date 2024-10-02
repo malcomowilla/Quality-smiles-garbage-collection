@@ -29,7 +29,7 @@ const handleGoBack=(e)=>{
     setpaybillOrTillInstr('')
   }
   return (
-    <div className=' bg-white h-screen flex justify-center gap-5 w-screen  items-center p-10 max-sm:flex-wrap'>
+    <div className=' bg-white    h-screen flex justify-center gap-5 w-screen  items-center p-10 max-sm:flex-wrap'>
         
         <div className='border border-gray-500 h-[390px] w-[330px]  shadow-lg rounded-md  p-8 lg:block sm:hidden max-sm:hidden 
         md:hidden max-md:hidden'>
@@ -120,15 +120,15 @@ scale: 1.1
 <form className="flex max-w-md flex-col gap-4 mt-8 ">
       <div>
         <div className="mb-2 block playwrite-de-grund">
-          <Label htmlFor="email1" value="Amount" />
+          <Label htmlFor="email1" value="Amount"  style={{color: 'black'}} />
         </div>
-        <TextInput id="email1"   required />
+        <TextInput id="email1"   style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}  required />
       </div>
       <div>
         <div className="mb-2 block playwrite-de-grund">
-          <Label htmlFor="password1" value="Phone Number" />
+          <Label htmlFor="password1" value="Phone Number" style={{color: 'black'}} />
         </div>
-        <TextInput id="password1"  required />
+        <TextInput id="password1"  style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}}  required />
       </div>
       
       <Button type="submit">Top Up</Button>

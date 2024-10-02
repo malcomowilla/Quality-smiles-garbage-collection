@@ -7,7 +7,9 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
-
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
 
 const ProviderRegistrationForm = ({isOpenProvider, setIsOpenProvider, addServiceProvider, emailError,
    seeEmailError, phoneNumberError, seePhoneNumberError, loading,  setloading,

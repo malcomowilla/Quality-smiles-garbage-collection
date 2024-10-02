@@ -11,9 +11,13 @@ import SmsForm from '../sms/SmsForm'
 import { MdOutlineSupportAgent } from "react-icons/md";
 import  DeleteSms from './DeleteSms'
  import DeleteMessageAlert from '../Alert/DeleteMessageAlert'
+ import {useNavigate} from 'react-router-dom'
 
 
 const Sms = () => {
+
+const navigate = useNavigate()
+
 
   const [sms, setSms] = useState([])
   const [isOpen, setIsOpen] = useState(false);
@@ -97,6 +101,10 @@ useCallback(
       //   setopenopenAccessDenied3(true)
         
       // }
+
+      if (response.status === 401) {
+        navigate('/signin')
+      }
       if (response.ok) {
         setSms(newData)
         console.log('customer data', newData)

@@ -7,6 +7,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
+import { PiSpinner } from "react-icons/pi";
 
 
 
@@ -73,7 +74,11 @@ transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3
 
            <button onClick={handleDeleteTicket}   className="px-6 py-2 font-medium text-red-700 bg-white rounded-md 
             w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+             
         Delete
+       {isloading ? (
+        <PiSpinner className={`text-lg ${isloading ? 'animate-spin' : null }   `} />
+       ): null} 
       </button>
 
 

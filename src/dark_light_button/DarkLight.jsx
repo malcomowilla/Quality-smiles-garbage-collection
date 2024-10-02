@@ -29,7 +29,7 @@ const SliderToggle = ({ selected, setSelected }) => {
         }`}
         onClick={() => {
           setTheme("light");
-          
+          localStorage.setItem('theme_normal', 'light')
           setMaterialuiTheme(lightTheme)
         }}
       >
@@ -42,6 +42,7 @@ const SliderToggle = ({ selected, setSelected }) => {
         }`}
         onClick={() => {
           setTheme("dark");
+          localStorage.setItem('theme_normal', 'dark')
           setMaterialuiTheme(darkTheme)
 
         }}

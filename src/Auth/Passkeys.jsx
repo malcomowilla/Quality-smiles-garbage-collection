@@ -1,7 +1,7 @@
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -49,9 +49,16 @@ const goBack = useNavigate()
     open,
     setOpen,
     handleClose,
-    
-    handleChangePhoneNumber
+    checkEmail,
+    handleChangePhoneNumber,
+    setImagePreview,
+    imagePreview,
+    setUpdateFormData,updateFormData
+
   } = useApplicationSettings();
+
+
+
   const navigate = useNavigate();
   const [screenload, setscreenload] = useState(false);
   const [openLoad, setOpenLoad] = useState(false);
@@ -67,14 +74,16 @@ const webAuthData={
   phone_number: ''
 }
 
-
+const email = checkEmail
 const [signupFormData, setsignupFormData] = useState(webAuthData)
 const handleGoBack = ()=> {
     goBack(-1)
 }
 
 
-const { email,  user_name, phone_number } = signupFormData;
+
+
+const {   user_name, phone_number } = signupFormData;
 
   useEffect(() => {
     setscreenload(true);
@@ -109,7 +118,7 @@ const handleChange = (e) => {
     const response = await fetch('/api/webauthn/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, user_name })
+      body: JSON.stringify({  user_name })
     });
   
     const options = await response.json();
@@ -174,7 +183,7 @@ const handleChange = (e) => {
       const createResponse = await fetch('/api/webauthn/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialJson, email, user_name })
+        body: JSON.stringify({ credential: credentialJson, email, user_name})
       });
   
       const createResponseJson = await createResponse.json();
@@ -222,6 +231,47 @@ const handleChange = (e) => {
 
 
 
+  const storedData = JSON.parse(localStorage.getItem("ojijo"));
+    
+  const fetchUpdatedProfile = useCallback(
+    
+     
+    async() => {
+      const requestParams = {
+              id:storedData.id,
+            
+            }
+      
+
+      const url = "/api/allow_get_updated_admin?" + new URLSearchParams(requestParams)
+      const response = await fetch(url)
+      const newData = await response.json()
+      console.log('updated admin', newData)
+  try {
+    const {email, user_name, phone_number, profile_image } = newData
+    if (response.ok) {
+      setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
+      // setUpdateFormData((prev)=> (
+      //   {...prev, email, phone_number, user_name }
+      // ))
+      setImagePreview(newData.profile_image)
+      console.log(`get updated adminn${newData.profile_image_url}`)
+    } else {
+      console.log('error geting updated admin')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+  
+    },
+    [],
+  )
+  
+  useEffect(() => {
+    fetchUpdatedProfile()
+    
+  }, [fetchUpdatedProfile]);
+
 
   return (
     <SkeletonTheme baseColor="#202020" highlightColor="#444">
@@ -265,7 +315,9 @@ const handleChange = (e) => {
           <SignupAlert open={open} handleClose={handleClose} />
           <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <a href="#" className="flex items-center mb-2 text-2xl font-semibold text-white">
-              <img className="w-20 h-20 mr-2 rounded-full" src="/images/logo/logo-small.png" alt="logo" />
+              {/* <img className="w-20 h-20 mr-2 rounded-full" src="/images/logo/logo-small.png" alt="logo" /> */}
+
+          <img src={imagePreview} alt="logo" className='w-20 h-20 mr-2 rounded-full' />
               <p className='playwrite-de-grund'>{ 'Quality Smiles'}</p>
             </a>
             <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
@@ -313,6 +365,23 @@ const handleChange = (e) => {
                       name="user_name"
                       className="border focus:border text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
                     />
+
+
+
+{/* 
+<label htmlFor="email" className="block mb-2 text-xl playwrite-de-grund text-white">
+                      Your Email
+                    </label>
+                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
+                      {seeError && usernameError}
+                    </p>
+                    <input
+                      value={email}
+                      onChange={(e)=>handleChange(e)}
+                      type="text"
+                      name="email"
+                      className="border focus:border text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
+                    /> */}
                   </div>
 
                
@@ -330,7 +399,7 @@ const handleChange = (e) => {
                   <p className="text-lg font-extrabold playwrite-de-grund text-white">
                     Already have an account?{' '}
                     <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
-                      <Link className="underline" to="/signin">
+                      <Link className="underline" to="/kasspass-key-signin">
                         Login here
                       </Link>
                     </a>

@@ -20,13 +20,20 @@ import { requestPermission } from '../firebase/firebasePermission';
 import {useNavigate} from 'react-router-dom'
 import OneSignal from 'react-onesignal';
 
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+
+import QuestionMarkAnimation from '../animation/question_mark.json'
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
+
 
 const Customers = () => {
 const navigate = useNavigate()
  
   const {customers, setGetCustomers, customerformData, setcustomerformData,
      setSeeCustomerCode, updatedMessage, setUpdatedMessage,  settingsformData,
-     materialuitheme
+     materialuitheme,adminFormSettings,setopenLogoutSession
   } = useApplicationSettings()
 
   const {send_sms_and_email, send_email} = settingsformData
@@ -45,6 +52,33 @@ const [seePhoneNumberError, setSeePhoneNumberError] = useState(false)
 const [nameError, setNameError] = useState('')
 const [seeNameError, setSeeNameError] = useState(false)
 const [openAccessDenied, setopenopenAccessDenied] = useState(false)
+const [openLoad, setopenLoad] = useState(false)
+
+console.log('adminset',adminFormSettings)
+
+
+
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+const defaultOptions2 = {
+  loop: true,
+  autoplay: true, 
+  animationData: QuestionMarkAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+
+
+
 
 
 // useEffect(() => {
@@ -209,6 +243,25 @@ useCallback(
       clearTimeout(id);
       if (response.status === 401) {
         navigate('/signin')
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          setopenLogoutSession(true)
+          navigate('/signup2fa_passkey')
+          
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+          setopenLogoutSession(true)
+        
+           navigate('/signin')
+           
+        }
 
 
       }
@@ -243,6 +296,7 @@ useEffect(() => {
 
     try {
       setloading(true)
+      setopenLoad(true)
 
       const url = customerformData.id ? `/api/update_customer/${customerformData.id}` : '/api/customer';
       const method = customerformData.id ? 'PATCH' : 'POST';
@@ -265,8 +319,10 @@ useEffect(() => {
         setSeeEmailError(false)
         setSeePhoneNumberError(false)
         setSeeNameError(false)
+        setopenLoad(false)
         if (customerformData.id) {
           setloading(false)
+          setopenLoad(false)
           setIsOpenUpdated(true)
           // Update existing package in tableData
           setGetCustomers(customers.map(item => (item.id === customerformData.id ? newData.customer : item)))
@@ -277,7 +333,7 @@ useEffect(() => {
         } else {
           setopenAddition(true)
           setloading(false)
-
+          setopenLoad(false)
           // Add newly created package to tableData
 
           setGetCustomers((prevData)=> (
@@ -297,6 +353,7 @@ useEffect(() => {
         setPhoneNumberError(newData.errors.phone_number)
         setNameError(newData.errors.name)
         setSeeNameError(true)
+        setopenLoad(false)
       }
     } catch (error) {
       console.log(error)
@@ -306,6 +363,7 @@ useEffect(() => {
       setOpenOfflineAlert(true)
       setSeeNameError(false)
       setSeePhoneNumberError(false)
+      setopenLoad(false)
 
     }
   }
@@ -327,6 +385,21 @@ useEffect(() => {
   return (
 
 <>
+
+
+
+
+{loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+  
+   </Backdrop>
+}
+
+
+
+
+
 {openAccessDenied ? (
   <AccessDenied />
 ) : 
@@ -353,27 +426,38 @@ setIsOpenDelete={setIsOpenDelete} />
       columns={[
 
 
-        { title: "Location", field: "location" },
-        { title: "Customer Name", field: "name" },
+        { title: "Location", field: "location",
+          render: (rowData) => 
+            
+            <>
+{rowData.location === null ||  rowData.location === 'null' || rowData.location === '' 
+? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> : rowData.location }
+
+            </>
+        
+         },
+        { title: "Customer Name", field: "name" ,
+          
+        },
      
         {
             title: "Phone Number",
             field: "phone_number",
           },
-          {
-            title: "Amount Paid",
-            field: "amount_paid",
-          },
+          // {
+          //   title: "Amount Paid",
+          //   field: "amount_paid",
+          // },
           
-          {
-            title: "Total",
-            field: "amount_paid",
-          },
+          // {
+          //   title: "Total",
+          //   field: "amount_paid",
+          // },
 
-          {
-            title: "Remaining Amount",
-            field: "Remaining Amount",
-          },
+          // {
+          //   title: "Remaining Amount",
+          //   field: "Remaining Amount",
+          // },
       
         {
             title: "Date Registered",
@@ -390,6 +474,13 @@ setIsOpenDelete={setIsOpenDelete} />
         {
           title: "Collection Request Date",
           field: "formatted_request_date",
+          render: (rowData) => 
+            
+            <>
+{rowData.formatted_request_date === null ||  rowData.formatted_request_date === 'null' || rowData.formatted_request_date === '' 
+? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> : rowData.formatted_request_date }
+
+            </>
         },
 
 
