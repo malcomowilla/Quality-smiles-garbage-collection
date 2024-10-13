@@ -14,6 +14,9 @@ import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import AnimationDone from '../animation/done_tick-animation.json'
 
+import { GoPasskeyFill } from "react-icons/go";
+import Tooltip from '@mui/material/Tooltip';
+
 
 const Signup = () => {
   const network = useNetworkState();
@@ -241,7 +244,8 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
                     <div className="absolute self-end bottom-0 p-2">
                       <img src="/images/logo/icons8-gmail-100.png" className="w-8 h-8" alt="gmail" />
                     </div>
-                    <p className="handlee-regular text-rose-800 tracking-widest text-lg uppercase">
+                    <p className="handlee-regular text-rose-800 tracking-widest text-lg
+                     uppercase font-extrabold">
                       {seeError && registrationError.email}
                     </p>
                     <input
@@ -283,7 +287,8 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
                     <label htmlFor="user_name" className="block mb-2 text-xl playwrite-de-grund text-white">
                       Your Username
                     </label>
-                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
+                    <p className="handlee-regular uppercase text-rose-800 tracking-widest 
+                    text-lg font-extrabold">
                       {seeError && registrationError.user_name}
                     </p>
                     <input
@@ -298,13 +303,21 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
                   </div>
 
                   <div className="flex flex-col relative">
-                    <div className="absolute self-end bottom-0 p-2" onClick={() => setIsSeenPassword(!isSeenPassWord)}>
-                      <ion-icon    style={{color: 'white'}}  name={isSeenPassWord ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
+                    <div className="absolute self-end bottom-0 p-2
+                   text-white" onClick={() => setIsSeenPassword(!isSeenPassWord)}>
+                      <ion-icon    style={{color: 'white',
+                      width: 20, height: 20
+
+                      }}  name={isSeenPassWord ? 'eye-outline' : 'eye-off-outline'}>
+
+                      </ion-icon>
                     </div>
                     <label htmlFor="password" className="block mb-2 text-xl playwrite-de-grund font-medium text-white">
                       Password
                     </label>
-                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
+                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg
+                    font-extrabold
+                    ">
                       {seeError && registrationError.password}
                     </p>
                     <input
@@ -319,12 +332,16 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
 
                   <div className='flex flex-col relative'>
                   <div className="absolute self-end bottom-0 p-2" onClick={() => setIsSeenPassword1(!isSeenPassWord1)}>
-                      <ion-icon style={{color: 'white'}} name={isSeenPassWord1 ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
+                      <ion-icon style={{color: 'white',
+ width: 20, height: 20
+
+                      }} name={isSeenPassWord1 ? 'eye-outline' : 'eye-off-outline'}></ion-icon>
                     </div>
                     <label htmlFor="confirm-password" className="block mb-2 text-xl playwrite-de-grund font-medium text-white">
                       Confirm password
                     </label>
-                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
+                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg
+                    font-extrabold">
                       {seeError && registrationError.password_confirmation}
                     </p>
                     <input
@@ -338,7 +355,10 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
                   </div>
                   {/* type={isSeenPassWord1 ? 'password' : 'text'} */}
                   <div className="flex justify-center">
-                    <button type="submit" className="btn btn-active playwrite-de-grund">
+                    <button type="submit" className="btn btn-active 
+                      playwrite-de-grund   bg-green-500    text-white
+                      
+                      playwrite-de-grund">
                       Create Account
                       <img
                         src="/images/logo/iconsreload2.png"
@@ -358,9 +378,25 @@ const [ isSeenPassWord1,setIsSeenPassword1] = useState(false)
                   </p >
 
 
+
+
+                        <Tooltip
+
+placement="top"
+arrow
+                        title={<>
+
+                          <div className='p-4'>
+                            
+                          {/* Add */}
+                          <GoPasskeyFill  className='w-20 h-20'/>
+                            </div>
+                            </>} >
                   <p className="text-lg font-extrabold playwrite-de-grund text-white hover:underline cursor-pointer">
                    <Link to='/kasspas-key'> Signing Up With Passkeys?</Link>
                   </p>
+
+                  </Tooltip >
                 </form>
               </div>
             </div>

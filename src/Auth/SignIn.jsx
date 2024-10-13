@@ -19,7 +19,10 @@ import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
 import OtpSentEmailAlert from '../Alert/OtpSentEmailAlert'
 import LogoutSession from '../Alert/LogoutSession'
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import { FaPhone } from "react-icons/fa";
 
+import { GoPasskeyFill } from "react-icons/go";
+import Tooltip from '@mui/material/Tooltip';
 
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
 // OtpSentEmailAlert openOtpSentEmailAlert, handleCloseOtpSentEmailAlert
@@ -36,8 +39,16 @@ const SignIn = () => {
     setAdminPermission, fetchCurrentUser, setTheme,  openLogoutSuccess,handleCloseLogoutSuccess,
     handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,setUpdateFormData,setImagePreview,
     setopenLoginSuccess,user,updateFormData,
-    // 
-    // 
+    
+    
+    materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
+      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
+       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+       setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,
+    
  } = useApplicationSettings()
 
 
@@ -97,6 +108,74 @@ const handleCloseOtpSentAlert = ()=> {
 // const login_with_otp_email = storedData.login_with_otp_email  
 // const enable_2fa_for_admin = storedData.enable_2fa_for_admin
 // const enable_2fa_for_admin_passkeys = storedData.enable_2fa_for_admin_passkeys
+
+
+
+
+
+
+const handlegetAdminSettings = useCallback(
+  async()=> {
+     
+       
+
+     try {
+       const response = await fetch(`/api/allow_get_admin_settings`, {
+       method: 'GET',
+
+       
+       headers: {
+         "Content-Type"  : 'application/json'
+       },
+       })
+
+
+
+       const newData = await response.json()
+       if (response.ok) {
+       // const use_auto_generated_number = newData.use_auto_generated_number
+       // const prefix = newData.prefix
+       const login_with_otp = newData[0].login_with_otp 
+       const login_with_web_auth = newData[0].login_with_web_auth
+       const login_with_otp_email = newData[0].login_with_otp_email
+       const send_password_via_email = newData[0].send_password_via_email
+       const send_password_via_sms = newData[0].send_password_via_sms
+       const check_is_inactive = newData[0].check_is_inactive
+       const check_inactive_hrs = newData[0].check_inactive_hrs
+       const check_inactive_minutes = newData[0].check_inactive_minutes
+       const enable_2fa_for_admin = newData[0].enable_2fa_for_admin
+       const enable_2fa_for_admin_passkeys = newData[0].enable_2fa_for_admin_passkeys
+       const check_inactive_days = newData[0].check_inactive_days
+     
+      //  const {login_with_otp} = newData[0]
+      console.log('enable_2fa_for_admin_passkeys2', enable_2fa_for_admin_passkeys)
+       setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
+        login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
+        check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
+        check_inactive_days
+       }))
+     
+       
+       } else {
+       console.log('failed to fetch')
+       setOpenOfflineError(true)
+       }
+       } catch (error) {
+       console.log(error)
+       setOpenOfflineError(true)
+       
+       }
+     },
+ 
+[]
+)
+
+
+  
+
+useEffect(() => {
+  handlegetAdminSettings()
+}, [handlegetAdminSettings]);
 
 
 
@@ -161,6 +240,17 @@ useEffect(() => {
     
 //   };
 // }, []);
+
+
+
+
+const app_theme = localStorage.getItem('theme_normal')
+
+
+// if (dark_theme  === 'dark') {
+  
+//   setTheme('dark')
+// }
 
   const handleSignIn = async (e) => {
  
@@ -232,7 +322,8 @@ if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
   localStorage.setItem('acha umbwakni', true);
 setopenLoginSuccess(true)
 fetchCurrentUser()
-      setTheme("light")
+      // setTheme("light")
+      setTheme(app_theme)
       console.log('admin',actualUserDataInJson.can_manage_settings
       )
       setAdminPermission(actualUserDataInJson.can_manage_settings
@@ -303,7 +394,7 @@ fetchCurrentUser()
     console.log(actualUserDataInJson)
     localStorage.setItem('acha umbwakni', true);
     fetchCurrentUser()
-    setTheme("light")
+    setTheme(app_theme)
     setopenLoginSuccess(true)
     setTimeout(() => {
       setDone(true);
@@ -388,7 +479,7 @@ fetchCurrentUser()
   return (
     <>
 
-<ToastContainer position='top-center' transition={Slide} autoClose={false}/>
+<ToastContainer position='top-center' transition={Slide}  autoClose={8000}/>
 
 <LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
 <OtpSentEmailAlert  openOtpSentEmailAlert={openOtpSentEmailAlert}  handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert}/>
@@ -533,7 +624,7 @@ Go Back
               <div className='mb-9'>
               <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
             <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
-           <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
+           <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles2 </p>    
         </a>
               </div>
       
@@ -556,7 +647,7 @@ Go Back
                 
                     <div className='flex flex-col relative'>
                     <p className='handlee-regular  text-rose-800 
-                                               tracking-widest text-xl'> { seeError && registrationError}</p>
+                                               tracking-widest text-xl font-extrabold'> { seeError && registrationError}</p>
                         <label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
                          text-gray-900 ">Your email</label>
                            <div className='absolute self-end bottom-0 p-2'>
@@ -572,7 +663,7 @@ Go Back
                   //   handleFormDataChangeSignin(e)
                   //   emailValue.set(e.target.value)
                   // } }
-                style={{width: emailWidth}} transition={{duration:5, ease: "easeOut",
+                 transition={{duration:5, ease: "easeOut",
   }}    name="email"  value={email} id="email" 
                         className={` border  focus:border-2 
                           text-black  handlee-regular  transition-all duration-1000 sm:text-lg rounded-lg
@@ -588,29 +679,64 @@ Go Back
 
 
 
-                    <div>
-                        <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
-                         text-gray-900 ">Your Phone Number</label>
-                        {/* <PhoneInput value={phone}
-        onChange={setPhone}   type="text" name="email" id="email" className="border  focus:border-2
-        text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-        sm:text-lg border-black
-         block w-full p-2.5  focus:border-green-700
-                            "
+
+
+
+
+
+
+
+
+{/* 
+                    <div className='relative flex flex-col'>
+   <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
+    text-gray-900 ">Your Phone Number</label>
   
-                            /> */}
+
+
+<div className='absolute self-end bottom-0 p-2'>
+
+<FaPhone className='text-blue-500 w-6 h-6'/>
+
+                      </div>
+<input value={phone_number}
+onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
+text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
+sm:text-lg border-black
+block w-full p-2.5  focus:border-green-700
+       "
+
+       />
+
+</div> */}
+
+
+
+
+
+
+{login_with_otp_email === true || login_with_otp_email === 'true' ? (
+  ''
+
+
+) :   <div>
+<label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
+ text-gray-900 ">Your Phone Number</label>
+
 
 
 <input value={phone_number}
-        onChange={handleChangePhoneNumberSignin}     name="phone_number"  className="border  focus:border-2
-        text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-        sm:text-lg border-black
-         block w-full p-2.5  focus:border-green-700
-                            "
-  
-                            />
-  
-                    </div>
+onChange={handleChangePhoneNumberSignin}     name="phone_number"  className="border  focus:border-2
+text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
+sm:text-lg border-black
+block w-full p-2.5  focus:border-green-700
+    "
+
+    />
+
+</div> }
+
+                  
 
 
                     <div className='flex flex-col relative'>
@@ -649,10 +775,25 @@ Go Back
                           '>Forgot your password?</p></Link>
                         </div>
                         
-  
+
+    <Tooltip
+
+placement="top"
+arrow
+                        title={<>
+
+                          <div className='p-4'>
+                            
+                          {/* Add */}
+                          <GoPasskeyFill  className='w-20 h-20'/>
+                            </div>
+                            </>} >
         <div>
           <Link  className='text-black font-extrabold hover:underline' to='/kasspass-key-signin'>login with passkey? </Link>
         </div>
+        </Tooltip >
+
+
         </div>
                     </div>
   
@@ -722,7 +863,8 @@ Go Back
                 
                     <div className='flex flex-col relative'>
                     <p className='handlee-regular  text-rose-800 
-                                               tracking-widest text-xl'> { seeError && registrationError}</p>
+                                               tracking-widest text-xl
+                                               font-extrabold'> { seeError && registrationError}</p>
                         <label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
                          text-gray-900 ">Your email</label>
                            <div className='absolute self-end bottom-0 p-2'>
@@ -807,15 +949,34 @@ block w-full p-2.5  focus:border-green-700
                           <Link to='/forgot_password'> <p className='text-lg tracking-wide font-bold underline text-white
                           '>Forgot your password?</p></Link>
                         </div>
-                        
-  
+
+          
+    <Tooltip
+
+placement="top"
+arrow
+                        title={<>
+
+                          <div className='p-4'>
+                            
+                          {/* Add */}
+                          <GoPasskeyFill  className='w-20 h-20'/>
+                            </div>
+                            </>} >
         <div>
           <Link  className='text-white font-extrabold  text-lg tracking-wider handlee-regular
            underline' to='/kasspass-key-signin'>login with passkey? </Link>
         </div>
+        </Tooltip >              
+  
+        {/* <div>
+          <Link  className='text-white font-extrabold  text-lg tracking-wider handlee-regular
+           underline' to='/kasspass-key-signin'>login with passkey? </Link>
+        </div> */}
 
                     <div className='flex justify-center'>
-                    <button type='submit' className="btn btn-active ">Login
+                    <button type='submit' className="btn btn-active
+                     bg-green-500  playwrite-de-grund  text-white ">Login
                   
                   <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
                   </button>  

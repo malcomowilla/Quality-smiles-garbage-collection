@@ -6,63 +6,146 @@ import {
   Routes, 
 } from "react-router-dom";
 
-import Signup from './Auth/Signup'
-import {HomePage} from './Home/HomePage'
-import SignIn from './Auth/SignIn'
-import Admin from './Admin/Admin'
-import Services from './services/Services'
-import {useEffect, useState, useCallback} from 'react'
+import {useEffect, useState, useCallback, lazy, Suspense} from 'react'
+
+// import Signup from './Auth/Signup'
+const Signup = lazy(() => import ('./Auth/Signup'))
+// import {HomePage} from './Home/HomePage'
+const HomePage = lazy(() => import ('./Auth/SignIn'))
+// import SignIn from './Auth/SignIn'
+
+const SignIn = lazy(()=>  import ('./Auth/SignIn'
+))
+
+
+// import Admin from './Admin/Admin'
+
+const Admin = lazy(()=> import ('./Admin/Admin'))
+
+
+// import Services from './services/Services'
+const Services = lazy(()=> import ('./services/Services'))
+
+
+
 import {useApplicationSettings} from './settings/ApplicationSettings'
-import Location from './location/Location'
-import Sublocation from './location/Sublocation'
-import Payment from './payment/Payment'
-import Store from './store/Store'
-import Collections from './collections/Collections'
-import CollectionRequests from './collections/CollectionRequests'
-import Expenses from './Expenses/Expenses'
-import Customers from './Customers/Customers'
-import ServiceProvider from './service_provider/ServiceProvider'
-import ManageUsers from './user_management/ManageUsers'
-import QrCode from './QrCode/QrCode'
-import CustomerForm from './form/CustomerForm'
-import ServiceProviderForm from './form/ServiceProviderForm'
-import ProviderConfirmation  from './collections/ProviderConfirmation'
-import CustomerConfirmation from './collections/CustomerConfirmation'
-import ProviderCollections from './form/ProviderCollections'
-import CustomerRequest from './form/CustomerRequest'
-import Driver from './driver/Driver'
- import ChooseRole from './choose_role/ChooseRole'
- import  {GeneralSettings} from './settings/GeneralSettings'
-import Dashboard from './dashboard/Dashboard'
+
+// import Location from './location/Location'
+const Location = lazy(()=> import ('./location/Location'))
+
+// import Sublocation from './location/Sublocation'
+
+const Sublocation = lazy(()=> import ('./location/Sublocation'))
+
+// import Payment from './payment/Payment'
+const Payment = lazy(()=> import ('./payment/Payment'))
+
+// import Store from './store/Store'
+const Store = lazy(()=> import ('./store/Store'))
+
+// import Collections from './collections/Collections'
+const Collections = lazy(()=> import ('./collections/Collections'))
+
+// import CollectionRequests from './collections/CollectionRequests'
+
+const CollectionRequests = lazy(()=> import ('./collections/CollectionRequests'))
+// import Expenses from './Expenses/Expenses'
+
+const Expenses = lazy(()=> import('./Expenses/Expenses'))
+
+const Customers = lazy(()=> import('./Customers/Customers'))
+// import Customers from './Customers/Customers'
+
+// import ServiceProvider from './service_provider/ServiceProvider'
+const ServiceProvider = lazy(()=> import('./service_provider/ServiceProvider'))
+
+// import ManageUsers from './user_management/ManageUsers'
+const ManageUsers = lazy(()=> import('./user_management/ManageUsers'))
+
+// import QrCode from './QrCode/QrCode'
+
+const QrCode = lazy(()=> import('./QrCode/QrCode'))
+
+// import CustomerForm from './form/CustomerForm'
+const CustomerForm = lazy(()=> import('./form/CustomerForm'))
+// import ServiceProviderForm from './form/ServiceProviderForm'
+
+const ServiceProviderForm = lazy(()=> import ('./form/ServiceProviderForm'))
+
+// import ProviderConfirmation  from './collections/ProviderConfirmation'
+const ProviderConfirmation = lazy(()=> import ('./collections/ProviderConfirmation'))
+
+// import CustomerConfirmation from './collections/CustomerConfirmation'
+const CustomerConfirmation = lazy(()=> import ('./collections/CustomerConfirmation'))
+// import ProviderCollections from './form/ProviderCollections'
+const  ProviderCollections = lazy(()=> import('./form/ProviderCollections'))
+// import CustomerRequest from './form/CustomerRequest'
+const CustomerRequest = lazy(()=> import('./form/CustomerRequest'))
+
+// import Driver from './driver/Driver'
+const Driver = lazy(()=> import('./driver/Driver'))
+//  import ChooseRole from './choose_role/ChooseRole'
+ const ChooseRole = lazy(()=> import ('./choose_role/ChooseRole'))
+//  import  {GeneralSettings} from './settings/GeneralSettings'
+ const GeneralSettings = lazy(()=> import ('./settings/GeneralSettings'))
+// import Dashboard from './dashboard/Dashboard'
+const Dashboard = lazy(()=> import ('./dashboard/Dashboard'))
+
 import { LocalizationProvider } from '@mui/x-date-pickers';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import CustomerRole from './login_role/CustomerRole'
-import ServiceProviderRole from './login_role/ServiceProviderRole'
+// import CustomerRole from './login_role/CustomerRole'
+const CustomerRole = lazy(()=> import ('./login_role/CustomerRole'))
+// import ServiceProviderRole from './login_role/ServiceProviderRole'
+const ServiceProviderRole = lazy(()=> import('./login_role/ServiceProviderRole'))
 import ProtectAuth from './Auth/ProtectAuth'
+// const ProtectAuth = lazy(()=> import('./Auth/ProtectAuth'))
 import ProtectAuthProvider from './Auth/ProtectAuthProvider'
+// const ProtectAuthProvider = lazy(()=> import('./Auth/ProtectAuthProvider'))
 import NotFound from './404/NotFound'
-import StoreManager from './store/StoreManager'
-import StoreManagerRole from './login_role/StoreManagerRole'
-import StoreManagerForm  from './form/StoreManagerForm'
-import ProtectAuthStoreManager from './Auth/ProtectAuthStoreManager'
+// const NotFound = lazy(()=> import('./404/NotFound'))
+// import StoreManager from './store/StoreManager'
+const StoreManager = lazy(()=> import('./store/StoreManager'))
+// const StoreManager = lazy(()=> import('./store/StoreManager'))
+// import StoreManagerRole from './login_role/StoreManagerRole'
+const StoreManagerRole = lazy(()=> import('./login_role/StoreManagerRole'))
+// import StoreManagerForm  from './form/StoreManagerForm'
+const StoreManagerForm = lazy(()=> import('./form/StoreManagerForm'))
+// import ProtectAuthStoreManager from './Auth/ProtectAuthStoreManager'
+const ProtectAuthStoreManager = lazy(()=> import('./Auth/ProtectAuthStoreManager'))
 import { Online, Offline, Detector } from "react-detect-offline";
-import OfflineMessage from './offline_message/OfflineMessage';
+// import OfflineMessage from './offline_message/OfflineMessage';
+const OfflineMessage = lazy(()=> import('./online_message/OnlineMessage'))
 import OnlineMessage from './online_message/OnlineMessage'
 import AppOfflineAlert from './Alert/AppOfflineAlert'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
-import ForgotPassword from './Auth/ForgotPassword'
-import ResetPassword from './Auth/ResetPassword'
+
+// import ForgotPassword from './Auth/ForgotPassword'
+
+const ForgotPassword = lazy(()=> import('./Auth/ForgotPassword'))
+// import ResetPassword from './Auth/ResetPassword'
+const ResetPassword = lazy(()=> import('./Auth/ResetPassword'))
 import ProtectAuthAdmin from './Auth/ProtectAuthAdmin'
+// const ProtectAuthAdmin = lazy(()=> import('./Auth/ProtectAuthAdmin'))
 import AuthSettings from './settings/AuthSettings'
-import Sms from './sms/Sms'
-import CustomerTickets from './customer_tickets/CustomerTickets'
-import Passkeys from './Auth/Passkeys'
-import PasskeySignin from './Auth/PasskeySignin'
-import WebAuthRegistration from './Auth/WebAuthRegistration'
-import StoreManagerReceived from './form/StoreManagerReceived'
-import CustomerPayment from './form/CustomerPayment'
-import Calendar from './calendar/Calendar'
+// const AuthSettings = lazy(()=> import('./settings/AuthSettings'))
+// import Sms from './sms/Sms'
+const Sms =  lazy(()=> import('./sms/Sms')) 
+// import CustomerTickets from './customer_tickets/CustomerTickets'
+const CustomerTickets = lazy(()=> import('./customer_tickets/CustomerTickets'))
+// import Passkeys from './Auth/Passkeys'
+const Passkeys =  lazy(()=> import('./Auth/Passkeys'))           
+// import PasskeySignin from './Auth/PasskeySignin'
+const PasskeySignin = lazy(()=> import ('./Auth/PasskeySignin'))         
+// import WebAuthRegistration from './Auth/WebAuthRegistration'
+const WebAuthRegistration = lazy(()=> import('./Auth/WebAuthRegistration') )
+// import StoreManagerReceived from './form/StoreManagerReceived'
+const StoreManagerReceived = lazy(()=> import ('./form/StoreManagerReceived'))
+// import CustomerPayment from './form/CustomerPayment'
+const CustomerPayment = lazy(()=> import ('./form/CustomerPayment'))
+// import Calendar from './calendar/Calendar'
+const Calendar = lazy(()=> import ('./calendar/Calendar'))
 import { messaging, getToken , onMessage} from './firebase/firebase';
 import OneSignal from 'react-onesignal';
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
@@ -73,11 +156,16 @@ import { IoCalendarNumberOutline } from "react-icons/io5";
 import { FaRegHandPointLeft } from "react-icons/fa6";
 import { Notifications } from 'react-push-notification';
 import addNotification from 'react-push-notification';
-import SignIn2FaPasskey from './Auth/SignIn2FaPasskey'
-import TicketStatus from './customer_tickets/TicketStatus'
-import ChatMessaging from './chat/ChatMessaging'
+// import SignIn2FaPasskey from './Auth/SignIn2FaPasskey'
+const SignIn2FaPasskey = lazy(()=> import ('./Auth/SignIn2FaPasskey'))
+// import TicketStatus from './customer_tickets/TicketStatus'
+const TicketStatus  = lazy(()=> import('./customer_tickets/TicketStatus'))
+// import ChatMessaging from './chat/ChatMessaging'
+const ChatMessaging  = lazy(()=> import('./chat/ChatMessaging'))
 import { createConsumer } from "@rails/actioncable";
-
+import Lottie from 'react-lottie';
+import LoadingAnimation from './animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
 
 
 // const router = createBrowserRouter(
@@ -170,8 +258,20 @@ import { createConsumer } from "@rails/actioncable";
 
 const App = () => {
   const [showOnlineMessage, setShowOnlineMessage] = useState(false);
-  const {openAccessDenied, currentUser, id, imagePreview, setImagePreview,
-     updateFormData, setUpdateFormData} = useApplicationSettings()
+
+
+
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
+  // const {openAccessDenied, currentUser, id, imagePreview, setImagePreview,
+  //    updateFormData, setUpdateFormData} = useApplicationSettings()
 
     //  const cable = createConsumer("ws://localhost:4000/cable");
 
@@ -317,50 +417,535 @@ useEffect(() => {
 <LocalizationProvider dateAdapter={AdapterDayjs}>
 
        {/* <RouterProvider router={router} /> */}
+       <Suspense fallback={<div> 
+
+        <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+     
+       </div>}>
+
+       </Suspense>
        <Routes>
-       <Route  path='/signup'  element={<Signup/> }/>
-      <Route index path='/'  element={<HomePage/> }/>
-      <Route  path='/signin'  element={ <SignIn/>}/>
-      <Route  path='/forgot_password' element={<ForgotPassword/>}/>
-      <Route path='/reset_password' element={<ResetPassword />}/>
-      <Route path='/kasspas-key' element={<Passkeys />}/>
-      <Route path='/kasspass-key-signin' element={<PasskeySignin />}/>
-      <Route  path='/web_authn_registration'  element={<WebAuthRegistration  />}/>
-      <Route path='/signup2fa_passkey' element={<SignIn2FaPasskey   />}/>
+
+
+
+       <Route  path='/signup'  element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <Signup/>
+        </Suspense>
+        }/>
+
+
+
+      <Route index path='/'  element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <HomePage/>
+        
+        </Suspense>
+        }/>
+
+
+
+      <Route  path='/signin'  element={ 
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <SignIn/>
+        </Suspense>
+        }/>
+
+
+      <Route  path='/forgot_password' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ForgotPassword/>
+        </Suspense>
+        }/>
+
+
+      <Route path='/reset_password' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ResetPassword />
+        </Suspense>
+        }/>
+
+
+
+      <Route path='/kasspas-key' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <Passkeys />
+        </Suspense>
+        }/>
+
+
+
+      <Route path='/kasspass-key-signin' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <PasskeySignin />
+        </Suspense>
+        }/>
+
+
+      <Route  path='/web_authn_registration'  element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <WebAuthRegistration  />
+        </Suspense>
+        }/>
+
+
+
+      <Route path='/signup2fa_passkey' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <SignIn2FaPasskey   />
+        </Suspense>
+        }/>
 
       
 
         
         <Route element={<ProtectAuthAdmin/>}>
         
-<Route  path='/admin' element={  <Admin/>}>
-<Route  path='/admin/location' element={<Location/>}/> 
-<Route path='/admin/sublocation' element={<Sublocation/>}/>
-<Route path='/admin/payment' element={<Payment/>}/>
-<Route path='/admin/store' element={<Store/>}/>
-<Route  path='/admin/collections' element={<Collections/>}/>
-<Route  path='/admin/collection-requests' element={<CollectionRequests/>}/>
-<Route path='/admin/expenses' element={<Expenses/>}/>
-<Route path='/admin/customers' element={<Customers/>}/>
-<Route path='/admin/service-provider' element={<ServiceProvider/>}/>
-<Route path='/admin/user-management' element={<ManageUsers/>}/>
-<Route path='/admin/customer-confirmation' element={<CustomerConfirmation/>}/>
-<Route path='/admin/view-driver' element={<Driver/>}/>
-<Route path='/admin/general-settings' element={<GeneralSettings/>}/>
-<Route path='/admin/dashboard' element={<Dashboard/>}/>
-<Route path='/admin/sms' element={<Sms />}/>
-<Route path='/admin/chat-messaging' element={<ChatMessaging />}/>
+<Route  path='/admin' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}> 
+   <Admin/>
+   </Suspense>
+   }>
 
 
-<Route path='/admin/support-tickets' element={<CustomerTickets  />}/>
-<Route path='/admin/collection-confirm' element={<ProviderConfirmation />
+<Route  path='/admin/location' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  
+  
+  <Location/>
+  </Suspense >
+  
+  }/> 
+
+<Route path='/admin/sublocation' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Sublocation/>
+  </Suspense>
+  
+  }/>
+
+
+
+<Route path='/admin/payment' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  
+  <Payment/>
+  </Suspense>
+  }
+  
+  />
+
+
+
+
+<Route path='/admin/store' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  
+  <Store/>
+  
+  </Suspense>
+  }/>
+
+
+
+
+<Route  path='/admin/collections' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Collections/>
+  
+  </Suspense>
+  }/>
+
+
+
+
+<Route  path='/admin/collection-requests' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <CollectionRequests/>
+  </Suspense>
+  }/>
+
+
+
+<Route path='/admin/expenses' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Expenses/>
+  </Suspense>
+  
+  }/>
+
+
+
+<Route path='/admin/customers' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Customers/>
+  </Suspense>
+  }/>
+
+
+
+<Route path='/admin/service-provider' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ServiceProvider/>
+  </Suspense>
+  }/>
+
+
+
+<Route path='/admin/user-management' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ManageUsers/>
+  </Suspense>
+  }/>
+
+
+<Route path='/admin/customer-confirmation' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <CustomerConfirmation/>
+  </Suspense>
+  }/>
+
+
+
+<Route path='/admin/view-driver' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Driver/>
+  </Suspense>
+  }/>
+
+
+
+  
+<Route path='/admin/general-settings' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <GeneralSettings/>
+  </Suspense>
+  
+  }/>
+
+
+
+
+<Route path='/admin/dashboard' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Dashboard/>
+  </Suspense>
+  
+  }/>
+
+
+
+
+<Route path='/admin/sms' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Sms />
+  </Suspense>
+  
+  }/>
+
+
+
+
+<Route path='/admin/chat-messaging' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ChatMessaging />
+  </Suspense>
+  }/>
+
+
+
+<Route path='/admin/support-tickets' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <CustomerTickets  />
+  </Suspense>
+  }/>
+
+
+
+
+<Route path='/admin/collection-confirm' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ProviderConfirmation />
+</Suspense>
 }/>
-<Route path='/admin/calendar' element={<Calendar />}/>
-<Route path='/admin/store-managers' element={<StoreManager/>}/>
+
+
+
+<Route path='/admin/calendar' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <Calendar />
+  </Suspense>
+  }/>
+
+
+<Route path='/admin/store-managers' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <StoreManager/>
+  
+  </Suspense>
+  }/>
 </Route>
 </Route>
 
-<Route path='/qr-code' element={<QrCode/>}/>
+
+
+<Route path='/qr-code' element={
+   <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <QrCode/>
+  </Suspense>
+  }/>
 
 
 
@@ -374,32 +959,184 @@ useEffect(() => {
 
 <Route element={<ProtectAuth/>}>
 
-<Route path='/customer' element={<CustomerForm/>}/> 
-<Route path='/customer-request' element={<CustomerRequest/>}/>
+<Route path='/customer' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <CustomerForm/>
+  </Suspense>
+  }
+  />
+
+
+<Route path='/customer-request' element={
+  <Suspense fallback={<div> 
+
+<Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+</Backdrop>
+
+</div>}>
+  <CustomerRequest/>
+</Suspense>
+}
+  
+  />
+
+
+
 <Route path='/customer-payment' element={<CustomerPayment />}  /> 
 <Route  path='/customer-ticket-status' element={<TicketStatus />}/>
 </Route>
 
 
 
+
 <Route element={<ProtectAuthStoreManager/>}>
-<Route  path='/store_manager' element={<StoreManagerForm />}/>
-<Route path='/store_manager_receved' element={<StoreManagerReceived />}/>
+<Route  path='/store_manager' element={
+   <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <StoreManagerForm />
+  </Suspense>
+  }
+  
+  />
+
+
+  
+<Route path='/store_manager_receved' element={
+   <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <StoreManagerReceived />
+</Suspense>
+}
+  
+  />
+
 
 </Route>
 
 
 
 
-      <Route path='/services' element={<Services/>} />
-      <Route path='/view-driver' element={<Driver/>}/>
-      <Route path='/choose_role' element={<ChooseRole/>}/>
+      <Route path='/services' element={
+        <Suspense fallback={<div> 
 
-      <Route path='/customer_role'  element={<CustomerRole/>}/>
-      <Route  path='/service_provider_role' element={<ServiceProviderRole/>}/>
-      <Route  path='/store_manager_role' element={<StoreManagerRole/>}/>
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <Services/>
+        </Suspense>
+        } />
+
+
+
+      <Route path='/view-driver' element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <Driver/>
+        
+        </Suspense>
+        }/>
+
+
+
+      <Route path='/choose_role' element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ChooseRole/>
+        </Suspense>
+        }/>
+
+
+      <Route path='/customer_role'  element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <CustomerRole/>
+        </Suspense>
+        }/>
+
+
+      <Route  path='/service_provider_role' element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ServiceProviderRole/>
+        </Suspense>
+        
+        }/>
+      <Route  path='/store_manager_role' element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <StoreManagerRole/>
+        </Suspense>
+        }/>
+
+
       <Route   path="*" element={<NotFound/>}/>
+     
       </Routes>
+     
        </LocalizationProvider>
 
      </AuthSettings>

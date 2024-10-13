@@ -18,6 +18,15 @@ import LogoutSuccess from '../Alert/LogoutSuccess'
 import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
 import OtpSentEmailAlert from '../Alert/OtpSentEmailAlert'
 import LogoutSession from '../Alert/LogoutSession'
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import * as React from 'react';
+import { GoPasskeyFill } from "react-icons/go";
+import { FaPhone } from "react-icons/fa";
+
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+
+
 
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
 
@@ -322,10 +331,29 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
 
 
 
+  const positionRef = React.useRef({
+    x: 0,
+    y: 0,
+  });
+  const popperRef = React.useRef(null);
+  const areaRef = React.useRef(null);
+
+  const handleMouseMove = (event) => {
+    positionRef.current = { x: event.clientX, y: event.clientY };
+
+    if (popperRef.current != null) {
+      popperRef.current.update();
+    }
+  };
+
 
 
   return (
     <>
+
+
+<ToastContainer position='top-center' transition={Slide} autoClose={8000}/>
+
 
 <LogoutSession  openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession}/>
 
@@ -407,7 +435,7 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
 
 
 {enable_2fa_for_admin === true || enable_2fa_for_admin === 'true' ? (
-   <div>
+   <div className='relative flex flex-col'>
    <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
     text-gray-900 ">Your Phone Number</label>
    {/* <PhoneInput value={phone}
@@ -420,6 +448,11 @@ block w-full p-2.5  focus:border-green-700
        /> */}
 
 
+<div className='absolute self-end bottom-0 p-2'>
+
+<FaPhone className='text-blue-500 w-6 h-6'/>
+
+                      </div>
 <input value={phone_number}
 onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
 text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
@@ -437,7 +470,7 @@ block w-full p-2.5  focus:border-green-700
                     <div className='flex flex-col relative'>
                     <div className='absolute self-end bottom-0 p-2 text-white' 
                      onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
-                  <ion-icon  name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
+                  <ion-icon   style={{width: 20, height: 20}} name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
                       </div>
                         <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
                          text-black">Password</label>
@@ -462,12 +495,39 @@ block w-full p-2.5  focus:border-green-700
                           '>Forgot your password?</p></Link>
                         </div>
                         
+
+
+
+
+
+
   {!enable_2fa_for_admin_passkeys ? (
+
+<Tooltip
+title={<>
+
+<div className='p-4'>
+  
+{/* Add */}
+<GoPasskeyFill  className='w-20 h-20'/>
+  </div>
+  </>}
+  
+placement="top"
+arrow
+
+>
+
      <div>
-     <Link  className='text-white font-extrabold  text-lg tracking-wider handlee-regular
-      underline' to='/kasspass-key-signin'>login with passkey? </Link>
+     <Link  className='text-black font-extrabold  text-lg tracking-wider handlee-regular
+      underline' to='/kasspass-key-signin'>login with passkey?
+       </Link>
    </div>
+
+   </Tooltip>
   ) : ''}
+
+
        
 
                     <div className='flex justify-center'>

@@ -27,12 +27,15 @@ import QuestionMarkAnimation from '../animation/question_mark.json'
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import { createConsumer } from '@rails/actioncable';
 
 
 
 
 const StoreManager = () => {
-    const {materialuitheme, storeManagerForm, setStoreManagerForm, storeManagerSettings} = useApplicationSettings()
+    const {materialuitheme, storeManagerForm, setStoreManagerForm,
+       storeManagerSettings, adminFormSettings} = useApplicationSettings()
 
     const [loading, setloading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -49,6 +52,45 @@ const [openLoad, setopenLoad] = useState(false)
 const [openStoreManagerUpdate, setopenStoreManagerUpdate] = useState()
 
 const navigate = useNavigate()
+
+
+
+
+const cable = createConsumer("ws://localhost:4000/cable");
+
+  useEffect(() => {
+   const subscription = cable.subscriptions.create("RequestsChannel", {
+     received(data) {
+      // setGetCustomers((prevData)=> (
+      //   [...prevData, data.request]
+      //   ));
+
+      
+
+      
+        if (data.request && typeof data.request === 'object') {
+          console.log("Appending new request:", data);
+
+
+
+          setStoreManager(storeManager.map(item => (item.id === storeManagerForm.id ? data.request : item)))
+
+        }
+        // setGetCustomers(data.request)
+      //  console.log("Customer Requests updated:", data);
+       // Update your frontend state or UI based on received data
+     }
+   });
+
+   return () => {
+     subscription.unsubscribe();
+   };
+ }, [cable.subscriptions]);
+
+
+
+
+
 
 const defaultOptions = {
   loop: true,
@@ -136,7 +178,36 @@ useCallback(
 
 
       if (response.status === 401) {
-        navigate('/signin')
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+         
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+       
+          navigate('/signup2fa_passkey')
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        }
+       
       }
 
       if (response.status === 403) {

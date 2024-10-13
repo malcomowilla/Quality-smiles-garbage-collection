@@ -208,19 +208,22 @@ if (response.ok) {
 </div>
 
 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-
+    
+<div className='flex justify-center'>
+    <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-lg' alt="quality-smiles" />
+</div>
 <div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
-
                  Quality Smiles
-                  
         </div>
         
     <div className='flex justify-between'>
         
-    <h2 className="mb-4   playwrite-de-grund  text-xl font-bold text-gray-900 dark:text-white "> Confirm Plastic Bag Received  </h2>
-<div>
-    <img src="/images/logo/logo-small.png" className='w-10 h-10 rounded-full' alt="quality-smiles" />
-</div>
+    <h2 className="mb-4   playwrite-de-grund  text-xl font-bold text-gray-900 dark:text-white ">
+       Confirm Plastic Bag Received  </h2>
+
+   
+
+
     </div>
     <form onSubmit={confirmBag} >
        
@@ -243,14 +246,15 @@ if (response.ok) {
             <p>Logout</p>
             </div>
        
-      <Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
-        
-        
-      
-        <div role="status">
-          { loading &&
-        <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'} 
-         dark:text-gray-600 fill-red-700`}
+            <button type="submit"    disabled={loading} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium
+             text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200
+               hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100
+                  dark:border-gray-600 playwrite-de-grund
+                dark:hover:text-white hover:bg-teal-700">
+                  
+                  { loading &&
+        <svg aria-hidden="true" className={`inline w-10 h-10 text-gray-200  ${loading && 'animate-spin'} 
+         dark:text-gray-600 fill-red-800`}
         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
          <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
          0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
@@ -265,10 +269,13 @@ if (response.ok) {
            39.0409Z" fill="currentFill"/>
         </svg>
           }
-        
-        </div>
-          
-          Confirm Received</Button>
+                  
+                  confirm received
+                
+                
+                </button>
+
+    
         </div>
        
 

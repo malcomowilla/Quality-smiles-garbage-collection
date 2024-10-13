@@ -23,10 +23,14 @@ const DeleteCalendarEvent = ({ isOpenDelete,handleChange, calendarEventForm, set
 
 
 
-const {user_name} = useApplicationSettings()
+const {user_name, calendarSettings} = useApplicationSettings()
 const [editEvent, setEditEvent] = useState(false)
 const [showEvent, setShowEvent] = useState(true)
 
+const {
+
+  start_in_minutes,
+        start_in_hours} = calendarSettings
   
   return (
     <AnimatePresence>
@@ -71,7 +75,11 @@ const [showEvent, setShowEvent] = useState(true)
 
 <div className='text-black flex gap-4  mt-5'>
   <CiBellOn className='font-bold text-xl' />
-  <p className='font-thin'>30 Minutes Before</p>
+  {start_in_hours ? <p className='font-thin'>   {start_in_hours} Hours Before</p> : '' }
+
+{start_in_minutes ? <p className='font-thin'>   {start_in_minutes } Minutes Before</p> : ''}
+
+  
 </div>
 
 <div className='text-black flex gap-4  mt-5 cursor-pointer hover:bg-green-400 w-fit p-1 rounded-md hover:bg-opacity-25' onClick={()=> {

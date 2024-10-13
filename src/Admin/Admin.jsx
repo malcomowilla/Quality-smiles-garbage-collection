@@ -1,4 +1,8 @@
-import Sidebar from '../sidebar/Sidebar'
+
+import {useEffect, useCallback, lazy} from 'react'
+
+// import Sidebar from '../sidebar/Sidebar'
+const Sidebar = lazy(()=> import('../sidebar/Sidebar'))
 import Header from '../Header/Header'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import {Outlet} from 'react-router-dom'
@@ -6,7 +10,6 @@ import CountDown from '../count_down/CountDown'
 import { motion } from "framer-motion"
 import openAccessDenied from '../access_denied/AccessDenied'
 import { useAuth } from '../settings/AuthSettings'; // Adjust path as needed
-import {useEffect, useCallback} from 'react'
 import LoginSuccessAlert from '../Alert/LoginSuccessAlert'
 
 
@@ -79,6 +82,8 @@ const getSmsBalance  = useCallback(
 
       
 <CountDown/>
+
+
 <motion.div  variants={variantDiv} transition={{duration:0.3, ease: "easeInOut",
   }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"} >
   

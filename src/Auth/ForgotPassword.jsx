@@ -135,7 +135,7 @@ const [openEmailSentError, setopenEmailSentError] = useState(false)
         emailError={emailError} seeEmailError={seeEmailError}/>
         <section    className="bg-gray-50 h-screen relative z-50   grid 
        xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
-     bg-small-screens2   ">
+     bg-small-screens-reset   ">
 
     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
               <div className='mb-9'>
@@ -153,7 +153,7 @@ const [openEmailSentError, setopenEmailSentError] = useState(false)
                 <h1 className="text-xl font-bold leading-tight  playwrite-de-grund  tracking-tight text-gray-900 md:text-2xl ">
                     Reset Password
                 </h1>
-                            <div className='max-w-sm space-y-6 text-black playwrite-de-grund text-lg'>
+                            <div className='max-w-sm space-y-6 text-white playwrite-de-grund text-lg'>
                             <p>Please provide your email below so we send you the reset link.</p>
                             <p>If an account exists with the provided email, you will receive a password recovery email.</p>
                             </div>

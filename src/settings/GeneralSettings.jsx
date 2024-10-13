@@ -5,7 +5,7 @@ import MySettings from './MySettings'
 import SmsSettings from './SmsSettings'
 import {useApplicationSettings} from './ApplicationSettings'
 
-export const GeneralSettings = () => {
+ const GeneralSettings = () => {
     const [tab, setTab] = useState('General')
 
 
@@ -99,3 +99,5 @@ const Cursor = ({ position }) => {
     />
   );
 };
+
+export default GeneralSettings

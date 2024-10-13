@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 import QuestionMarkAnimation from '../animation/question_mark.json'
 import Lottie from 'react-lottie';
 import TicketAnimation from '../animation/ticket.json'
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
 
 
@@ -113,7 +114,7 @@ const CustomTooltip = styled(({ className, ...props }) => (
 
     const {
       
-        materialuitheme  } = useApplicationSettings()
+        materialuitheme, adminFormSettings  } = useApplicationSettings()
 
 
 
@@ -148,6 +149,40 @@ useEffect(() => {
                 try {
                   const response = await fetch('/api/get_admins')
                   const newData = await response.json()
+
+                  if (response.status === 401) {
+                    if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+                     
+                      toast.error(
+                        <div>
+                          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                            <div> <span className='font-thin flex gap-3'>
+                         
+                              </span></div></p>
+                        </div>,
+                       
+                      );
+                   
+                      navigate('/signup2fa_passkey')
+                      // setlogoutmessage(true)
+                      // localStorage.setItem('logoutMessage', true)
+                    }else{
+                      toast.error(
+                        <div>
+                          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                            <div> <span className='font-thin flex gap-3'>
+                         
+                              </span></div></p>
+                        </div>,
+                       
+                      );
+                       navigate('/signin')
+                    // setlogoutmessage(true)
+                    // localStorage.setItem('logoutMessage', true)
+                    }
+                   
+                  }
+
                   if (response.ok) {
                     console.log('get admins', newData)
                     const getAgent = newData.map((theAgent)=> {
@@ -256,7 +291,36 @@ useEffect(() => {
                     const newData = await response.json()
 
                     if (response.status === 401) {
-                      navigate('/signin')
+                      if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+                       
+                        toast.error(
+                          <div>
+                            <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                              <div> <span className='font-thin flex gap-3'>
+                           
+                                </span></div></p>
+                          </div>,
+                         
+                        );
+                     
+                        navigate('/signup2fa_passkey')
+                        // setlogoutmessage(true)
+                        // localStorage.setItem('logoutMessage', true)
+                      }else{
+                        toast.error(
+                          <div>
+                            <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                              <div> <span className='font-thin flex gap-3'>
+                           
+                                </span></div></p>
+                          </div>,
+                         
+                        );
+                         navigate('/signin')
+                      // setlogoutmessage(true)
+                      // localStorage.setItem('logoutMessage', true)
+                      }
+                     
                     }
 
                     if (response.status === 403) {

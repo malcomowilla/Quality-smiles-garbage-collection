@@ -19,6 +19,9 @@ import CalendarEventDeleteAlert from '../Alert/CalendarEventDeleteAlert'
 import { requestPermission } from '../firebase/firebasePermission';
 import addNotification from 'react-push-notification';
 import {useNavigate} from 'react-router-dom'
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import {useApplicationSettings} from '../settings/ApplicationSettings'
+
 
 
 const Calendar = () => {
@@ -47,10 +50,9 @@ const [eventId, setEventId] = useState('')
 const [openUpdateAlert, setopenUpdateAlert] = useState(false)
 const [openDeleteAlert, setopenDeleteAlert] = useState(false)
 
+const {adminFormSettings} = useApplicationSettings()
 
-
-
-
+adminFormSettings
 const handleCloseDeleteAlert = ()=>{
   setopenDeleteAlert(false)
 }
@@ -130,8 +132,36 @@ const handleGetCalendarEvents = useCallback(
       const newData = await response.json()
 
       if (response.status === 401) {
-        navigate('/signin')
+        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+          adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+          navigate('/signup2fa_passkey')
+       
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+           
+       
+        }
       }
+
+
       if (response.json) {
         setCalendarEvent(newData)
         

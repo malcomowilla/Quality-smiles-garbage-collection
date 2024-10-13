@@ -19,6 +19,8 @@ import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import { IoSettingsOutline } from "react-icons/io5";
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import {useNavigate} from 'react-router-dom'
 
 
 
@@ -37,6 +39,7 @@ const MySettings = () => {
        handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings
      } = useApplicationSettings();
 
+     const navigate = useNavigate()
 
 const { login_with_otp, login_with_web_auth, login_with_otp_email, send_password_via_sms,
   send_password_via_email,check_is_inactive,check_inactive_days,check_inactive_hrs,
@@ -310,6 +313,37 @@ useEffect(() => {
 
   
            const newData = await response.json()
+
+
+           if (response.status === 401) {
+            if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+              adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+              toast.error(
+                <div>
+                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                    <div> <span className='font-thin flex gap-3'>
+                 
+                      </span></div></p>
+                </div>,
+               
+              );
+              navigate('/signup2fa_passkey')
+           
+            }else{
+              toast.error(
+                <div>
+                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                    <div> <span className='font-thin flex gap-3'>
+                 
+                      </span></div></p>
+                </div>,
+               
+              );
+               navigate('/signin')
+               
+           
+            }
+          }
            if (response.ok) {
            // const use_auto_generated_number = newData.use_auto_generated_number
            // const prefix = newData.prefix
@@ -374,6 +408,37 @@ useEffect(() => {
           body: JSON.stringify(calendarSettings)
 
         })
+
+
+        if (response.status === 401) {
+          if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+            adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+            toast.error(
+              <div>
+                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                  <div> <span className='font-thin flex gap-3'>
+               
+                    </span></div></p>
+              </div>,
+             
+            );
+            navigate('/signup2fa_passkey')
+         
+          }else{
+            toast.error(
+              <div>
+                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                  <div> <span className='font-thin flex gap-3'>
+               
+                    </span></div></p>
+              </div>,
+             
+            );
+             navigate('/signin')
+             
+         
+          }
+        }
 
         if (response.status === 403) {
           setOpenError(true)
@@ -745,6 +810,40 @@ useEffect(() => {
 
   
            const newData = await response.json()
+
+
+           if (response.status === 401) {
+            if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+              adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+              toast.error(
+                <div>
+                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                    <div> <span className='font-thin flex gap-3'>
+                 
+                      </span></div></p>
+                </div>,
+               
+              );
+              navigate('/signup2fa_passkey')
+           
+            }else{
+              toast.error(
+                <div>
+                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                    <div> <span className='font-thin flex gap-3'>
+                 
+                      </span></div></p>
+                </div>,
+               
+              );
+               navigate('/signin')
+               
+           
+            }
+          }
+
+
+
            if (response.ok) {
            // const use_auto_generated_number = newData.use_auto_generated_number
            // const prefix = newData.prefix
@@ -1848,7 +1947,10 @@ Is Created(email)"  />
           onChange={handleFormDataChangeForCalendar}
           label='Minutes' 
           type='number'
-           ></TextField>
+           >
+
+            
+           </TextField>
 
           <TextField  
           onChange={handleFormDataChangeForCalendar}

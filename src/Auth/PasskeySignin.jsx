@@ -364,7 +364,7 @@ handleClosePasskeyError={handleClosePasskeyError}/>
        </Backdrop> }
     <section    className="bg-gray-50 h-screen relative z-50   grid 
        xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
-     bg-small-screens2   ">
+     bg-passkey   ">
 
     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
               <div className='mb-9'>
@@ -442,22 +442,28 @@ handleClosePasskeyError={handleClosePasskeyError}/>
 
 
                     
-                    <div className="flex items-start">
+                    {/* <div className="flex items-start">
                         <div className="flex items-center h-5">
                          <p className='playwrite-de-grund  text-black underline decoration-2 hover:no-underline
                           cursor-pointer'>
                           Recover Your Account</p>
                         
                         </div>
-                    </div>
+                    </div> */}
   
 
                     <IoArrowUndoSharp className='w-10 h-10 cursor-pointer text-white' onClick={handleGoBack}/>
 
                     <div className='flex justify-center'>
-                    <button type='submit' className="btn btn-active ">Login
+                    <button type='submit
+                    ' className="btn btn-active
+                     playwrite-de-grund
+                  bg-green-700
+                       text-white
+                    ">Login
                   
-                  <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
+                  <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}
+                    alt="reload" />
                   </button>  
                     </div>
   

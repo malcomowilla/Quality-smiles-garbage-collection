@@ -26,6 +26,7 @@ import QuestionMarkAnimation from '../animation/question_mark.json'
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
+import { createConsumer } from '@rails/actioncable';
 
 
 const Customers = () => {
@@ -33,7 +34,7 @@ const navigate = useNavigate()
  
   const {customers, setGetCustomers, customerformData, setcustomerformData,
      setSeeCustomerCode, updatedMessage, setUpdatedMessage,  settingsformData,
-     materialuitheme,adminFormSettings,setopenLogoutSession
+     materialuitheme,adminFormSettings,setopenLogoutSession,
   } = useApplicationSettings()
 
   const {send_sms_and_email, send_email} = settingsformData
@@ -54,9 +55,40 @@ const [seeNameError, setSeeNameError] = useState(false)
 const [openAccessDenied, setopenopenAccessDenied] = useState(false)
 const [openLoad, setopenLoad] = useState(false)
 
-console.log('adminset',adminFormSettings)
+// console.log('adminset',adminFormSettings)
 
 
+const cable = createConsumer("ws://localhost:4000/cable");
+
+  useEffect(() => {
+   const subscription = cable.subscriptions.create("RequestsChannel", {
+     received(data) {
+      // setGetCustomers((prevData)=> (
+      //   [...prevData, data.request]
+      //   ));
+
+      
+
+      
+        if (data.request && typeof data.request === 'object') {
+          console.log("Appending new request:", data);
+
+         
+
+          setGetCustomers(customers.map(item => (item.id === customerformData.id ? data.request : item)))
+
+
+        }
+        // setGetCustomers(data.request)
+      //  console.log("Customer Requests updated:", data);
+       // Update your frontend state or UI based on received data
+     }
+   });
+
+   return () => {
+     subscription.unsubscribe();
+   };
+ }, [cable.subscriptions]);
 
 
 const defaultOptions = {
@@ -162,6 +194,7 @@ const handleClickOpen = () => {
   
 const handleRowClick = (event, rowData) => {
   setcustomerformData(rowData);
+  console.log('rowData=>', rowData)
   setSeeCustomerCode(true)
   setSeeEmailError(false)
   setSeeNameError(false)
@@ -241,12 +274,24 @@ useCallback(
 
       })
       clearTimeout(id);
+     
       if (response.status === 401) {
-        navigate('/signin')
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
-          setopenLogoutSession(true)
+         
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+       
           navigate('/signup2fa_passkey')
-          
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+          setopenLogoutSession(true)
         }else{
           toast.error(
             <div>
@@ -257,13 +302,12 @@ useCallback(
             </div>,
            
           );
-          setopenLogoutSession(true)
-        
            navigate('/signin')
-           
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        setopenLogoutSession(true)
         }
-
-
+       
       }
       const newData = await response.json()
       if (response.status === 403) {

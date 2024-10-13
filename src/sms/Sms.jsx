@@ -12,6 +12,7 @@ import { MdOutlineSupportAgent } from "react-icons/md";
 import  DeleteSms from './DeleteSms'
  import DeleteMessageAlert from '../Alert/DeleteMessageAlert'
  import {useNavigate} from 'react-router-dom'
+ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
 
 const Sms = () => {
@@ -35,7 +36,7 @@ const [openLoad, setopenLoad] = useState(false)
 const [loading, setloading] = useState(false)
     const {
       
-        materialuitheme, smsBalance, setSmsBalance  } = useApplicationSettings()
+        materialuitheme, smsBalance, setSmsBalance, adminFormSettings  } = useApplicationSettings()
 
 
 const handleAddButton = () => {
@@ -103,7 +104,36 @@ useCallback(
       // }
 
       if (response.status === 401) {
-        navigate('/signin')
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+         
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+       
+          navigate('/signup2fa_passkey')
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        }
+       
       }
       if (response.ok) {
         setSms(newData)

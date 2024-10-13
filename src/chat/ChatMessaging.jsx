@@ -14,7 +14,7 @@ const ChatMessaging = () => {
     const {user_name} = useApplicationSettings()
 
 const [admins, setAdmins] = useState([])
-
+const [isSeenChat, setIsSeenChat] = useState(false)
 
 
 
@@ -132,7 +132,7 @@ useEffect(() => {
                     <div className="list-group ">
                         {admins.map((admin)=> (
                              <a key={admin.id} href="#" className="list-group-item list-group-item-action
-                              border-0 flex items-center space-x-3 py-2 hover:bg-stone-300 rounded-md">
+                              border-0 flex items-center space-x-3 py-2 hover:bg-green-300 rounded-md">
                              <div className="relative">
                                 
                                  <Avatar style={{width: 60, height: 60, color: 'white',
@@ -183,18 +183,28 @@ useEffect(() => {
                             </div>
                         </a> */}
                     </div>
+                    {isSeenChat ? (
+                                    ''
+                                ): ''}
 
-                    <hr className="block md:hidden my-1 border-t border-gray-300"/>
+
+                    <hr className="block md:hidden my-1 border-t border-black"/>
                 </div>
                 
                 <div className="w-full md:w-7/12 lg:w-9/12">
 
-                    <div className="py-2 px-4 border-b border-gray-300 hidden lg:block">
+                
+                                
+                    <div className={`py-2 px-4   border-b border-black hidden lg:block`}>
                         <div className="flex items-center py-1">
+                            
                             <div className="relative">
                                 <img src="https://bootdey.com/img/Content/avatar/avatar3.png"
                                  className="rounded-full" alt="Sharon Lessman" width="40" height="40"/>
                             </div>
+
+
+                            
                             <div className="flex-grow pl-3 kalam-light text-black text-xl">
                                 <strong>Sharon Lessman</strong>
                                 <div className="text-lg text-black  "><em>Typing...</em></div>
@@ -254,6 +264,8 @@ useEffect(() => {
                                     Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal commodo.
                                     </div>
                                     
+
+
                                 </div>
                             </div>
 

@@ -25,7 +25,8 @@ import Alert from '@mui/material/Alert';
           sx={{ width: '100%' }}
         >
           
-    OTP sent,check sms
+    {/* OTP sent,check sms */}
+    A One Time Password was just sent,please check  your sms
         </Alert>
       </Snackbar>
     </div>

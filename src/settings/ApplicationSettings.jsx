@@ -825,7 +825,8 @@ const darkTheme = createTheme({
         const newData = await response.json()
   
         if (response.status === 401) {
-          if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+            adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
             toast.error(
               <div>
                 <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
@@ -1121,9 +1122,27 @@ const handlegetstoreManagerSettings = useCallback(
 
        if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
           navigate('/signup2fa_passkey')
           setopenLogoutSession(true)
         }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
            navigate('/signin')
            setopenLogoutSession(true)
        
@@ -1236,6 +1255,43 @@ const handlegetAdminSettings = useCallback(
 
 
        const newData = await response.json()
+
+
+       if (response.status === 401) {
+        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+          adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+          navigate('/signup2fa_passkey')
+          setopenLogoutSession(true)
+       
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+           setopenLogoutSession(true)
+           
+       
+        }
+      }
+
+
+
+
        if (response.ok) {
        // const use_auto_generated_number = newData.use_auto_generated_number
        // const prefix = newData.prefix
@@ -1311,6 +1367,46 @@ const handlegetcustomerSettings = useCallback(
 
 
        const newData = await response.json()
+
+
+       if (response.status === 401) {
+        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+          adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+          navigate('/signup2fa_passkey')
+          setopenLogoutSession(true)
+       
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+           setopenLogoutSession(true)
+           
+       
+        }
+      }
+
+
+
+
+
+
+
        if (response.ok) {
        // const use_auto_generated_number = newData.use_auto_generated_number
        // const prefix = newData.prefix
@@ -1377,6 +1473,47 @@ try {
   clearTimeout(id);
 
   const newData = await response.json()
+
+
+  if (response.status === 401) {
+    if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+     
+      toast.error(
+        <div>
+          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+            <div> <span className='font-thin flex gap-3'>
+         
+              </span></div></p>
+        </div>,
+       
+      );
+   
+      navigate('/signup2fa_passkey')
+      // setlogoutmessage(true)
+      // localStorage.setItem('logoutMessage', true)
+      setopenLogoutSession(true)
+    }else{
+      toast.error(
+        <div>
+          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+            <div> <span className='font-thin flex gap-3'>
+         
+              </span></div></p>
+        </div>,
+       
+      );
+       navigate('/signin')
+    // setlogoutmessage(true)
+    // localStorage.setItem('logoutMessage', true)
+    setopenLogoutSession(true)
+    }
+   
+  }
+
+
+
+
+
   if (response.ok) {
   // const use_auto_generated_number = newData.use_auto_generated_number
   // const prefix = newData.prefix
@@ -1448,20 +1585,40 @@ const handlegetstoreManagerSettingsAllow = useCallback(
 
 
 
-       if (response.status === 401) {
-        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
-          navigate('/signup2fa_passkey')
-          // setlogoutmessage(true)
-          // localStorage.setItem('logoutMessage', true)
-          setopenLogoutSession(true)
-        }else{
-           navigate('/signin')
-        // setlogoutmessage(true)
-        // localStorage.setItem('logoutMessage', true)
-        setopenLogoutSession(true)
-        }
+      //  if (response.status === 401) {
+      //   if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+         
+      //     toast.error(
+      //       <div>
+      //         <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+      //           <div> <span className='font-thin flex gap-3'>
+             
+      //             </span></div></p>
+      //       </div>,
+           
+      //     );
        
-      }
+      //     navigate('/signup2fa_passkey')
+      //     // setlogoutmessage(true)
+      //     // localStorage.setItem('logoutMessage', true)
+      //     setopenLogoutSession(true)
+      //   }else{
+      //     toast.error(
+      //       <div>
+      //         <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+      //           <div> <span className='font-thin flex gap-3'>
+             
+      //             </span></div></p>
+      //       </div>,
+           
+      //     );
+      //      navigate('/signin')
+      //   // setlogoutmessage(true)
+      //   // localStorage.setItem('logoutMessage', true)
+      //   setopenLogoutSession(true)
+      //   }
+       
+      // }
        const newData = await response.json()
        if (response.ok) {
        // const use_auto_generated_number = newData.use_auto_generated_number

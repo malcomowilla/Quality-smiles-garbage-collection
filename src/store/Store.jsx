@@ -16,10 +16,12 @@ import AccessDenied from '../access_denied/AccessDenied'
 import {useNavigate} from 'react-router-dom'
 import QuestionMarkAnimation from '../animation/question_mark.json'
 import Lottie from 'react-lottie'
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
 
 const Store = () => {
-    const {materialuitheme, storeForm, setStoreForm,openAccessDenied3, setopenopenAccessDenied3} = useApplicationSettings()
+    const {materialuitheme, storeForm, setStoreForm,openAccessDenied3, 
+      setopenopenAccessDenied3, adminFormSettings} = useApplicationSettings()
 const [isOpen, setIsOpen] = useState(false)
 const [seeStoreNumber, setSeeStoreNumber] = useState(false)
 const [loading, setloading] = useState(false)
@@ -92,10 +94,41 @@ useCallback(
 
       const newData = await response.json()
 
-
       if (response.status === 401) {
-        navigate('/signin')
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+         
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+       
+          navigate('/signup2fa_passkey')
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        }
+       
       }
+     
+
+
       if (response.status === 403) {
         // setopenopenAccessDenied3(true)
         

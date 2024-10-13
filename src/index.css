@@ -225,6 +225,47 @@
 
 
 
+
+
+.bg-passkey::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/public//images/quality_smiles12.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(14px);
+
+}
+
+
+
+
+
+
+.bg-small-screens-reset::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/images/quality_smiles11.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(24px);
+
+}
+
+
+
 .bg-small-screens::before{
   content: '';
   position: absolute;
@@ -232,7 +273,8 @@
   left: 0;
   width: 100vw;
   height: 100%;
-  background-image: url(/images//reduce_reuse_recycle.png);
+  /* background-image: url(/images//reduce_reuse_recycle.png); */
+  background-image: url(/images/quality_smiles_people.jpeg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -253,7 +295,8 @@
     left: 0;
     width: 100vw;
     height: 100%;
-    background-image: url(/images//reduce_reuse_recycle.png);
+    /* background-image: url(/images//reduce_reuse_recycle.png); */
+    
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -261,11 +304,50 @@
 
     z-index: -1; 
   }
+
+
+
+
+.bg-passkey::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/public//images/quality_smiles12.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(14px);
+
+}
 }
 
 
 @media not all and (min-width: 640px) {
  
+
+
+  .bg-passkey::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/public//images/quality_smiles12.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
 
   .bg-small-screens::before{
     content: '';
@@ -274,7 +356,8 @@
     left: 0;
     width: 100vw;
     height: 100%;
-    background-image: url(/images//reduce_reuse_recycle.png);
+    /* background-image: url(/images//reduce_reuse_recycle.png); */
+    
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -291,7 +374,8 @@
     left: 0;
     width: 100vw;
     height: 100%;
-    background-image: url(/images//green_reduce_reuse.png);
+    /* background-image: url(/images//green_reduce_reuse.png); */
+    
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -301,8 +385,36 @@
   }
 }
 
+
+
+
 @media not all and (min-width: 768px) {
   
+
+
+  .bg-passkey::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/public//images/quality_smiles12.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
+
+
+
+
+
 .bg-small-screens::before{
   content: '';
   position: absolute;
@@ -310,7 +422,8 @@
   left: 0;
   width: 100vw;
   height: 100%;
-  background-image: url(/images//reduce_reuse_recycle.png);
+  /* background-image: url(/images//reduce_reuse_recycle.png); */
+  background-image: url(/images/quality_smiles_people.jpeg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -326,7 +439,8 @@
   left: 0;
   width: 100vw;
   height: 100%;
-  background-image: url(/images//green_reduce_reuse.png);
+  /* background-image: url(/images//green_reduce_reuse.png); */
+  
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -334,11 +448,53 @@
 
   z-index: -1; 
 }
+
+
+
+
+.bg-small-screens-reset::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/images/quality_smiles11.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(24px);
+
+}
 }
 
 
 @media (min-width: 1280px) {
   
+
+  .bg-passkey::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/public//images/quality_smiles12.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
+
+
+
+
 
   .bg-small-screens::before{
     content: '';
@@ -347,7 +503,8 @@
     left: 0;
     width: 100vw;
     height: 100%;
-    background-image: url(/images//reduce_reuse_recycle.png);
+    background-image: url(/images/quality_smiles_people.jpeg);
+    /* background-image: url(/images//reduce_reuse_recycle.png); */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -373,11 +530,61 @@
   filter: blur(14px);
 
 }
+
+
+
+.bg-small-screens-reset::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-image: url(/images/quality_smiles11.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  z-index: -1; 
+  filter: blur(24px);
+
+}
 }
 
 
 
 @media not all and (min-width: 768px) {
+
+
+
+
+
+  .bg-passkey::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/public//images/quality_smiles12.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
+
+
+
+
+
+
+
+
+
   .bg-small-screens2::before{
     content: '';
     position: absolute;
@@ -393,11 +600,58 @@
     filter: blur(14px);
 
   }
+
+
+  .bg-small-screens-reset::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/images/quality_smiles11.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(24px);
+
+  }
 }
 
 
 
 @media (min-width: 1024px) {
+
+
+
+
+  .bg-passkey::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/images/quality_smiles12.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
+
+
+
+
+
+
+
+
   .bg-small-screens2::before{
     content: '';
     position: absolute;
@@ -411,6 +665,23 @@
     background-size: cover;
     z-index: -1; 
     filter: blur(14px);
+
+  }
+
+
+  .bg-small-screens-reset::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/images/quality_smiles11.jpeg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(24px);
 
   }
 }

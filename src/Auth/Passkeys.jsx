@@ -323,7 +323,7 @@ const handleChange = (e) => {
             <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
                 <h1 className="text-xl leading-tight playwrite-de-grund tracking-wide  text-white md:text-2xl">
-                  Create an account
+                  Signup with passkeys
                 </h1>
                 <form className="space-y-4 md:space-y-6" onSubmit={registerWebAuthn}>
                   <div className="flex flex-col relative">
@@ -386,7 +386,9 @@ const handleChange = (e) => {
 
                
                   <div className="flex justify-center">
-                    <button type="submit" className="btn btn-active playwrite-de-grund">
+                    <button type="submit" className="btn btn-active playwrite-de-grund
+                    
+                     bg-green-500    text-white">
                       Create Account
                       <img
                         src="/images/logo/iconsreload2.png"

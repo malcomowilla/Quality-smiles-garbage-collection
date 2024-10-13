@@ -21,6 +21,10 @@ import QuestionMarkAnimation from '../animation/question_mark.json'
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import { createConsumer } from '@rails/actioncable';
+
+
 
 
 const ServiceProvider = () => {
@@ -28,7 +32,8 @@ const ServiceProvider = () => {
 
   const navigate = useNavigate()
   const {providers, setGetProviders,  providerformData,  setproviderformData,
-    setProviderCode,  updatedMessageProvider, setUpdatedMessageProvider, materialuitheme,settingsformDataForProvider
+    setProviderCode,  updatedMessageProvider, setUpdatedMessageProvider, materialuitheme,settingsformDataForProvider,
+    adminFormSettings
  } = useApplicationSettings()
 
 const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
@@ -49,6 +54,38 @@ const [openAcessDenied, setOpenAcessDenied] = useState(false)
 const [openLoad, setopenLoad] = useState(false)
 
 
+
+const cable = createConsumer("ws://localhost:4000/cable");
+
+  useEffect(() => {
+   const subscription = cable.subscriptions.create("RequestsChannel", {
+     received(data) {
+      // setGetCustomers((prevData)=> (
+      //   [...prevData, data.request]
+      //   ));
+
+      
+
+      
+        if (data.request && typeof data.request === 'object') {
+          console.log("Appending new request:", data);
+
+
+
+          setGetProviders(providers.map(item => (item.id === providerformData.id ? data.request : item)))
+
+
+        }
+        // setGetCustomers(data.request)
+       console.log("Customer Requests updated:", data);
+       // Update your frontend state or UI based on received data
+     }
+   });
+
+   return () => {
+     subscription.unsubscribe();
+   };
+ }, [cable.subscriptions]);
 
 
 
@@ -160,11 +197,43 @@ useCallback(
         signal: controller.signal,  
 
       })
+     
+
       if (response.status === 401) {
-        navigate('/signin')
-
-
+        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
+         
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+       
+          navigate('/signup2fa_passkey')
+          // setlogoutmessage(true)
+          // localStorage.setItem('logoutMessage', true)
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+        // setlogoutmessage(true)
+        // localStorage.setItem('logoutMessage', true)
+        }
+       
       }
+
+
+
       const newData = await response.json()
       if (response.status === 403) {
         // setOpenAcessDenied(true)
