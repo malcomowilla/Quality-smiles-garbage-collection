@@ -50,7 +50,7 @@ const handleProvider = () =>{
            
 
 
- <div className="mb-5">
+ <div className="mb-5 p-4 playwrite-de-grund text-lg   font-bold">
   Are You Sure You Want To Delete This Service Provider?
 
 </div>

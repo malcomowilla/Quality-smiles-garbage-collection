@@ -1775,7 +1775,7 @@ useEffect(() => {
     setopenServiceProviderLoginSuccesful,openStoreManagerLogin, handleCloseStoreManagerLogin ,setopenStoreManagerLogin,
     openStoreManagerLogout, handleCloseStoreManagerLogout,setopenStoreManagerLogout,signedUpPassKey, setSignedUpPassKey,
     checkEmail,seeSettings7, setSeeSettings7, handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
-    openLogoutSession, handleCloseLogoutSession
+    openLogoutSession, handleCloseLogoutSession,setopenLogoutSession
 
   }}>
 

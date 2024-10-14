@@ -951,8 +951,34 @@ useEffect(() => {
 
 
 <Route element={<ProtectAuthProvider />}>
-<Route path='/service-provider' element={<ServiceProviderForm/>}/>
-<Route path='/provider-collecting' element={<ProviderCollections/>}/>
+<Route path='/service-provider' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ServiceProviderForm/>
+  </Suspense>
+  }/>
+
+
+<Route path='/provider-collecting' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ProviderCollections/>
+  </Suspense>
+  }/>
 </Route>
 
 

@@ -57,13 +57,13 @@ const handleDeleteStoreManager = () =>{
        <div className="bg-white w-16 h-16 mb-2 rounded-full text-3xl text-rose-600 grid place-items-center mx-auto">
              <FiAlertCircle />
            </div>
-         <h3 className="text-3xl font-bold  text-center   playwrite-de-grund mb-2">
+         <h3 className="text-3xl font-extrabold  text-center   playwrite-de-grund mb-2">
            Delete StoreManager
          </h3>
         
 
 
-<div className="mb-5">
+<div className="mb-5 p-3 playwrite-de-grund text-lg   font-bold">
 Are You Sure You Want To Delete This StoreManager?
 
 </div>

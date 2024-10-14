@@ -6,6 +6,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
+import { MdCancel } from "react-icons/md";
 
 
 
@@ -44,6 +45,9 @@ const handleDeleteUser = () =>{
                      <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
 
        <div className="relative z-10">
+       <div  onClick={()=> setisOpenDelete(false)} className='cursor-pointer absolute right-0'>
+                     <MdCancel className='w-8 h-8 '/>
+                     </div>
        <div className="bg-white w-16 h-16 mb-2 rounded-full text-3xl text-rose-600 grid place-items-center mx-auto">
              <FiAlertCircle />
            </div>
@@ -53,7 +57,7 @@ const handleDeleteUser = () =>{
         
 
 
-<div className="mb-5">
+<div className="mb-5 p-4 playwrite-de-grund text-xl   font-bold">
 Are You Sure You Want To Delete This User?
 
 </div>

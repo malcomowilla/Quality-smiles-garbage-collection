@@ -16,6 +16,7 @@ import SinupInvalidOtpAlert from '../Alert/SinupInvalidOtpAlert'
 import {useAuth} from '../settings/AuthSettings'
 import { IoArrowUndoSharp } from "react-icons/io5";
 import PasskeyError from '../Alert/PasskeyError'
+import { FaRegUser } from "react-icons/fa";
 
 
 
@@ -53,6 +54,7 @@ const goBack = useNavigate()
   const [done, setDone] = useState(false)
 const [seeError, setSeeError] = useState(false)
 
+const app_theme = localStorage.getItem('theme_normal')
 
   const adminWebAuthData = {
     email: '',
@@ -257,7 +259,7 @@ const newData = await createResponse.json()
       setOpenLoad(false);
       setloading(false);
       fetchCurrentUser()
-    setTheme("light")
+    setTheme(app_theme)
     setopenLoginSuccess(true)
     setTimeout(() => {
       setDone(true);
@@ -399,8 +401,7 @@ handleClosePasskeyError={handleClosePasskeyError}/>
                         <label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
                          text-gray-900 ">Your username</label>
                            <div className='absolute self-end bottom-0 p-2'>
-                      <img src="/images/logo/icons8-gmail-100.png"  className='w-8 h-8' alt="gmail" />
-
+<FaRegUser className='text-black w-6 h-6'/>
                       </div>
 
                         <motion.input
