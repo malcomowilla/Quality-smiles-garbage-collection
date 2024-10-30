@@ -59,6 +59,8 @@ const [openLoad, setopenLoad] = useState(false)
 
 const [search, setSearch] = useState('')
 const [searchInput] = useDebounce(search, 1000)
+
+
 // console.log('adminset',adminFormSettings)
 
 
@@ -66,6 +68,15 @@ const cable = createConsumer("ws://localhost:4000/cable");
 
   useEffect(() => {
    const subscription = cable.subscriptions.create("RequestsChannel", {
+
+    connected() {
+      console.log("Connected to private WebSocket!");
+    },
+
+    disconnected() {
+      console.log("Disconnected from private WebSocket!");
+    },
+
      received(data) {
       // setGetCustomers((prevData)=> (
       //   [...prevData, data.request]
@@ -92,7 +103,7 @@ const cable = createConsumer("ws://localhost:4000/cable");
    return () => {
      subscription.unsubscribe();
    };
- }, [cable.subscriptions]);
+ }, [cable.subscriptions, customerformData.id, customers,setGetCustomers]);
 
 
 const defaultOptions = {

@@ -1,7 +1,7 @@
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import {useState, useCallback, useEffect} from 'react'
+import {useState, useCallback, useEffect,useMemo} from 'react'
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
@@ -85,8 +85,8 @@ const {name, value} = e.target
 setTemplateForm((prevData) => ({...prevData, [name]: value}))
   }
 
+  const controller = useMemo(() => new AbortController(), [])
 
-  const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 9000)
 
 const getSmsTemplates= 
@@ -98,7 +98,7 @@ useCallback(
         signal: controller.signal,  
 
       })
-      clearTimeout(id);
+      // clearTimeout(id);
 
       const newData = await response.json()
       // if (response.status === 403) {
@@ -139,7 +139,11 @@ const service_provider_otp_confirmation_template = newData[0].service_provider_o
 
 useEffect(() => {
   getSmsTemplates()
-}, [getSmsTemplates]);
+
+  return () => {
+    controller?.abort()
+  };
+}, [getSmsTemplates, controller]);
 
 
   const saveSmsTemplate = async(e)=> {
@@ -206,15 +210,16 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
     <div className='p-7'>
 
     <div>
+      
     <p className='text-black playwrite-de-grund  text-lg font-bold'>
-        Customize messages sent to customers.Make sure to include the keywords to correctly include content
+        Customize messages sent to customers using sms.Make sure to include the keywords to correctly include content
 
         </p>
     </div>
         
 
         <div className='p-7'>
-            <p className='text-black playwrite-de-grund  text-2xl font-extrabold'>Sytem User Templates</p>
+            <p className='text-black playwrite-de-grund  text-2xl font-extrabold'>SMS Templates</p>
         </div>
 
 <form onSubmit={saveSmsTemplate}>

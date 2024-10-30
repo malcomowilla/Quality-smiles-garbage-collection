@@ -10,7 +10,7 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   background-image: url(/images/background_chat_wallpaper.jpeg);
   background-position: center;
   background-repeat: no-repeat;
@@ -19,6 +19,19 @@
 
   z-index: -1; 
 }
+
+
+.edu-au-vic-wa-nt-guides {
+  font-family: "Edu AU VIC WA NT Guides", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  
+}
+
+
+
+
 
 
 .kalam-light {

@@ -64,6 +64,15 @@ const cable = createConsumer("ws://localhost:4000/cable");
 
   useEffect(() => {
    const subscription = cable.subscriptions.create("RequestsChannel", {
+
+    connected() {
+      console.log("Connected to private WebSocket!");
+    },
+
+    disconnected() {
+      console.log("Disconnected from private WebSocket!");
+    },
+
      received(data) {
       // setGetCustomers((prevData)=> (
       //   [...prevData, data.request]

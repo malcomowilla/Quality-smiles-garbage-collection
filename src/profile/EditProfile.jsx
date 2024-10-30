@@ -240,7 +240,7 @@ function stringAvatar(name) {
      initial={{ opacity: 0 }}
      animate={{ opacity: 1 }}
      exit={{ opacity: 0 }}
-     className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll 
+     className="bg-green-500 bg-opacity-10 backdrop-blur p-8 fixed inset-0 z-[100] grid place-items-center overflow-y-scroll 
      cursor-pointer"
    >
      <motion.div
@@ -303,12 +303,13 @@ function stringAvatar(name) {
 
     name='profile_image'
   />
+{/*   
   <label
     htmlFor="upload-photo"
     className="cursor-pointer"
   >
     Upload
-  </label>
+  </label> */}
 </div>
   
 </div>
@@ -336,7 +337,9 @@ function stringAvatar(name) {
 
   }
 }
-}}  label='User Name'  onChange={onChangeImagePreview} name='user_name'  value={updateFormData.user_name} />
+}}  label='User Name'  onChange={onChangeImagePreview} name='user_name' 
+className='myTextField'
+value={updateFormData.user_name} />
 
 
 
@@ -360,7 +363,7 @@ function stringAvatar(name) {
 
   }
 }
-}}  label='Email'  onChange={onChangeImagePreview} value={email} name='email'/>
+}}  label='Email'  className='myTextField'  onChange={onChangeImagePreview} value={email} name='email'/>
 
 
 <TextField sx={{
@@ -383,7 +386,7 @@ function stringAvatar(name) {
 
   }
 }
-}}  label='Phone Number'  name='phone_number' onChange={onChangeImagePreview} value={phone_number}/>
+}}  label='Phone Number'  className='myTextField'  name='phone_number' onChange={onChangeImagePreview} value={phone_number}/>
 
 
 
@@ -409,7 +412,7 @@ function stringAvatar(name) {
 
   }
 }
-}}  label=' New Password'  name='password' onChange={onChangeImagePreview} />
+}}  label=' New Password' className='myTextField'  name='password' onChange={onChangeImagePreview} />
 
 <div className="flex gap-8 mt-4">
 

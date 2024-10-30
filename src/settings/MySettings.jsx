@@ -21,6 +21,7 @@ import Backdrop from '@mui/material/Backdrop';
 import { IoSettingsOutline } from "react-icons/io5";
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import {useNavigate} from 'react-router-dom'
+import Alert from '@mui/material/Alert';
 
 
 
@@ -247,11 +248,49 @@ const [isloading, setisloading] = useState({
   //     handlegetcustomerSettings()
   //   }, [handlegetcustomerSettings, setsettingsformData]);
   
+
+  
 const handleGetCalendarSettings = useCallback(
   async() => {
     try {
       const response = await fetch('/api/get_calendar_settings')
       const newData = await response.json()
+
+
+
+      if (response.status === 401) {
+        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+          adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+          navigate('/signup2fa_passkey')
+       
+        }else{
+          toast.error(
+            <div>
+              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                <div> <span className='font-thin flex gap-3'>
+             
+                  </span></div></p>
+            </div>,
+           
+          );
+           navigate('/signin')
+           
+       
+        }
+      }
+
+
+
+
       if (response.ok) {
         console.log('data',newData)
         // const start_in_minutes = newData.start_in_minutes
@@ -410,35 +449,7 @@ useEffect(() => {
         })
 
 
-        if (response.status === 401) {
-          if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
-            adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-            toast.error(
-              <div>
-                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                  <div> <span className='font-thin flex gap-3'>
-               
-                    </span></div></p>
-              </div>,
-             
-            );
-            navigate('/signup2fa_passkey')
-         
-          }else{
-            toast.error(
-              <div>
-                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                  <div> <span className='font-thin flex gap-3'>
-               
-                    </span></div></p>
-              </div>,
-             
-            );
-             navigate('/signin')
-             
-         
-          }
-        }
+       
 
         if (response.status === 403) {
           setOpenError(true)
@@ -463,6 +474,8 @@ useEffect(() => {
           setisloading({...isloading, loading7: false})
           setOpenLoad(false)
         }
+
+
       } catch (error) {
         console.log('error creating calendar settings', error)
         setisloading({...isloading, loading7: false})
@@ -1436,6 +1449,45 @@ Is Created(email)"  />
               three digits)'></TextField>
 
         </Stack>
+
+
+
+
+        <Stack direction='row'  className='myTextField'  sx={{
+           
+           '& .MuiTextField-root': { m: 1, width: '90ch',    '& label.Mui-focused': {
+             color: 'black',
+             fontSize: '16px'
+             },
+         '& .MuiOutlinedInput-root': {
+           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+             borderColor: "black",
+             borderWidth: '3px',
+             },
+          '&.Mui-focused fieldset':  {
+             borderColor: 'black', 
+             
+           }
+         } },
+         }}   spacing={{
+             xs: 1,
+             sm: 2
+           }}>
+
+
+
+<TextField name='sequence_value' onChange={handleCustomerFormDataChange} value={settingsformData.sequence_value}
+  className='myTextField'   
+             type='number'  label='customer code current count'></TextField>
+
+<Alert severity="info">
+  <p className='font-bold text-lg'>Set Customer Code starting value</p>
+  <p>use this value to set the value from which customer code should start</p>
+    </Alert>
+            </Stack>
+
+
+
         <div className='p-5'>
         <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
  shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
@@ -1878,7 +1930,8 @@ Is Created(email)"  />
 
 
   <h2 id="accordion-open-heading-2">
-    <button type="button"   onClick={()=> setSeeSettings7(!seeSettings7)} className="flex items-center justify-between w-full p-5 
+    <button type="button"   onClick={()=> setSeeSettings7(!seeSettings7)} className="flex items-center justify-between
+     w-full p-5 
     
     font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
     hover:dark:text-white hover:text-black
@@ -1904,17 +1957,6 @@ Is Created(email)"  />
   aria-labelledby="accordion-open-heading-2">
 
 
-   <ThemeProvider theme={materialuitheme}>
-
-
-  <FormGroup>
-          
-
-
-
-
-</FormGroup>
-        </ThemeProvider>
 
 <ThemeProvider theme={materialuitheme}>
 

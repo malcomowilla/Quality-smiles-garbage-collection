@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import {Link} from 'react-router-dom'
 import MySettings from './MySettings'
 import SmsSettings from './SmsSettings'
+import EmailSettings from './EmailSettings'
 import {useApplicationSettings} from './ApplicationSettings'
+import PaymentSettings from './PaymentSettings'
 
  const GeneralSettings = () => {
     const [tab, setTab] = useState('General')
@@ -20,6 +22,8 @@ const {  canManageSmsTemplates,canReadSmsTemplates, user
        canReadSmsTemplates={canReadSmsTemplates}/>
       {tab === 'General' &&  <MySettings />}
       {tab === 'Sms' && <SmsSettings />}
+      {tab === 'Email' &&  <EmailSettings />}
+      {tab === 'Payment' &&  <PaymentSettings />}
     </div>
   );
 };
@@ -49,9 +53,34 @@ const SlideTabs = ({setTab,   canManageSmsTemplates,canReadSmsTemplates, user
 setTab('General')
 
       }}>General</Link></Tab>
-      <Tab setPosition={setPosition}><Link>Payment</Link></Tab>
+
+
+
+      <Tab setPosition={setPosition}><Link
+      onClick={(e)=> {
+        e.preventDefault()
+setTab('Payment')
+
+      }}
+      >Payment</Link></Tab>
+
+
+
+      
       <Tab setPosition={setPosition}><Link>Website</Link></Tab>
-      <Tab setPosition={setPosition}><Link>Email</Link></Tab>
+
+
+
+      <Tab setPosition={setPosition}><Link
+      onClick={(e)=> {
+        e.preventDefault()
+setTab('Email')
+
+      }}
+      >Email</Link></Tab>
+
+
+
       <Tab setPosition={setPosition}><Link onClick={(e)=> {
         e.preventDefault()
 setTab('Sms')

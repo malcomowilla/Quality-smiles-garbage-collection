@@ -1,7 +1,7 @@
 
 import { CgProfile } from "react-icons/cg";
 
-import {useEffect, useCallback, useState, useRef} from 'react'
+import {useEffect, useCallback, useState, useRef, useMemo} from 'react'
 import { IoSendSharp } from "react-icons/io5";
 import Avatar from '@mui/material/Avatar';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
@@ -12,11 +12,16 @@ import Picker from '@emoji-mart/react'
 import TextareaAutosize from 'react-textarea-autosize';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { BsChatRightText } from "react-icons/bs";
+import { createConsumer } from '@rails/actioncable';
+import { MdCancel } from "react-icons/md";
+import { useDebounce } from 'use-debounce';
+
+
 
 
 const ChatMessaging = () => {
 
-    const {user_name} = useApplicationSettings()
+    const {user_name, id, chat_user_name} = useApplicationSettings()
 
 const [admins, setAdmins] = useState([])
 const [isSeenChat, setIsSeenChat] = useState(false)
@@ -24,45 +29,180 @@ const [showEmoji, setShowEmoji] = useState(false)
 const [text, setText] = useState('')
 const [selectedAdmin, setSelectedAdmin] = useState(null)
 const messagesEndRef = useRef(null);
-const [messages, setMessages] = useState('')
+const [messages, setMessages] = useState([])
+const [hasMoreAdmins, setHasMoreAdmins] = useState(true);
+const [isLoadingAdmins, setIsLoadingAdmins] = useState(false);
+const [admin_id, setAdminId] =useState('')
+const [receiver_id, setReceiverId] = useState('')
+const [sender_id] = useState(id)
+const [messageYesterday, setMessageYesterday] = useState([])
+const [isHovered, setIsHovered] = useState(false);
+const [isHovered1, setIsHovered1] = useState(false);
+const [isTyping, setIsTyping] = useState('');
+const [userTyping, setUserTyping] = useState('')
+const [typingTimeout, setTypingTimeout] = useState(null);
+const [subscription, setSubscription] = useState(null);
 
+const [search, setSearch] = useState('')
+const [searchInput] = useDebounce(search, 1000)
 
 
 const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 };
 
+console.log('messagess=>', messages.today)
+
 useEffect(() => {
     scrollToBottom();
 }, [messages]);
 
-// onChange={(e) => setText(e.target.value)}
-//                     onKeyPress={(e) => {
-//                         if (e.key === 'Enter') {
-//                             e.preventDefault();
-//                             sendMessage();
-//                         }
-//                     }}
-//                     className="bg-gray-50 border border-gray-900 text-black text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full pl-10 p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-green-500 dark:focus:border-green-500"
-//                     placeholder="Type your message..."
-//                     required
-//                     autoFocus
-//                 />
+
+const fetchMessages = useCallback(
+  async () => {
+
+    try {
+        const response = await fetch(`/api/chat_messages`);
+        if (response.ok) {
+            const fetchedMessages = await response.json();
+            // setMessages(fetchedMessages.today);
+            setMessageYesterday(fetchedMessages.yesterday);
+            setMessages(fetchedMessages.today.filter((the_message)=> {
+              return search.toLowerCase() === '' ? the_message : the_message.content.toLowerCase().includes(search)
+            }))
+
+            // const filteredMessages = fetchedMessages.today.filter((the_message)=> {
+            //   return the_message.content
+            // })
+
+            // console.log("filtered messages=>",filteredMessages)
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
+  },
+  [search],
+)
+
+
+useEffect(() => {
+    fetchMessages()
+   
+}, [fetchMessages]);
 
 
 
-const sendMessage = async() => {
+const cable = createConsumer("ws://localhost:4000/cable");
+const cableTypingChannel = createConsumer("ws://localhost:4000/cable");
+  useEffect(() => {
+   const subscription = cable.subscriptions.create("MessageChannel", {
+    connected() {
+        console.log("Connected to private WebSocket!");
+      },
+      received(data) {
+        console.log("Message received:", data);
+        setMessages((prevMessages) => [...prevMessages, data]);
+        // Handle incoming message
+      },
+      disconnected() {
+        console.log("Disconnected from private WebSocket!");
+      },
+     
+   });
 
+   return () => {
+     subscription.unsubscribe();
+   };
+ }, [cable.subscriptions]);
+
+
+
+
+
+
+const newSubscription = cableTypingChannel.subscriptions.create("TypingChannel", {
+  connected() {
+    console.log("Connected to the Typing Channel");
+  },
+  received(data) {
+    console.log("Message received typing channel:", data);
+    setIsTyping(data.action)
+    setUserTyping(data.user)
+    // Handle incoming message
+  },
+  disconnected() {
+    console.log("Disconnected from the Typing Channel");
+  },
+  sendTyping(user) {
+    newSubscription.perform("typing", { user: user });
+  },
+  stopTyping() {
+    newSubscription.perform("stop_typing");
+  },
+});
+
+
+
+
+
+
+  
+  // Define handleTyping outside of useEffect so it's accessible
+  const handleTyping = (user) => {
+    if (newSubscription) {
+      newSubscription.sendTyping(user);
+
+      if (typingTimeout) clearTimeout(typingTimeout);
+
+      setTypingTimeout(
+        setTimeout(() => {
+          newSubscription.stopTyping();
+        }, 3000) // Stops typing after 3 seconds of inactivity
+      );
+    }
+  };
+
+ 
+
+
+const sendMessage = async () => {
+    if (!text.trim()) return;
             try {
-                
+                const response = await fetch('/api/send_chat_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        content: text,
+                        // receiver_id: receiver_id.id,
+                        receiver_id: selectedAdmin?.id,
+                        sender_id: id,
+                        // room: selectedAdmin?.id 
+                      }),
+                },
+            
+            
+            )
+
+
+                if (response.ok) {
+                    setText('')
+                } else{
+                    setText('')
+                }
             } catch (error) {
-                
+                console.log(error)
+                setText('')
             }
 }
 
 
 const handleSelectAdmin = (my_admin)=> {
 setSelectedAdmin(my_admin)
+setAdminId(my_admin)
+setReceiverId(my_admin)
+
 setIsSeenChat(true)
 // fetchMessages(my_admin.id)
 }
@@ -96,15 +236,11 @@ function stringToColor(string) {
       const value = (hash >> (i * 8)) & 0xff;
       color += `00${value.toString(16)}`.slice(-2);
     }
-    /* eslint-enable no-bitwise */
   
     return color;
   }
   
-  
-  
-  
-  
+
   function stringAvatar(name) {
   
     const nameParts = name.split(' ').filter(Boolean)
@@ -126,14 +262,16 @@ function stringToColor(string) {
   
 
 
-
-
-
-
 const fetchAdmins = useCallback(
+
+    
   async() => {
+
+    if (isLoadingAdmins || !hasMoreAdmins) return; // Prevent multiple fetches
+
+    setIsLoadingAdmins(true);
     try {
-        const response = await fetch('/api/get_admins')
+        const response = await fetch('/api/get_my_admins')
 const newData = await response.json()
         if (response.ok) {
             console.log('adminss', newData)
@@ -145,7 +283,7 @@ const newData = await response.json()
         console.log(error)
     }
   },
-  [],
+  [isLoadingAdmins, hasMoreAdmins],
 )
 
 useEffect(() => {
@@ -155,16 +293,18 @@ useEffect(() => {
 
     
 
+// let customerSupport = admins.filter((admin)=> {
+//     return admin.role === "customer_support"
+// })
 
 
-
-
+// bg-chat-image
   return (
    <>
-<main className="content bg-chat-image relative z-50 h-screen  ">
+<main className="content  relative z-50  ">
     <div className="container mx-auto p-0">
 
-        <h1 className="text-2xl font-semibold mb-3 text-black kalam-bold">Messages</h1>
+        <h1 className="text-2xl font-semibold mb-3 dark:text-black text-white kalam-bold">Messages</h1>
 
         <div className="card  rounded-lg shadow-sm">
             <div className="flex flex-wrap md:flex-nowrap">
@@ -173,181 +313,195 @@ useEffect(() => {
                     <div className="px-4 hidden md:block">
                         <div className="flex items-center">
                             <input type="text" 
+                            value={search} onChange={(e)=> setSearch(e.target.value)}
                             className="form-input my-3 text-black w-full rounded-lg
-                             border-gray-300 focus:ring-green-700 focus:border-green-700
-                             " placeholder="Search..."/>
+                             border-gray-300 focus:ring-green-700 focus:border-green-700" placeholder="Search..."/>
                         </div>
                     </div>
 
-                    <div className="list-group ">
-                        {admins.map((admin)=> (
-                             <button
-                             onClick={()=> handleSelectAdmin(admin)}
-                             key={admin.id} 
-                             
-                             className={`list-group-item list-group-item-action border-0 
-                                flex items-center space-x-3 py-2 rounded-md w-full text-left ${
-                                selectedAdmin && selectedAdmin.id === admin.id ? 'bg-green-300' : 
-                                ''
-                            }`}
-                              
-                              >
-                             <div className="relative">
-                                
-                                 <Avatar style={{width: 60, height: 60, color: 'white',
-                                    
-                                 }}    {...stringAvatar(admin.user_name)} />
-
-                             </div>
-                             <div className="flex-grow ml-3">
-                                 <span className="font-semibold text-black
-                                  p-6">{admin.user_name}</span>
-                                 <div className="text-sm text-black">
-                                     <span className="fas fa-circle text-green-500"></span> Online</div>
-                             </div>
-                         </button>
-                        )) }
-                       
-                        
-                        {/* <a href="#" className="list-group-item list-group-item-action border-0 
-                        flex items-center space-x-3 py-2">
-                            <div className="relative">
-                                <span className="absolute top-0 right-0 bg-green-500 text-white 
-                                text-xs px-2 py-0.5 rounded-full">2</span>
-                                <img src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                                 className="rounded-full" alt="William Harris" width="40" height="40"/>
-                            </div>
-                            <div className="flex-grow ml-3">
-                                <span className="font-semibold text-black">William Harris</span>
-                                <div className="text-sm text-black"><span className="fas fa-circle text-green-500"></span> Online</div>
-                            </div>
-                        </a>
-
-                        <a href="#" className="list-group-item list-group-item-action border-0 flex items-center space-x-3 py-2">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar3.png" 
-                            className="rounded-full" alt="Sharon Lessman" width="40" height="40"/>
-                            <div className="flex-grow ml-3">
-                                <span className="font-semibold text-black">Sharon Lessman</span>
-                                <div className="text-sm text-black"><span className="fas fa-circle
-                                 text-green-500"></span> Online</div>
-                            </div>
-                        </a>
-
-                        <a href="#" className="list-group-item list-group-item-action border-0 flex items-center space-x-3 py-2">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar4.png"
-                             className="rounded-full" alt="Christina Mason" width="40" height="40"/>
-                            <div className="flex-grow ml-3">
-                                <span className="font-semibold text-black">Christina Mason</span>
-                                <div className="text-sm  text-black"><span className="fas fa-circle text-red-500"></span> Offline</div>
-                            </div>
-                        </a> */}
-                    </div>
-                   
+                    
 
 
                     <hr className="block md:hidden my-1 border-t border-black"/>
                 </div>
+               
 
-
-      
-
-
-                {isSeenChat && selectedAdmin ? (
-                                     <div className="w-full md:w-7/12 lg:w-9/12">
+<div className="w-full md:w-7/12 lg:w-9/12">
 
                 
                                 
                                 
-                                     <div className={`py-2 px-4   `}>
-                                         <div className="flex items-center py-1">
-                                             
-                                             <div className="relative">
-                                                 <img src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                                                  className="rounded-full" alt="Sharon Lessman" width="40" height="40"/>
-                                             </div>
-                 
-                 
-                                             
-                                             <div className="flex-grow pl-3 kalam-light text-black text-xl">
-                                                 <strong>{selectedAdmin.user_name}</strong>
-                                                 <div className="text-lg text-black  "><em>Typing...</em></div>
-                                             </div>
-                                             <div className="flex space-x-2">
-                                                 <button className="btn btn-primary btn-lg mr-1 px-3 bg-green-500
-                                                  text-white rounded-lg">
-                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
-                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                                       className="feather feather-phone feather-lg">
-                                                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 
-                                                         19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2
-                                                          0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 
-                                                          16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 
-                                                          0 0 1 22 16.92z"></path>
-                                                     </svg>
-                                                 </button>
-                                                 <button className="btn btn-info btn-lg mr-1 px-3 bg-green-400 text-white rounded-lg hidden md:inline-block">
-                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-video feather-lg">
-                                                         <polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                                                     </svg>
-                                                 </button>
-                                               
-                                             </div>
-                                         </div>
-                                     </div>
-                 
-                                     <div className="relative">
-                                         <div className="chat-messages p-4 space-y-4 overflow-y-auto h-96">
-                 
-                                             <div className="flex justify-end kalam-light text-black">
-                                                 <div className="flex-shrink-0">
-                                                     <img src="https://bootdey.com/img/Content/avatar/avatar1.png" 
-                                                     className="rounded-full" alt="Chris Wood" width="40" height="40"/>
-                                                     <div className="text-sm text-black text-right mt-2">2:33 am</div>
-                                                 </div>
-                                                 <div className="chat chat-start">
-                                                     {/* <div className=" chat-bubble chat-bubble-accent">You</div> */}
-                 
-                                                     <div className=" chat-bubble chat-bubble-accent">
-                                                         <p className='font-bold'>You</p>
-                                                     Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te vix.
-                                                     </div>
-                                                     
-                                                 </div>
-                                             </div>
-                 
-                                             <div className="flex justify-start kalam-light text-black">
-                                                 <div className="flex-shrink-0">
-                                                     <img src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                                                      className="rounded-full" alt="Sharon Lessman" width="40" height="40"/>
-                                                     <div className="text-sm text-black text-left mt-2">2:34 am</div>
-                                                 </div>
-                                                 <div className="chat chat-end">
-                                                     {/* <div className="font-semibold mb-1 chat-bubble chat-bubble-success">
-                                                         Sharon Lessman</div> */}
-                 
-                                                         
-                 
-                                                     <div className='chat-bubble chat-bubble-success'>
-                                                     <p className='font-bold'>Sharon Lessman</p>
-                                                     Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal commodo.
-                                                     </div>
-                                                     
-                 
-                 
-                                                 </div>
-                                             </div>
-                 
-                                         </div>
-                                     </div>
-                                 </div>
-                 
-                                ):   <div className='flex justify-center items-center mx-auto relative z-0'>
-                                {/* <img src="/public/images/logo/logo-small.png"  className='w-[1500px] h-screen  rounded-full' alt="" /> */}
-                                <BsChatRightText   className=' w-full font-extralight h-[500px] '/>
-                                    </div> }
+<div className={`py-2 px-4   `}>
+    <div className="flex items-center py-1">
+        
+        <div className="relative">
+                                           
+        <Avatar style={{width: 60, height: 60, color: 'white',
+                                    
+                                }}    {...stringAvatar(user_name)} />
 
+             
+        </div>
+
+
+        
+        <div className="flex-grow pl-3 kalam-light text-black text-xl">
+            {/* <strong>{selectedAdmin.user_name}</strong> */}
+            <div className="text-lg text-black  "><em className='text-green-600'> {userTyping} {isTyping}</em></div>
+        </div>
+        <div className="flex space-x-2">
+            <button className="btn btn-primary btn-lg mr-1 px-3 bg-green-500
+             text-white rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  className="feather feather-phone feather-lg">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 
+                    19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2
+                     0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 
+                     16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 
+                     0 0 1 22 16.92z"></path>
+                </svg>
+            </button>
+            <button className="btn btn-info btn-lg mr-1 px-3 bg-green-400 text-white rounded-lg hidden md:inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-video feather-lg">
+                    <polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+            </button>
+          
+        </div>
+    </div>
+</div>
+
+{/* https://bootdey.com/img/Content/avatar/avatar1.png */}
+{/* https://bootdey.com/img/Content/avatar/avatar2.png */}
+
+
+<div className="relative">
+
+
+    <div className="chat-messages p-4 space-y-4  h-96 cursor-pointer">
+  
+
+<div className='flex justify-end'>
+            <p className='dark:text-black edu-au-vic-wa-nt-guides text-xl  text-white font-thin'>Yesterday</p>
+
+            </div>
+
+{messageYesterday.map((my_m, index) => (
+
+        <div key={index} className={`flex ${my_m.sender.user_name === chat_user_name ?
+         'justify-end' : 'justify-start'} kalam-light text-black`}>
+
+           
+
+
+            <div className="flex-shrink-0">
+             <Avatar style={{width: 60, height: 60, color: 'white',
+                                    
+                                }}    {...stringAvatar(my_m.sender.user_name )} />
+
+                <div className={`text-sm text-black ${my_m.sender.user_name === chat_user_name ? 
+                    'text-right' : 'text-left'} mt-2 `}>
+                       <p className='text-white dark:text-black'> {my_m.formatted_date_time_of_message} </p>
+                        
+                        </div>
+
+            </div>
+  <div className={`chat ${my_m.sender.user_name === chat_user_name ? 'chat-start' : 'chat-end'}`}
+   onMouseEnter={() => setIsHovered1(true)}
+   onMouseLeave={() => setIsHovered1(false)}
+  >
+{isHovered1 && <MdCancel className="text-red-600 text-xl" />}
+                <div className={`chat-bubble ${my_m.sender.user_name === 
+                    chat_user_name ? 'chat-bubble-accent' : 'chat-bubble-success'}`}>
+
+                    <p className='font-bold text-black'>
+                       {my_m.sender.user_name === chat_user_name 
+                          ? <p className='text-xl'> You</p>
+                          :<p className='text-xl'> {my_m.sender.user_name} </p>
+                          }
+                       </p>
+                    <p className='text-lg'>{my_m.content} </p>
+                </div>
+                
+            </div>
+        </div>
+
+
+))}
+
+
+
+
+
+
+<div className='flex justify-end  '>
+            <p className='dark:text-black edu-au-vic-wa-nt-guides text-xl
+             font-thin text-white '>Today</p>
+
+            </div>
+
+
+  {messages.map((my_m, index) => (
+
+        <div ref={messagesEndRef} key={index} className={`flex ${my_m.sender.user_name === chat_user_name ?
+         'justify-end ' : 'justify-start'} kalam-light text-black `}>
+
+           
+
+
+            <div className="flex-shrink-0">
+             <Avatar style={{width: 60, height: 60, color: 'white',
+                                    
+                                }}    {...stringAvatar(my_m.sender.user_name )} />
+
+                <div className={`text-sm text-black ${my_m.sender.user_name === chat_user_name ? 
+                    'text-right' : 'text-left'} mt-2`}>
+                        
+                        <p className='dark:text-black text-white'>{my_m.formatted_date_time_of_message } </p>
+                        
+                        </div>
+
+            </div>
+  <div className={`chat  ${my_m.sender.user_name === chat_user_name
+   ? 'chat-start' : 'chat-end'} `}
+   onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+   >
+    {isHovered && <MdCancel className="text-red-600 text-xl" />}
+  
+
+
+                <div className={`chat-bubble ${my_m.sender.user_name === 
+                    chat_user_name ? 'chat-bubble-accent' : 'chat-bubble-success'}`}>
+
+                       
+
+                    <p className='font-bold text-black'>
+                       {my_m.sender.user_name === chat_user_name 
+                          ? <p className='text-xl'> You</p>
+                          :<p className='text-xl'> {my_m.sender.user_name} </p>
+                          }
+                       </p>
+                    <p className='text-lg'>{my_m.content} </p>
+                </div>
+                
+            </div>
+        </div>
+
+
+))}
+    </div>
+
+
+    
+</div>
+</div>
+
+
+        
                
                 
             </div>
@@ -355,7 +509,6 @@ useEffect(() => {
     </div>
     
 
-{isSeenChat && selectedAdmin ? (
     
 <div  className='mt-20'>
    
@@ -365,76 +518,81 @@ useEffect(() => {
     <label htmlFor="simple-search" className="sr-only">Search</label>
     <div className="relative w-full">
 
-{showEmoji ? (
-<div className='absolute inset-y-14'>
+
+
+    {showEmoji ? (
+<div className='fixed lg:inset-y-[300px] sm:inset-y-[700px] '>
+  <MdCancel  className='text-black text-2xl cursor-pointer' onClick={handleEmojiSelect}  
+  
+  
+  
+  />
+
+
          <Picker data={data} 
          
          emojiSize={20}
 
          onEmojiSelect= {(e) => {
             addEmoji(e)
-            handleEmojiSelect()
+            // handleEmojiSelect()
          }}
-        //  onEmojiSelect={ ()=>
-            
-        //     addEmoji
-            
-        // }
+       
          />
     </div>
 ): null}
 
 
-        <div  onClick={()=> setShowEmoji(!showEmoji)} className="absolute inset-y-0 start-0 flex items-center ps-3 cursor-pointer">
-        <BsEmojiSmile 
-        className='text-black bg-yellow-400 text-xl rounded-full' />
-        </div>
+
+<div className='fixed bottom-0 right-0 z-50 p-4' onClick={sendMessage}>
 
 
-
-        <TextareaAutosize value={text}  onChange={(e)=> setText(e.target.value)} className="bg-gray-50 border
-         border-gray-900 text-black
-        text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full ps-10 p-2.5  
-         dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-green-500
-          dark:focus:border-green-500 " placeholder="Search Message..." autoFocus />
-
-
-        {/* <input type="text" value={text}  onChange={(e)=> setText(e.target.value)} className="bg-gray-50 border
-         border-gray-900 text-black
-        text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full ps-10 p-2.5  
-         dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-green-500
-          dark:focus:border-green-500 " placeholder="Search Message..." required /> */}
-    </div>
-     
-    <IoSendSharp    onClick={sendMessage}
-    className={`text-green-800 text-5xl pl-3 cursor-pointer hover:scale-125 transition duration-500 transform ${
+<IoSendSharp    
+    className={`text-green-800 text-5xl pl-3 cursor-pointer w-10 h-10  hover:scale-125
+         transition duration-500 transform ${
         text.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''
     }`}
     aria-label="Send message"
     role="button"
     disabled={text.trim() === ''}/>
-
-    
-   
 </div>
 
 
+<div className='fixed bottom-0 left-0 right-0 shadow-lg p-4 z-10'>
+<div  onClick={()=> setShowEmoji(!showEmoji)} className="absolute inset-y-0 start-0 
+        flex items-center ps-3 cursor-pointer ">
+        <BsEmojiSmile 
+        className='text-black bg-yellow-400 text-xl rounded-full ml-2' />
+        </div>
 
+        {/* onChange={(e)=> setText(e.target.value)} */}
 
-{/* 
-    <input  name="floating_email" id="floating_email" className="block py-2.5 px-0 w-full 
-    text-lg text-black bg-transparent border-0 border-b-2  appearance-none 
-     border-gray-700 dark:focus:border-green-500 focus:outline-none focus:ring-0
-      focus:border-green-600 peer "   placeholder='Type Message Here.......' required /> */}
+<TextareaAutosize value={text}
 
+// onKeyUp={() => handleTyping("Current User")}
+onKeyPress={(e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+   }
+}}
 
+onChange={(e) =>   {
+  handleTyping(user_name)
+setText(e.target.value)
+}}
 
+ className="bg-gray-50 border
+         border-gray-900 text-black 
+        text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w- ps-10 p-2.5  
+         dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-green-500
+          dark:focus:border-green-500 " placeholder="Type Message..." autoFocus />
 </div>
-): ''}
-
-
-
-
+       
+    </div>
+     
+</div>
+</div>
 </main>
 
 
@@ -443,8 +601,3 @@ useEffect(() => {
 }
 
 export default ChatMessaging
-
-
-
-
-

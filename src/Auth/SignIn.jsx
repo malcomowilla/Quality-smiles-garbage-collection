@@ -167,7 +167,7 @@ const handlegetAdminSettings = useCallback(
        }
      },
  
-[]
+[setAdminFormSettings, setOpenOfflineError]
 )
 
 

@@ -18,11 +18,11 @@ const ApplicationSettings = ({children}) => {
 const settingsFormDataInitialValue = {
   prefix: '',
   minimum_digits: '',
-  
   use_auto_generated_number: false,
   send_sms_and_email: false,
   send_email: false,
-  enable_2fa: false
+  enable_2fa: false,
+  sequence_value: ''
 }
 
 
@@ -246,6 +246,7 @@ const [canReadSmsTemplates, setCanReadSmsTemplates] = useState('')
 const [currentUser, setCurrentUser] = useState('')
 const [settingsTicket,  setsettingsTicket] = useState(ticketNumberFormDataInitialValue)
  const [user_name, setUserName] = useState('')
+ const [chat_user_name, setChatUserName] = useState('')
  const [id, setAdminId] = useState(null)
  const [imagePreview, setImagePreview] = useState(null)
 const [openLoginSuccess, setopenLoginSuccess] = useState(false)
@@ -279,7 +280,10 @@ const [calendarSettings, setCalendarSettings] = useState(calendarSettingsData)
 const [logoutMessage, setlogoutmessage] = useState(false)
 const [openLogoutSession, setopenLogoutSession] = useState(false)
 
-
+useEffect(() => {
+  setChatUserName(user_name)
+  
+}, [user_name]);
 
 const handleCloseLogoutSession = () => {
   setopenLogoutSession(false)
@@ -803,12 +807,12 @@ const darkTheme = createTheme({
    }, [])
 
 
+
+
+
+
+
   const controller = new AbortController();
-
-
-
-
-
 
 
   const getLocation = 
@@ -1707,7 +1711,7 @@ useEffect(() => {
 
     // const URL = 'ws://localhost:4000/cable';
     // const consumer = createConsumer(URL);
-    const cable = createConsumer("ws://localhost:4000/cable");
+    // const cable = createConsumer("ws://localhost:4000/cable");
 
   //   useEffect(() => {
   //    const subscription = cable.subscriptions.create("AdminStatusChannel", {
@@ -1775,7 +1779,7 @@ useEffect(() => {
     setopenServiceProviderLoginSuccesful,openStoreManagerLogin, handleCloseStoreManagerLogin ,setopenStoreManagerLogin,
     openStoreManagerLogout, handleCloseStoreManagerLogout,setopenStoreManagerLogout,signedUpPassKey, setSignedUpPassKey,
     checkEmail,seeSettings7, setSeeSettings7, handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
-    openLogoutSession, handleCloseLogoutSession,setopenLogoutSession
+    openLogoutSession, handleCloseLogoutSession,setopenLogoutSession,chat_user_name
 
   }}>
 

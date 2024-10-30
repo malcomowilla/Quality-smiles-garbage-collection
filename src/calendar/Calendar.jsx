@@ -50,9 +50,63 @@ const [eventId, setEventId] = useState('')
 const [openUpdateAlert, setopenUpdateAlert] = useState(false)
 const [openDeleteAlert, setopenDeleteAlert] = useState(false)
 
-const {adminFormSettings} = useApplicationSettings()
+const {adminFormSettings,  setCalendarSettings, setOpenOfflineError} = useApplicationSettings()
 
-adminFormSettings
+
+
+
+
+
+  
+const handleGetCalendarSettings = useCallback(
+  async() => {
+    try {
+      const response = await fetch('/api/get_calendar_settings')
+      const newData = await response.json()
+
+
+
+     
+
+
+
+
+      if (response.ok) {
+        console.log('data',newData)
+        // const start_in_minutes = newData.start_in_minutes
+        //   const start_in_hours = newData.start_in_hours
+
+          const {start_in_hours,  start_in_minutes} = newData[0]
+          setCalendarSettings((prevData)=>  ({...prevData, start_in_minutes,
+            start_in_hours
+             }))
+      } else {
+        console.log('error fetching calendar settings')
+        setOpenOfflineError(true)
+      }
+    } catch (error) {
+      console.log('error fetching calendar settings', error)
+      setOpenOfflineError(true)
+    }
+  },
+  [],
+)
+
+
+
+useEffect(() => {
+  handleGetCalendarSettings()
+}, [handleGetCalendarSettings]);
+
+
+
+
+
+
+
+
+
+
 const handleCloseDeleteAlert = ()=>{
   setopenDeleteAlert(false)
 }
