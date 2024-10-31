@@ -120,26 +120,26 @@ const cableTypingChannel = createConsumer("ws://localhost:4000/cable");
 
 
 
-const newSubscription = cableTypingChannel.subscriptions.create("TypingChannel", {
-  connected() {
-    console.log("Connected to the Typing Channel");
-  },
-  received(data) {
-    console.log("Message received typing channel:", data);
-    setIsTyping(data.action)
-    setUserTyping(data.user)
-    // Handle incoming message
-  },
-  disconnected() {
-    console.log("Disconnected from the Typing Channel");
-  },
-  sendTyping(user) {
-    newSubscription.perform("typing", { user: user });
-  },
-  stopTyping() {
-    newSubscription.perform("stop_typing");
-  },
-});
+// const newSubscription = cableTypingChannel.subscriptions.create("TypingChannel", {
+//   connected() {
+//     console.log("Connected to the Typing Channel");
+//   },
+//   received(data) {
+//     console.log("Message received typing channel:", data);
+//     setIsTyping(data.action)
+//     setUserTyping(data.user)
+//     // Handle incoming message
+//   },
+//   disconnected() {
+//     console.log("Disconnected from the Typing Channel");
+//   },
+//   sendTyping(user) {
+//     newSubscription.perform("typing", { user: user });
+//   },
+//   stopTyping() {
+//     newSubscription.perform("stop_typing");
+//   },
+// });
 
 
 
@@ -147,20 +147,20 @@ const newSubscription = cableTypingChannel.subscriptions.create("TypingChannel",
 
 
   
-  // Define handleTyping outside of useEffect so it's accessible
-  const handleTyping = (user) => {
-    if (newSubscription) {
-      newSubscription.sendTyping(user);
+//   // Define handleTyping outside of useEffect so it's accessible
+//   const handleTyping = (user) => {
+//     if (newSubscription) {
+//       newSubscription.sendTyping(user);
 
-      if (typingTimeout) clearTimeout(typingTimeout);
+//       if (typingTimeout) clearTimeout(typingTimeout);
 
-      setTypingTimeout(
-        setTimeout(() => {
-          newSubscription.stopTyping();
-        }, 3000) // Stops typing after 3 seconds of inactivity
-      );
-    }
-  };
+//       setTypingTimeout(
+//         setTimeout(() => {
+//           newSubscription.stopTyping();
+//         }, 3000) // Stops typing after 3 seconds of inactivity
+//       );
+//     }
+//   };
 
  
 
@@ -578,7 +578,7 @@ onKeyPress={(e) => {
 }}
 
 onChange={(e) =>   {
-  handleTyping(user_name)
+  // handleTyping(user_name)
 setText(e.target.value)
 }}
 

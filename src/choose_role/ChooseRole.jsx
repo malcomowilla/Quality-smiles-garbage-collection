@@ -23,16 +23,9 @@ const ChooseRole = () => {
     </div>
   </div> 
   </Link>
-  <div className="carousel-item text-black flex-col  caveat flex sm:text-4xl max-sm:text-3xl">
 
-    <img src="/images/logo/trashcolector.jpg"  className='w-[300px] h-[300px]' alt="waste collector" />
-    <div className='flex justify-center'>
-    <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/service_provider_role'>Service Provider</Link></p>
 
-    </div>
-
-  </div> 
-
+{/* 
 
   <div className="carousel-item text-black flex-col    caveat  flex sm:text-4xl max-sm:text-3xl">
 
@@ -42,7 +35,7 @@ const ChooseRole = () => {
 <p className='hover:underline transition-all duration-500 ease-in-out'><Link to='/store_manager_role'>StoreManager</Link></p>
 
 </div>
-  </div>
+  </div> */}
 </div>
     
     
@@ -50,4 +43,4 @@ const ChooseRole = () => {
   )
 }
 
-export default ChooseRole
+export default ChooseRole  

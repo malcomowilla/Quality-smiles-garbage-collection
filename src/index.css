@@ -219,6 +219,30 @@
 
   @media (min-width: 640px) {
    
+
+
+
+    .bg-small-screens2::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100%;
+      background-image: url(/images//green_reduce_reuse.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      z-index: -1; 
+      filter: blur(14px);
+    
+    }
+
+
+
+
+
+
 .bg-small-screens2::before{
   content: '';
   position: absolute;
@@ -301,6 +325,27 @@
 
 @media (min-width: 1280px) {
  
+
+
+
+  .bg-small-screens2::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/images//green_reduce_reuse.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
+
+
   .bg-small-screens3::before{
     content: '';
     position: absolute;
@@ -403,6 +448,23 @@
 
 @media not all and (min-width: 768px) {
   
+
+  .bg-small-screens2::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background-image: url(/images//green_reduce_reuse.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1; 
+    filter: blur(14px);
+  
+  }
+
 
 
   .bg-passkey::before{

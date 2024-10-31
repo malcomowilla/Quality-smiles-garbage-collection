@@ -11,7 +11,7 @@ import {useEffect, useState, useCallback, lazy, Suspense} from 'react'
 // import Signup from './Auth/Signup'
 const Signup = lazy(() => import ('./Auth/Signup'))
 // import {HomePage} from './Home/HomePage'
-const HomePage = lazy(() => import ('./Auth/SignIn'))
+const HomePage = lazy(() => import ('./Home/HomePage'))
 // import SignIn from './Auth/SignIn'
 
 const SignIn = lazy(()=>  import ('./Auth/SignIn'
@@ -65,7 +65,7 @@ const ManageUsers = lazy(()=> import('./user_management/ManageUsers'))
 // import QrCode from './QrCode/QrCode'
 
 const QrCode = lazy(()=> import('./QrCode/QrCode'))
-
+import QrCodeServiceProvider from './QrCode/QrCodeServiceProvider'
 // import CustomerForm from './form/CustomerForm'
 const CustomerForm = lazy(()=> import('./form/CustomerForm'))
 // import ServiceProviderForm from './form/ServiceProviderForm'
@@ -166,7 +166,7 @@ import { createConsumer } from "@rails/actioncable";
 import Lottie from 'react-lottie';
 import LoadingAnimation from './animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
-
+import ChooseRoleServiceProvider from './choose_role/ChooseRoleServiceProvider'
 
 // const router = createBrowserRouter(
 
@@ -947,7 +947,9 @@ useEffect(() => {
   </Suspense>
   }/>
 
-
+<Route path='/qr-code-service-provider' element={
+  <QrCodeServiceProvider />
+} />
 
 
 <Route element={<ProtectAuthProvider />}>
@@ -1019,8 +1021,30 @@ useEffect(() => {
 
 
 
-<Route path='/customer-payment' element={<CustomerPayment />}  /> 
-<Route  path='/customer-ticket-status' element={<TicketStatus />}/>
+<Route path='/customer-payment' element={
+  <Suspense fallback={<div> 
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+ </Backdrop>
+   </div>}>
+  <CustomerPayment />
+  </Suspense>
+  }  /> 
+
+
+
+<Route  path='/customer-ticket-status' element={
+ <Suspense fallback={<div> 
+  <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+</Backdrop>
+ </div>}>
+  
+  <TicketStatus />
+
+  </Suspense>
+
+  }/>
 </Route>
 
 
@@ -1100,7 +1124,7 @@ useEffect(() => {
 
 
 
-      <Route path='/choose_role' element={
+      <Route path='/role_customer' element={
         <Suspense fallback={<div> 
 
           <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -1114,6 +1138,10 @@ useEffect(() => {
         </Suspense>
         }/>
 
+
+
+
+<Route  path='/role_service_provider'  element={<ChooseRoleServiceProvider  />}/>
 
       <Route path='/customer_role'  element={
         <Suspense fallback={<div> 

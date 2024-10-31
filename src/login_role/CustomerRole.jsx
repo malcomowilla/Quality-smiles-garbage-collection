@@ -128,7 +128,7 @@ useEffect(() => {
 
 const handleGoBack = (e) => {
   e.preventDefault()
-  navigate('/choose_role')
+  navigate('/role_customer')
 };
 
 
@@ -329,7 +329,7 @@ setCustomer(true)
 
 {enable_2fa ? (
   <>
-<div    className='bg-white    h-screen flex justify-center items-center'>
+<div    className='bg-small-screens2     h-screen flex justify-center items-center'>
             {otpSent ? (
     
 
@@ -410,7 +410,7 @@ setCustomer(true)
            
   <form    onSubmit={handleCustomerSignIn} className="flex max-w-md flex-col gap-4">
       
-    
+      bg-small-screens2 
   <div>
 
     <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
@@ -479,7 +479,7 @@ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 </div>
     
     Login In </Button>
-    <Link className='' to='/choose_role'>
+    <Link className='' to='/role_customer'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link>
@@ -493,7 +493,7 @@ viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 ): 
 
 
-<div    className='bg-white h-screen flex justify-center items-center'>
+<div    className='bg-small-screens2  h-screen flex justify-center items-center'>
 
 <form    onSubmit={handleCustomerSignIn} className="flex max-w-md flex-col gap-4">
       

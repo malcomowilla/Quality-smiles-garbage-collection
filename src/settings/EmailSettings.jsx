@@ -10,6 +10,12 @@ import Stack from '@mui/material/Stack';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import Lottie from 'react-lottie';
+import EmailSettingsCreateAlert from '../Alert/EmailSettingsCreateAlert'
+import EmailSettingsErrorAlert from '../Alert/EmailSettingsErrorAlert'
+import EmailSettingsFetchErrorAlert  from '../Alert/EmailSettingsFetchErrorAlert'
+
+  // openEmailSettingsFetchErrorAlert, handleCloseEmailFetchErrorAlert
+
 
 
 const EmailSettings = () => {
@@ -71,7 +77,9 @@ const [openLoadEmailSettings, setOpenLoadEmailSettings] = useState(false)
 
 const {smtp_host,smtp_username, sender_email,smtp_password, api_key,domain } = emailSettings
 const [emailTemplates, setEmailTemplates] = useState(emailTemplateForm)
-
+const [openEmailSettingsCreate, setopenEmailSettingsCreate] = useState(false)
+const [openEmailSettingsErrorAlert, setopenEmailSettingsErrorAlert] = useState(false)
+const [openEmailSettingsFetchErrorAlert, setopenEmailSettingsFetchErrorAlert] = useState(false)
 
 const {customer_confirmation_code_header, customer_confirmation_code_body, 
   customer_confirmation_code_footer, service_provider_confirmation_code_header, service_provider_confirmation_code_body, 
@@ -87,6 +95,23 @@ const {customer_confirmation_code_header, customer_confirmation_code_body,
    payment_reminder_body, payment_reminder_footer} = emailTemplates
       
 
+
+const handleCloseEmailFetchErrorAlert = () => {
+  setopenEmailSettingsFetchErrorAlert(false)
+}
+
+
+const handleCloseEmailErrorAlert = () => {
+  setopenEmailSettingsErrorAlert(false)
+}
+
+
+
+const handleCloseEmailSettingsCreate =()=> {
+  setopenEmailSettingsCreate(false)
+}
+
+   
 const handleChangeEmailTemplates = (e)=>{
   const {name, value} = e.target
   
@@ -187,15 +212,17 @@ const getEmailSettings = useCallback(
       if (response.ok) {
         console.log('fetched email settings',newData)
 
-  const {smtp_host,smtp_username, sender_email,smtp_password, api_key,domain} = newData[0]
-  setEmailSettings((prevData)=>  ({...prevData, smtp_host,smtp_username, sender_email,smtp_password, api_key,
+  const {smtp_host,smtp_username, sender_email,domain} = newData[0]
+  setEmailSettings((prevData)=>  ({...prevData, smtp_host,smtp_username, sender_email,
     domain
      }))
       }else{
         console.log('not fetched')
+        setopenEmailSettingsFetchErrorAlert(true)
       }
     } catch (error) {
       console.log('not fetched')
+      setopenEmailSettingsFetchErrorAlert(true)
     }
   },
   [controller.signal],
@@ -207,7 +234,10 @@ useEffect(() => {
   return () => {
     controller?.abort()
   };
-}, [controller, getEmailSettings]);
+}, [controller, getEmailSettings]);   
+  
+
+
 
 
 const handleCreateEmailSettings = async(e)=> {
@@ -233,18 +263,20 @@ body: JSON.stringify(emailSettings)
       console.log('email settings =>', newData)
       setOpenLoadEmailSettings(false)
   setloadEmailSettings(false)
-  
-  const {smtp_host,smtp_username, sender_email,smtp_password, api_key,domain} = newData
-  setEmailSettings((prevData)=>  ({...prevData, smtp_host,smtp_username, sender_email,smtp_password, api_key,
+  setopenEmailSettingsCreate(true)
+  const {smtp_host,smtp_username, sender_email,domain} = newData
+  setEmailSettings((prevData)=>  ({...prevData, smtp_host,smtp_username, sender_email,smtp_password, 
     domain
      }))
     } else {
       console.log('email settings error')
       setOpenLoadEmailSettings(false)
   setloadEmailSettings(false)
+  setopenEmailSettingsErrorAlert(true)
     }
   } catch (error) {
     console.log(error)
+    setopenEmailSettingsErrorAlert(true)
     setOpenLoadEmailSettings(false)
   setloadEmailSettings(false)
   }
@@ -257,7 +289,15 @@ body: JSON.stringify(emailSettings)
 <>
 
 
+<EmailSettingsFetchErrorAlert  openEmailSettingsFetchErrorAlert={openEmailSettingsFetchErrorAlert}
+handleCloseEmailFetchErrorAlert={handleCloseEmailFetchErrorAlert}/>
 
+<EmailSettingsCreateAlert  openEmailSettingsCreate={openEmailSettingsCreate}
+handleCloseEmailSettingsCreate={handleCloseEmailSettingsCreate}
+/>
+
+<EmailSettingsErrorAlert openEmailSettingsErrorAlert={openEmailSettingsErrorAlert}
+handleCloseEmailErrorAlert={handleCloseEmailErrorAlert}/>
 {loadEmailSettings &&    <Backdrop open={openLoadEmailSettings} sx={{ color:'#fff', zIndex:
    (theme) => theme.zIndex.drawer + 1 }}>
   

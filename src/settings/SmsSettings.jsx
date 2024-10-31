@@ -9,8 +9,9 @@ import TemplateAlert from '../Alert/TemplateAlert'
 import {  ThemeProvider } from '@mui/material';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
 import SmsTemplateDeniedAlert from '../Alert/SmsTemplateDeniedAlert'
-
+import SmsTemplateErrorAlert from '../Alert/SmsTemplateError'
   
+// openSmsTemplateError, handleCloseSmsTemplateError 
 
 const templateData = {
   admin_otp_confirmation_template: '' ,
@@ -45,10 +46,12 @@ const [loading, setloading] = useState(false)
 const [openLoad, setOpenLoad] = useState(false);
 const [openTemplateAlert, setopenTemplateAlert] = useState(false)
 const [openTemplateError, setopenTemplateError]= useState(false)
+const [openSmsTemplateError, setopenSmsTemplateError] = useState(false)
 
 
-
-
+const handleCloseSmsTemplateError  = () => {
+  setopenSmsTemplateError(false)
+}
 
 
 const handleCloseTemplateError = ()=> {
@@ -125,10 +128,11 @@ const service_provider_otp_confirmation_template = newData[0].service_provider_o
         }))
       } else {
         console.log('error')
-
+        setopenSmsTemplateError(true)
       }
     } catch (error) {
       console.log(error)
+      setopenSmsTemplateError(true)
 
     }
   },
@@ -172,8 +176,8 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
     const user_invitation_template = newData.user_invitation_template
   const service_provider_confirmation_code_template = newData.service_provider_confirmation_code_template
   const customer_confirmation_code_template = newData.customer_confirmation_code_template
-  const store_manager_otp_confirmation_template =  newData[0].store_manager_otp_confirmation_template
-  const store_manager_manager_number_confirmation_template = newData[0].store_manager_manager_number_confirmation_template
+  const store_manager_otp_confirmation_template =  newData.store_manager_otp_confirmation_template
+  const store_manager_manager_number_confirmation_template = newData.store_manager_manager_number_confirmation_template
 
 
   setTemplateForm((prevData)=>  ({...prevData, admin_otp_confirmation_template,
@@ -183,13 +187,16 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
   }))
         setloading(false)
         setOpenLoad(false)
+        
         console.log('sms template', newData)
       } else {
         setloading(false)
         setOpenLoad(false)
+        setopenSmsTemplateError(true)
         console.log('error', newData.error)
       }
     } catch (error) {
+      setopenSmsTemplateError(true)
       setloading(false)
       setOpenLoad(false)
       console.log(error)
@@ -198,6 +205,9 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
   return (
 
     <>
+
+<SmsTemplateErrorAlert openSmsTemplateError={openSmsTemplateError}  handleCloseSmsTemplateError={handleCloseSmsTemplateError}/>
+
 <SmsTemplateDeniedAlert openTemplateError={openTemplateError}  handleCloseTemplateError={handleCloseTemplateError}/>
 <TemplateAlert  openTemplateAlert={openTemplateAlert} handleCloseTemplateAlert={handleCloseTemplateAlert}/>
 

@@ -339,13 +339,16 @@ setopenProviderLoginAlert(true)
 
 {enable_2fa_for_service_provider ? (
         <>
-  <div    className='bg-white h-screen flex justify-center items-center'>
+  <div    className='bg-small-screens2  h-screen flex justify-center items-center
+  
+  '>
      
      {otpSent ? (
  
  
   
- <form    onSubmit={handleVerifyOtp} className="flex max-w-md flex-col gap-4">
+ <form    onSubmit={handleVerifyOtp} className="flex max-w-md flex-col gap-4
+   ">
  
  
  <div>
@@ -429,7 +432,8 @@ setopenProviderLoginAlert(true)
     
 
       
- <form    onSubmit={ handleProviderSignIn} className="flex max-w-md flex-col gap-4">
+ <form    onSubmit={ handleProviderSignIn} className="flex max-w-md 
+ flex-col gap-4 ">
  
  
  <div>
@@ -501,7 +505,7 @@ setopenProviderLoginAlert(true)
  
  Login In </Button>
  
- <Link  to='/choose_role'>
+ <Link  to='/role_customer'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link> 
@@ -515,12 +519,14 @@ setopenProviderLoginAlert(true)
         </>
       ):  <>
       
-      <div    className='bg-white h-screen flex justify-center items-center'>
+      <div    className='bg-small-screens2 h-screen flex justify-center items-center
+      '>
       
- <form    onSubmit={ handleProviderSignIn} className="flex max-w-md flex-col gap-4">
+ <form    onSubmit={ handleProviderSignIn} className="flex max-w-md
+  flex-col gap-4 ">
  
  
- <div>
+ <div className=''>
  
  <h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
  
@@ -588,7 +594,7 @@ setopenProviderLoginAlert(true)
  
  Login In </Button>
  
- <Link  to='/choose_role'>
+ <Link  to='/role_customer'>
     <p className='playwrite-de-grund text-black'>Go Back</p>
     <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
     </Link> 
