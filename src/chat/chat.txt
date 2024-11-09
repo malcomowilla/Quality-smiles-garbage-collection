@@ -101,3 +101,36 @@
                                 ):   <div className='flex justify-center items-center mx-auto relative z-0'>
                                 <BsChatRightText   className=' w-full font-extralight h-[500px] '/>
                                     </div> } */}
+
+
+
+
+
+
+
+
+
+
+
+
+    {showEmoji ? (
+<div className='fixed lg:inset-y-[300px] sm:inset-y-[700px] '>
+  <MdCancel  className='text-black text-2xl cursor-pointer' onClick={handleEmojiSelect}  
+  
+  
+  
+  />
+
+
+         <Picker data={data} 
+         
+         emojiSize={20}
+
+         onEmojiSelect= {(e) => {
+            addEmoji(e)
+            // handleEmojiSelect()
+         }}
+       
+         />
+    </div>
+): null}

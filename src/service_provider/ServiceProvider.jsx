@@ -35,13 +35,12 @@ const ServiceProvider = () => {
   const navigate = useNavigate()
   const {providers, setGetProviders,  providerformData,  setproviderformData,
     setProviderCode,  updatedMessageProvider, setUpdatedMessageProvider, materialuitheme,settingsformDataForProvider,
-    adminFormSettings
+    adminFormSettings,isOpenProvider, setIsOpenProvider
  } = useApplicationSettings()
 
 const {send_sms_and_email_for_provider, send_email_for_provider, enable_2fa_for_service_provider} = settingsformDataForProvider
 
 
- const [isOpenProvider, setIsOpenProvider] = useState(false)
  const [ openAdditionProvider, setopenAdditionProvider] = useState(false)
 const [openProviderOfflineAlert, setopenProviderOfflineAlert] = useState(false)
 const [openUpdatedProvider, setopenUpdatedProvider] = useState(false)

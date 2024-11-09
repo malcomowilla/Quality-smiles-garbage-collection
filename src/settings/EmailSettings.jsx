@@ -13,9 +13,13 @@ import Lottie from 'react-lottie';
 import EmailSettingsCreateAlert from '../Alert/EmailSettingsCreateAlert'
 import EmailSettingsErrorAlert from '../Alert/EmailSettingsErrorAlert'
 import EmailSettingsFetchErrorAlert  from '../Alert/EmailSettingsFetchErrorAlert'
+import EmailTemplateCreateAlert from '../Alert/EmailTemplateCreateAlert'
+import EmailTemplateErrorAlert from '../Alert/EmailTemplateErrorAlert'
 
   // openEmailSettingsFetchErrorAlert, handleCloseEmailFetchErrorAlert
 
+  // EmailTemplateCreateAlert,openEmailTemplateCreateAlert, handleCloseEmailTemplateCreateAlert
+  // EmailTemplateErrorAlert, openEmailTemplateErrorAlert, handleCloseEmailTemplateErrorAlert
 
 
 const EmailSettings = () => {
@@ -23,13 +27,19 @@ const EmailSettings = () => {
   const [seeSettings, setSeeSettings] = useState(false)
 const [loadEmailSettings, setloadEmailSettings] = useState(false)
 const [openLoadEmailSettings, setOpenLoadEmailSettings] = useState(false)
+const [openEmailTemplateCreateAlert, setopenEmailTemplateCreateAlert] = useState(false)
+const [openEmailTemplateErrorAlert, setopenEmailTemplateErrorAlert] = useState(false)
+
 
   const { materialuitheme, 
   } = useApplicationSettings();
 
 
 
- 
+  const handleCloseEmailTemplateCreateAlert = () => {
+    setopenEmailTemplateCreateAlert(false)
+  }
+
  const emailForm = {
   smtp_host: '',
   smtp_username: '',
@@ -43,6 +53,9 @@ const [openLoadEmailSettings, setOpenLoadEmailSettings] = useState(false)
  
    
  const emailTemplateForm = {
+  password_reset_header: '',
+  password_reset_body: '',
+  password_reset_footer: '',
   customer_confirmation_code_header: '',
   customer_confirmation_code_body:  '',
   customer_confirmation_code_footer: '',
@@ -82,18 +95,29 @@ const [openEmailSettingsErrorAlert, setopenEmailSettingsErrorAlert] = useState(f
 const [openEmailSettingsFetchErrorAlert, setopenEmailSettingsFetchErrorAlert] = useState(false)
 
 const {customer_confirmation_code_header, customer_confirmation_code_body, 
-  customer_confirmation_code_footer, service_provider_confirmation_code_header, service_provider_confirmation_code_body, 
+  customer_confirmation_code_footer, service_provider_confirmation_code_header, 
+  service_provider_confirmation_code_body, 
   service_provider_confirmation_code_footer, user_invitation_header, user_invitation_body,
    user_invitation_footer, customer_otp_confirmation_header, customer_otp_confirmation_body,
    customer_otp_confirmation_footer, 
   service_provider_otp_confirmation_header, service_provider_otp_confirmation_body, 
-  service_provider_otp_confirmation_footer, admin_otp_confirmation_header, admin_otp_confirmation_body,
-   admin_otp_confirmation_footer, store_manager_otp_confirmation_header, store_manager_otp_confirmation_body, 
-   store_manager_otp_confirmation_footer, store_manager_number_header, store_manager_number_body,
+  service_provider_otp_confirmation_footer, admin_otp_confirmation_header,
+   admin_otp_confirmation_body,
+   admin_otp_confirmation_footer, store_manager_otp_confirmation_header, 
+   store_manager_otp_confirmation_body, 
+   store_manager_otp_confirmation_footer, store_manager_number_header, 
+   store_manager_number_body,
     store_manager_number_footer,
     payment_reminder_header,
-   payment_reminder_body, payment_reminder_footer} = emailTemplates
-      
+   payment_reminder_body, payment_reminder_footer,
+   password_reset_header, password_reset_body, password_reset_footer} = emailTemplates
+
+
+const handleCloseEmailTemplateErrorAlert = () => {
+  setopenEmailTemplateErrorAlert(false)
+}
+
+
 
 
 const handleCloseEmailFetchErrorAlert = () => {
@@ -284,10 +308,176 @@ body: JSON.stringify(emailSettings)
 }
 
 
+
+
+
+
+
+
+
+
+const handleCreateEmailTemplate = async(e)=> {
+
+
+  e.preventDefault()
+
+  setOpenLoadEmailSettings(true)
+  setloadEmailSettings(true)
+  try {
+    const response = await fetch('/api/email_template', {
+method: 'POST',
+headers: {
+  "Content-Type": "application/json"
+},
+body: JSON.stringify(emailTemplates)
+
+    })
+
+    const newData = await response.json()
+
+    if (response.ok) {
+      console.log('email settings =>', newData)
+      setOpenLoadEmailSettings(false)
+  setloadEmailSettings(false)
+  setopenEmailTemplateCreateAlert(true)
+  setopenEmailSettingsCreate(true)
+
+  const {customer_confirmation_code_header, customer_confirmation_code_body, 
+    customer_confirmation_code_footer, service_provider_confirmation_code_header, 
+    service_provider_confirmation_code_body, 
+    service_provider_confirmation_code_footer, user_invitation_header, user_invitation_body,
+     user_invitation_footer, customer_otp_confirmation_header, customer_otp_confirmation_body,
+     customer_otp_confirmation_footer, 
+    service_provider_otp_confirmation_header, service_provider_otp_confirmation_body, 
+    service_provider_otp_confirmation_footer, admin_otp_confirmation_header,
+     admin_otp_confirmation_body,
+     admin_otp_confirmation_footer, store_manager_otp_confirmation_header, 
+     store_manager_otp_confirmation_body, 
+     store_manager_otp_confirmation_footer, store_manager_number_header, 
+     store_manager_number_body,
+      store_manager_number_footer,
+      payment_reminder_header,
+     payment_reminder_body, payment_reminder_footer,
+     password_reset_header, password_reset_body, password_reset_footer} = newData
+
+     
+  setEmailTemplates((prevData)=>  ({...prevData, customer_confirmation_code_header, customer_confirmation_code_body, 
+    customer_confirmation_code_footer, service_provider_confirmation_code_header, 
+    service_provider_confirmation_code_body, 
+    service_provider_confirmation_code_footer, user_invitation_header, user_invitation_body,
+     user_invitation_footer, customer_otp_confirmation_header, customer_otp_confirmation_body,
+     customer_otp_confirmation_footer, 
+    service_provider_otp_confirmation_header, service_provider_otp_confirmation_body, 
+    service_provider_otp_confirmation_footer, admin_otp_confirmation_header,
+     admin_otp_confirmation_body,
+     admin_otp_confirmation_footer, store_manager_otp_confirmation_header, 
+     store_manager_otp_confirmation_body, 
+     store_manager_otp_confirmation_footer, store_manager_number_header, 
+     store_manager_number_body,
+      store_manager_number_footer,
+      payment_reminder_header,
+     payment_reminder_body, payment_reminder_footer,
+     password_reset_header, password_reset_body, password_reset_footer
+     }))
+    } else {
+      console.log('email settings error')
+      setOpenLoadEmailSettings(false)
+  setloadEmailSettings(false)
+  setopenEmailSettingsErrorAlert(true)
+  setopenEmailTemplateCreateAlert(false)
+  setopenEmailTemplateErrorAlert(true)
+    }
+  } catch (error) {
+    console.log(error)
+    setopenEmailSettingsErrorAlert(true)
+    setOpenLoadEmailSettings(false)
+  setloadEmailSettings(false)
+  setopenEmailTemplateCreateAlert(false)
+  setopenEmailTemplateErrorAlert(true)
+  }
+
+}
+
+
+const handleGetEmailTemplates = useCallback(
+  async() => {
+    try {
+      const response = await fetch('/api/get_email_templates', {
+        
+      })
+      const newData = await response.json()
+      if (response.ok) {
+        console.log('fetched email templates',newData)
+
+        const {customer_confirmation_code_header, customer_confirmation_code_body, 
+          customer_confirmation_code_footer, service_provider_confirmation_code_header, 
+          service_provider_confirmation_code_body, 
+          service_provider_confirmation_code_footer, user_invitation_header, user_invitation_body,
+           user_invitation_footer, customer_otp_confirmation_header, customer_otp_confirmation_body,
+           customer_otp_confirmation_footer, 
+          service_provider_otp_confirmation_header, service_provider_otp_confirmation_body, 
+          service_provider_otp_confirmation_footer, admin_otp_confirmation_header,
+           admin_otp_confirmation_body,
+           admin_otp_confirmation_footer, store_manager_otp_confirmation_header, 
+           store_manager_otp_confirmation_body, 
+           store_manager_otp_confirmation_footer, store_manager_number_header, 
+           store_manager_number_body,
+            store_manager_number_footer,
+            payment_reminder_header,
+           payment_reminder_body, payment_reminder_footer,
+           password_reset_header, password_reset_body, password_reset_footer} = newData[0]
+
+
+               
+  setEmailTemplates((prevData)=>  ({...prevData, customer_confirmation_code_header, customer_confirmation_code_body, 
+    customer_confirmation_code_footer, service_provider_confirmation_code_header, 
+    service_provider_confirmation_code_body, 
+    service_provider_confirmation_code_footer, user_invitation_header, user_invitation_body,
+     user_invitation_footer, customer_otp_confirmation_header, customer_otp_confirmation_body,
+     customer_otp_confirmation_footer, 
+    service_provider_otp_confirmation_header, service_provider_otp_confirmation_body, 
+    service_provider_otp_confirmation_footer, admin_otp_confirmation_header,
+     admin_otp_confirmation_body,
+     admin_otp_confirmation_footer, store_manager_otp_confirmation_header, 
+     store_manager_otp_confirmation_body, 
+     store_manager_otp_confirmation_footer, store_manager_number_header, 
+     store_manager_number_body,
+      store_manager_number_footer,
+      payment_reminder_header,
+     payment_reminder_body, payment_reminder_footer,
+     password_reset_header, password_reset_body, password_reset_footer
+     }))
+      } else {
+      console.log('not fecthed')
+      setopenEmailTemplateErrorAlert(true)
+      }
+    } catch (error) {
+      console.log('not fecthed', error)
+      setopenEmailTemplateErrorAlert(true)
+    }
+  },
+  [],
+)
+
+
+
+
+useEffect(() => {
+  handleGetEmailTemplates()
+}, [handleGetEmailTemplates]);
+
+
+
   return (
 
 <>
 
+
+<EmailTemplateErrorAlert  openEmailTemplateErrorAlert={openEmailTemplateErrorAlert}
+handleCloseEmailTemplateErrorAlert={handleCloseEmailTemplateErrorAlert}/>
+
+<EmailTemplateCreateAlert openEmailTemplateCreateAlert={openEmailTemplateCreateAlert}
+handleCloseEmailTemplateCreateAlert={handleCloseEmailTemplateCreateAlert}/>
 
 <EmailSettingsFetchErrorAlert  openEmailSettingsFetchErrorAlert={openEmailSettingsFetchErrorAlert}
 handleCloseEmailFetchErrorAlert={handleCloseEmailFetchErrorAlert}/>
@@ -503,7 +693,7 @@ rounded-md">
 
 
 
-        <form >
+        <form onSubmit={handleCreateEmailTemplate}>
           <motion.div 
           variants={variantDiv} transition={{duration:0.5, ease: "easeInOut",
           }} initial='hidden' animate={seeSettings ? "visible" : "hidden"}
@@ -961,11 +1151,54 @@ id="fullWidth" multiline  rows={4}
       
       />
 
+
+
+
+
+<TextField        fullWidth label="Password Reset Header" name='password_reset_header'  
+onChange={handleChangeEmailTemplates}
+value={password_reset_header}
+id="fullWidth" multiline  rows={4}  
+      
+      helperText={<p className='dark:text-black text-sm tracking-wider
+      text-white
+      playwrite-de-grund'>Message Sent To Customers To Reset Their Password</p>}
+      
+      />
+
+
+
+
+<TextField        fullWidth label="Password Reset Body" name='password_reset_body'  
+onChange={handleChangeEmailTemplates}
+value={password_reset_body}
+id="fullWidth" multiline  rows={4}  
+      
+      helperText={<p className='dark:text-black text-sm tracking-wider
+      text-white
+      playwrite-de-grund'>Message Sent To Customers To Reset Their Password</p>}
+      
+      />
+
+
+
+
+
+<TextField        fullWidth label="Password Reset Footer" name='password_reset_footer'  
+onChange={handleChangeEmailTemplates}
+value={password_reset_footer}
+id="fullWidth" multiline  rows={4}  
+      
+      helperText={<p className='dark:text-black text-sm tracking-wider
+      text-white
+      playwrite-de-grund'>Message Sent To Customers To Reset Their Password</p>}
+      
+      />
     </Box>
 
 
     <div className="flex gap-2 p-3">
-<button onClick     className="px-6 py-2 font-medium bg-black text-white w-fit transition-all 
+<button onClick   type='submit'  className="px-6 py-2 font-medium bg-black text-white w-fit transition-all 
 shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]
 rounded-md">
         Save Settings

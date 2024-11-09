@@ -10,7 +10,8 @@ import {  ThemeProvider } from '@mui/material';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
 import SmsTemplateDeniedAlert from '../Alert/SmsTemplateDeniedAlert'
 import SmsTemplateErrorAlert from '../Alert/SmsTemplateError'
-  
+import { IoKeyOutline, IoLockClosedOutline } from "react-icons/io5";
+
 // openSmsTemplateError, handleCloseSmsTemplateError 
 
 const templateData = {
@@ -47,6 +48,15 @@ const [openLoad, setOpenLoad] = useState(false);
 const [openTemplateAlert, setopenTemplateAlert] = useState(false)
 const [openTemplateError, setopenTemplateError]= useState(false)
 const [openSmsTemplateError, setopenSmsTemplateError] = useState(false)
+const [success, setSuccess] = useState(false);
+const [isLoading, setLoading] = useState(false);
+
+
+const [formData, setFormData] = useState({
+  api_key: '',
+  api_secret: ''
+});
+
 
 
 const handleCloseSmsTemplateError  = () => {
@@ -75,7 +85,36 @@ const handleCloseTemplateAlert = ()=> {
 
 
 
+const handleChangeSmsSettings = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({...prev, [name]: value}));
+};
 
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  
+  try {
+    const response = await fetch('/api/create_sms_setting', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ sms_setting: formData })
+    });
+
+    if (response.ok) {
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  } catch (error) {
+    console.error('Error saving SMS settings:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 const { admin_otp_confirmation_template,  payment_reminder_template,  
   service_provider_otp_confirmation_template, customer_otp_confirmation_template, user_invitation_template,
@@ -361,7 +400,110 @@ rounded-md">
 </form>
 
 
+
+
+
+<div className=" p-4">
+      <div className="max-w-md mx-auto">
+        <div className="dark:bg-gray-800 bg-white rounded-2xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            SMS Configuration
+          </h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              {/* API Key Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 
+                dark:text-gray-200 mb-2">
+                  API Key
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <IoKeyOutline className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="api_key"
+                    value={formData.api_key}
+                    onChange={handleChangeSmsSettings}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl 
+                      focus:ring-2 focus:ring-green-500 focus:border-green-500
+                      dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                      transition duration-150 ease-in-out"
+                    placeholder="Enter API Key"
+                    required
+                  />
+                </div>
+              </div>
   
+  
+     {/* API Secret Input */}
+     <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  API Secret
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <IoLockClosedOutline className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    name="api_secret"
+                    value={formData.api_secret}
+                    onChange={handleChangeSmsSettings}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl
+                      focus:ring-2 focus:ring-green-500 focus:border-green-500
+                      dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                      transition duration-150 ease-in-out"
+                    placeholder="Enter API Secret"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-xl
+                text-sm font-medium text-white bg-green-600 hover:bg-green-700
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                transition duration-150 ease-in-out
+                ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                ${success ? 'bg-green-600 hover:bg-green-700' : ''}`}
+            >
+              {isLoading ? (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                 fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                   strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 
+                  0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 
+                  7.938l3-2.647z"></path>
+                </svg>
+              ) : success ? (
+                'Settings Saved!'
+              ) : (
+                'Save Settings'
+              )}
+            </button>
+          </form>
+
+          {/* Help Text */}
+          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+            Enter your SMS provider API credentials. These will be used to send SMS 
+            notifications to your users.
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
     </div>
 
     </>

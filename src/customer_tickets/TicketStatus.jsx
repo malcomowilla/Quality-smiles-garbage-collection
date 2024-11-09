@@ -1,13 +1,10 @@
-
 import Lottie from 'react-lottie';
-
-
 import {useCallback,  useState, useEffect} from 'react'
 import TicketAnimation from '../animation/ticket.json'
 import { FaHandPointLeft } from "react-icons/fa6";
 import {useNavigate} from 'react-router-dom'
-
 import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
 
 const TicketStatus = () => {
 const navigate = useNavigate()
@@ -71,28 +68,89 @@ useEffect(() => {
 }, [getCurrentCustomer]);
 
   return (
-    <div className='w-full h-screen grid grid-auto-fit  items-center bg-white'>
-      
-      <Lottie options={defaultOptions} width={300} height={300}/>
-
-
-      <div onClick={()=> navigate(-1)} className='cursor-pointer'>
-      <FaHandPointLeft className='w-8 h-8 text-black'/>
-      <p className='font-light text-black'>Go Back</p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white
+    flex justify-center items-center">
+      {/* Top Navigation Bar */}
+      <div className="bg-white shadow-sm px-4 py-3 flex items-center fixed top-0 w-full z-10">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-2 text-gray-600"
+        >
+          <FaHandPointLeft className=" max-sm:text-4xl sm:text-3xl 
+           max-md:text-5xl" />
+          <span>Back</span>
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900 flex-1 text-center">
+          Ticket Status
+        </h1>
+        <div className="w-10"></div> {/* Spacer for alignment */}
       </div>
-      
 
-      <div className='flex justify-center'>
-        
-        <ul className='max-sm:text-sm'>
-        <li className='font-light text-black'>Ticket Status: <span className='font-extrabold'>{ticketStatus}</span></li>
+      {/* Main Content */}
+      <div className="pt-16 px-4 pb-6 max-w-lg mx-auto">
+        {/* Animation */}
+        <div className="flex justify-center mb-6">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Lottie options={defaultOptions} width={200} height={200} />
+          </motion.div>
+        </div>
 
-<li className='font-light text-black'>Ticket Number: <span className='font-extrabold'>{ticketNumber}</span></li>
-<li className='font-light text-black '> Date Created: <span className='font-extrabold'> {dateOfCreation}  </span></li>
-<li className='font-light text-black'> Issue Summary: <span className='font-extrabold'>{issueDescription} </span></li>
-<li className='font-light text-black'> Priority Level: <span className='font-extrabold'>{priorityLevel} </span> </li>
-        </ul>
-        
+        {/* Ticket Information */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="space-y-4">
+            {/* Status */}
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Status</span>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium
+                ${ticketStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                  ticketStatus === 'Resolved' ? 'bg-green-100 text-green-800' :
+                  'bg-blue-100 text-blue-800'}`}>
+                {ticketStatus}
+              </span>
+            </div>
+
+            {/* Ticket Number */}
+            <div className="flex items-center justify-between border-t pt-4">
+              <span className="text-gray-600">Ticket Number</span>
+              <span className="font-medium text-gray-900">{ticketNumber}</span>
+            </div>
+
+            {/* Creation Date */}
+            <div className="flex items-center justify-between border-t pt-4">
+              <span className="text-gray-600">Created</span>
+              <span className="font-medium text-gray-900">{dateOfCreation}</span>
+            </div>
+
+            {/* Priority Level */}
+            <div className="flex items-center justify-between border-t pt-4">
+              <span className="text-gray-600">Priority</span>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium
+                ${priorityLevel === 'High' ? 'bg-red-100 text-red-800' :
+                  priorityLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'}`}>
+                {priorityLevel}
+              </span>
+            </div>
+
+            {/* Issue Description */}
+            <div className="border-t pt-4">
+              <span className="text-gray-600 block mb-2
+              font-bold">Issue Description</span>
+              <p className="text-gray-900 bg-gray-50 p-3 rounded-lg text-sm">
+                {issueDescription}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Help Text */}
+        <p className="text-sm text-gray-500 text-center mt-6">
+          We'll notify you when there are updates to your ticket
+        </p>
       </div>
     </div>
   )

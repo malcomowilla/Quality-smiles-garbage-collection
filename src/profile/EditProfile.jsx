@@ -1,4 +1,3 @@
-
 import { AnimatePresence, motion } from "framer-motion";
 import { FiAlertCircle } from "react-icons/fi";
 import { useState, useEffect, useCallback } from "react";
@@ -243,6 +242,9 @@ function stringAvatar(name) {
      className="bg-green-500 bg-opacity-10 backdrop-blur p-8 fixed inset-0 z-[100] grid place-items-center overflow-y-scroll 
      cursor-pointer"
    >
+
+   <TbLetterX className='text-black text-2xl' onClick={() => setisOpenEditProfile(false)}/>
+
      <motion.div
        initial={{ scale: 0, rotate: "12.5deg" }}
        animate={{ scale: 1, rotate: "0deg" }}
@@ -254,7 +256,6 @@ function stringAvatar(name) {
        <div className="relative z-10">
        <div className="cursor-pointer w-16 h-16 mb-2 rounded-full text-3xl text-black ">
 
-<TbLetterX className='' onClick={() => setisOpenEditProfile(false)}/>
            </div>
          <h3 className="text-3xl font-bold  text-center  text-black  playwrite-de-grund mb-2">
            My Profile
@@ -415,28 +416,71 @@ value={updateFormData.user_name} />
 }}  label=' New Password' className='myTextField'  name='password' onChange={onChangeImagePreview} />
 
 <div className="flex gap-8 mt-4">
+  <button
+    disabled={loading}
+    type='submit'
+    className="relative inline-flex items-center justify-center px-8 py-3 
+    overflow-hidden font-medium text-white bg-green-500 transition-all duration-300 
+    ease-out rounded-lg shadow-md group hover:ring-2 hover:ring-offset-2 
+    hover:ring-green-400 disabled:opacity-70 disabled:cursor-not-allowed"
+  >
+    <span className="absolute inset-0 flex items-center justify-center w-full h-full 
+      text-white duration-300 -translate-x-full bg-green-600 group-hover:translate-x-0">
+      <svg 
+        className="w-6 h-6" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth="2" 
+          d="M14 5l7 7m0 0l-7 7m7-7H3"
+        />
+      </svg>
+    </span>
+    <span className="absolute flex items-center justify-center w-full h-full 
+      text-white transition-all duration-300 transform group-hover:translate-x-full">
+      {loading && <ImSpinner9 className="animate-spin mr-2"/>}
+      Save
+    </span>
+    <span className="relative invisible">Save</span>
+  </button>
 
-           <button
-           disabled={loading}
-           type='submit'
-             className="btn btn-success "
-           >
-                             {loading && <ImSpinner9 className={`${loading && 'animate-spin'}`}/> }
-
-               Save
-           </button>
-
-
-           <button
-             onClick={(e)=>  {
-              e.preventDefault()
-              setisOpenEditProfile(false)
-             }}
-             className="btn btn-outline btn-error "
-           >
-               Cancel
-           </button>
-         </div>
+  <button
+    onClick={(e) => {
+      e.preventDefault();
+      setisOpenEditProfile(false);
+    }}
+    className="relative inline-flex items-center justify-center px-8 py-3 
+    overflow-hidden font-medium text-red-500 border-2 border-red-500 
+    transition-all duration-300 ease-out rounded-lg shadow-md group 
+    hover:bg-red-50 hover:ring-2 hover:ring-offset-2 hover:ring-red-400"
+  >
+    <span className="absolute inset-0 flex items-center justify-center w-full h-full 
+      text-red-500 duration-300 -translate-y-full group-hover:translate-y-0">
+      <svg 
+        className="w-6 h-6" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth="2" 
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </span>
+    <span className="absolute flex items-center justify-center w-full h-full 
+      text-red-500 transition-all duration-300 transform group-hover:translate-y-full">
+      Cancel
+    </span>
+    <span className="relative invisible">Cancel</span>
+  </button>
+</div>
 
      
        </div>

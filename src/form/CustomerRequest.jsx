@@ -5,7 +5,9 @@ import  CustomerRequestAlert from '../Alert/CustomerRequestAlert'
 import CustomerRequestError from '../Alert/CustomerRequestError'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { SiMoneygram } from "react-icons/si";
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import CustomerProfile from '../components/CustomerProfile';
+import { FaUserCircle } from 'react-icons/fa';
 
 
 
@@ -14,13 +16,16 @@ import { motion } from "framer-motion"
 
 const CustomerRequest = () => {
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
-        customerLatitude, customer, setCustomer, setCustomerLatitude} = useApplicationSettings()
+        customerLatitude, customer, setCustomer, setCustomerLatitude,
+        customerId,setCustomerId, companySettings,setcompanySettings} = useApplicationSettings()
 const [loading, setloading]  = useState(false)
 const [openRequest, setopenRequest] = useState(false)
 const [openRequestError, setopenRequestError] = useState(false)
 
+const [showProfile, setShowProfile] = useState(false);
 
 
+const {company_name, contact_info, email_info, logo_preview} = companySettings
 
 const  handleCloseRequestError = (event, reason) => {
     if (reason === 'clickaway') {
@@ -99,82 +104,125 @@ const confirmRequest = async(e)=> {
   return (
    <>
    <CustomerRequestAlert  openRequest={openRequest} handleCloseRequest={handleCloseRequest} />
-   <CustomerRequestError  handleCloseRequestError={handleCloseRequestError} openRequestError={openRequestError} />
+   <CustomerRequestError  handleCloseRequestError={handleCloseRequestError} 
+   openRequestError={openRequestError} />
 
 
-<section className="bg-white   h-screen flex items-center">
-<Link to='/customer-payment'>
-<motion.div whileHover={{
-    scale: 1.2,
-    transition: { duration: 0.5 },
+<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white
+flex justify-center items-center">
+  {/* Top Navigation Bar */}
+  <div className="bg-white shadow-sm px-4 py-3 flex justify-between items-center
+   fixed top-0 w-full z-10">
+    <Link to='/customer' className="flex items-center gap-2 text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+       viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+         d="M15 19l-7-7 7-7" />
+      </svg>
+      <span className='max-sm:text-xl sm: text-2xl font-semibold'>Back</span>
+    </Link>
+    <AnimatePresence mode="wait">
+        {showProfile && (
+          <CustomerProfile 
+            key="customer-profile"
+            onClose={() => setShowProfile(false)} 
+          />
+        )}
+      </AnimatePresence>
 
-    
-  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 border-green-800
-    ml-4  text-black cursor-pointer   w-[120px] gap-x-4  playwrite-de-grund rounded-md'>
-      <SiMoneygram className='text-green-700'/>
-      To Up   </motion.div> </Link>
+      {/* Add profile button to your header */}
+      <div className="flex items-center gap-4">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowProfile(true)}
+          className="text-gray-600 hover:text-gray-900 p-2"
+        >
+          <FaUserCircle className="max-sm:text-5xl sm:text-5xl 
+           max-md:text-5xl " />
+        </motion.button>
+        {/* ... other header content ... */}
+      </div>
+    <div className="w-6"></div> {/* Spacer for alignment */}
+  </div>
 
-<div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-
-
-<div className='flex justify-center'>
-    <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-lg' alt="quality-smiles" />
-</div>
-
-
-<div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund  tracking-widest'>
-                 Quality Smiles
-        </div>
-    <div className='flex justify-evenly'>
-    <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white playwrite-de-grund "> Confirm Your Request </h2>
-
-
-
-
+  {/* Main Content */}
+  <div className="pt-20 px-4 pb-6 max-w-lg mx-auto">
+    {/* Logo and Title */}
+    <div className="flex flex-col items-center mb-8">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <img 
+          src={logo_preview} 
+          className="w-24 h-24 rounded-full shadow-lg mb-4" 
+          alt={company_name} 
+        />
+      </motion.div>
+      <h2 className="text-2xl font-bold text-gray-900 text-center">
+        {company_name}
+      </h2>
     </div>
 
+    {/* Quick Actions */}
+    <div className="mb-8">
+      <Link to='/customer-payment'>
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3"
+        >
+          <div className="bg-green-50 p-2 rounded-full">
+            <SiMoneygram className="text-green-600 text-xl" />
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900">Top Up Balance</h3>
+            <p className="text-sm text-gray-600">Add funds to your account</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </motion.div>
+      </Link>
+    </div>
 
-    <form onSubmit={confirmRequest}>
-        
-<div className='flex flex-row gap-4'>
-   <Link to='/customer'><img src="/images/logo/icons8-arrow-64.png" className='w-8 h-8' alt="arrow" /></Link>
-   <span  className='text-black playwrite-de-grund'>Go Back</span>
-
-</div>
-
-
-        <div className='mt-2'>
-        <Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
-        
-        
+    {/* Request Form */}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 className="text-xl font-semibold text-gray-900 mb-6">
+        Confirm Your Request
+      </h3>
       
-        <div role="status">
-          { loading &&
-        <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600 fill-red-700`}
-        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-         0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-         91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-         9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-         <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-         
-         20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-          46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-           10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-           79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-           39.0409Z" fill="currentFill"/>
-        </svg>
-          }
-        
-        </div>
-          
-          Confirm Request</Button>
-        </div>
-       
+      <form onSubmit={confirmRequest}>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          type="submit"
+          disabled={loading}
+          className="w-full bg-green-600 text-white py-3.5 rounded-xl font-medium flex items-center justify-center gap-2
+            disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700 transition-colors"
+        >
+          {loading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Confirm Request</span>
+            </>
+          )}
+        </motion.button>
+      </form>
 
-    </form>
+      <p className="text-sm text-gray-600 text-center mt-4">
+        Your request will be processed shortly
+      </p>
+    </div>
+  </div>
 </div>
-</section>
    </>
   )
 }

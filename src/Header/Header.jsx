@@ -5,23 +5,28 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkLight from '../dark_light_button/DarkLight'
 import Profile from '../profile/Profile'
 import {useState} from 'react'
-
-
+import { Badge, Menu, MenuItem } from '@mui/material';
+import { useNotifications } from '../context/NotificationContext';
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const { notifications, unreadCount, clearNotifications } = useNotifications();
 
   const { seeSidebar, setSeeSideBar, handleThemeSwitch, theme, icon, setIcon, smsBalance, setSmsBalance,
     user_name
    }
    = useApplicationSettings()
 
+  const handleNotificationClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+    clearNotifications();
+  };
 
-
-
-
-  
   return (
     <div className=' flex justify-between p-3 cursor-pointer'>
 
@@ -46,10 +51,38 @@ setIcon(!icon)
 
 
       <div className='text-black bg-gray-200 w-[50px] max-md:h-[50px]
-        sm:h-[50x] max-sm:h-[50px] lg:h-[50px]  md:h-[50px] shadow-2xl p-4 rounded-full flex justify-center'>
-        
-      <NotificationsNoneIcon/>
+        sm:h-[50x] max-sm:h-[50px] lg:h-[50px]  md:h-[50px] shadow-2xl p-4 rounded-full flex justify-center relative'
+      >
+        <Badge badgeContent={unreadCount} color="error">
+          <NotificationsNoneIcon onClick={handleNotificationClick} />
+        </Badge>
       </div>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: 300,
+            width: '300px',
+          },
+        }}
+      >
+        {notifications.length === 0 ? (
+          <MenuItem disabled>No new notifications</MenuItem>
+        ) : (
+          notifications.map((notification, index) => (
+            <MenuItem key={index} className="whitespace-normal">
+              <div className="flex flex-col">
+                <span className="font-semibold">{notification.sender}</span>
+                <span className="text-sm text-gray-600">{notification.message}</span>
+                <span className="text-xs text-gray-400">{notification.time}</span>
+              </div>
+            </MenuItem>
+          ))
+        )}
+      </Menu>
 
       <Profile open={open} setOpen={setOpen}/>
 

@@ -5,6 +5,12 @@ import {useNavigate} from 'react-router-dom'
 import dayjs from 'dayjs';
 import { createConsumer } from '@rails/actioncable';
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import { useNotifications } from '../context/NotificationContext';
+import useSound from 'use-sound';
+import notificationSound from '/751326__robinhood76__13129-mystery-cash-bonus.wav'; // Add your sound file
+
+
+
 
 
 const GeneralSettingsContext = createContext(null)
@@ -279,6 +285,29 @@ const [checkEmail, setCheckEmail] = useState(null)
 const [calendarSettings, setCalendarSettings] = useState(calendarSettingsData)
 const [logoutMessage, setlogoutmessage] = useState(false)
 const [openLogoutSession, setopenLogoutSession] = useState(false)
+const [providerData, setProviderData] = useState(null);
+const [customerProfileData, setCustomerProfileData] = useState(null);
+const [messages, setMessages] = useState([])
+
+const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+const [isWindowFocused, setIsWindowFocused] = useState(true);
+const { addNotification } = useNotifications();
+
+const [playNotification] = useSound(notificationSound, { volume: 0.5 });
+
+const companyInfo  = {
+  company_name: '',
+  contact_info: '',
+  email_info: '',
+  logo: null, 
+  logo_preview: null 
+}
+
+const [companySettings, setcompanySettings] = useState(companyInfo)
+const [isOpenProvider, setIsOpenProvider] = useState(false)
+const [customerId, setCustomerId] = useState('')
+
 
 useEffect(() => {
   setChatUserName(user_name)
@@ -1730,7 +1759,194 @@ useEffect(() => {
     
 
 
+  const handleGetCompanySettings = useCallback(
+    async(abortController) => {
+      try {
+        const response = await fetch('/api/get_company_settings', {
+          signal: abortController.signal // Add the abort signal to the fetch
+        })
+        const newData = await response.json()
+        if (response.ok) {
+          // setcompanySettings(newData)
+  
+          const { contact_info, company_name, email_info, logo_url } = newData
+          setcompanySettings((prevData)=> ({...prevData, 
+            contact_info, company_name, email_info,
+          
+            logo_preview: logo_url
+          }))
+  
+          console.log('company settings fetched', newData)
+        }else{
+          console.log('failed to fetch company settings')
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Fetch aborted')
+        } else {
+          console.log("error fetching company settings", error)
+        }
+      }
+    },
+    [setcompanySettings],
+  )
+  
+  useEffect(() => {
+    const abortController = new AbortController()
+    
+    handleGetCompanySettings(abortController)
+    
+    return () => {
+      // This cleanup function runs when component unmounts
+      abortController.abort()
+    }
+  }, [handleGetCompanySettings])
+  
 
+
+  const handleCustomerLogout = async() => {
+
+    try {
+      const response = await fetch('/api/logout_customer', {
+        method: 'DELETE',
+        credentials: 'include'
+  
+      })
+  if (response.ok) {
+    navigate('/customer_role')
+    setopenLogoutCustomerSucessfully(true)
+    localStorage.removeItem('customer');
+  
+  } else {
+    console.log('failed')
+  }
+  
+    } catch (error) {
+      console.log(error)
+      setOpen(true)
+    }
+  }
+  
+
+
+  const handleLogout = async(e) => {
+    e.preventDefault()
+        try {
+          const response = await fetch('/api/logout_service_provider', {
+            method: 'DELETE',
+            credentials: 'include'
+      
+          })
+    
+    
+    
+          
+      if (response.ok) {
+        navigate('/service_provider_role')
+        localStorage.removeItem('service provider');
+        setopenServiceProviderLogoutSuccesful(true)
+      
+      } else {
+        console.log('failed')
+      }
+      
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      
+
+const handleGetServiceProvider = useCallback(
+  async() => {
+    const response = await fetch('/api/get_current_service_provider', {
+    })
+    const newData = await response.json()
+    if (response.ok) {
+      setProviderData(newData)
+    }
+  },
+  [],
+)
+
+useEffect(() => {
+    
+  handleGetServiceProvider()
+  
+}, [handleGetServiceProvider]);
+
+
+
+
+
+const handleGetCustomer = useCallback(
+  async() => {
+    const response = await fetch('/api/get_current_customer', {
+    })
+    const newData = await response.json()
+    if (response.ok) {
+      setCustomerProfileData(newData)
+      setCustomerId(newData.id)
+    }
+  },
+  [],
+)
+
+useEffect(() => {
+    
+  handleGetCustomer()
+  
+ 
+}, [handleGetCustomer]);
+
+
+
+
+const isCurrentUser = useCallback((message) => {
+  if (message.customer_id && id) {
+    return message.customer_id.toString() === id.toString();
+  }
+  return false;
+}, [id]);
+
+
+
+const cable = createConsumer("ws://localhost:4000/cable");
+  useEffect(() => {
+   const subscription = cable.subscriptions.create("MessageChannel", {
+    connected() {
+        console.log("Connected to private WebSocket!");
+      },
+      received(data) {
+        console.log("Message received:", data);
+        setMessages((prevMessages) => [...prevMessages, data]);
+        
+        // Add notification
+        if (!isCurrentUser(data)) {
+          addNotification({
+            sender: data.sender_info?.name || 'Unknown',
+            message: data.content,
+            time: new Date().toLocaleTimeString(),
+          });
+          
+          // Play sound if window not focused
+          if (!isWindowFocused && notificationsEnabled) {
+            playNotification();
+          }
+        }
+      },
+      disconnected() {
+        console.log("Disconnected from private WebSocket!");
+      },
+     
+   });
+
+   return () => {
+     subscription.unsubscribe();
+     // Reset title when component unmounts
+     document.title = "Chat";
+   };
+ }, [cable.subscriptions, isWindowFocused, notificationsEnabled,
+   playNotification, addNotification, isCurrentUser]);
 
 
 
@@ -1779,7 +1995,13 @@ useEffect(() => {
     setopenServiceProviderLoginSuccesful,openStoreManagerLogin, handleCloseStoreManagerLogin ,setopenStoreManagerLogin,
     openStoreManagerLogout, handleCloseStoreManagerLogout,setopenStoreManagerLogout,signedUpPassKey, setSignedUpPassKey,
     checkEmail,seeSettings7, setSeeSettings7, handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
-    openLogoutSession, handleCloseLogoutSession,setopenLogoutSession,chat_user_name
+    openLogoutSession, handleCloseLogoutSession,setopenLogoutSession,chat_user_name,
+    companySettings, setcompanySettings, providerData,
+    setProviderData,handleLogout,handleCustomerLogout,customerProfileData,
+    setCustomerProfileData, isOpenProvider, setIsOpenProvider,customerId,setCustomerId,
+    messages, setMessages, isCurrentUser,notificationsEnabled, setNotificationsEnabled,isWindowFocused, setIsWindowFocused
+
+     
 
   }}>
 

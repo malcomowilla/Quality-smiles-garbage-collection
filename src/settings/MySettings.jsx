@@ -22,8 +22,9 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import {useNavigate} from 'react-router-dom'
 import Alert from '@mui/material/Alert';
+import CompanySettingsCreateAlert from '../Alert/CompanySettingsCreateAlert'
 
-
+// openCreateAlert, handleCloseCreateAlert
 
 
 
@@ -37,11 +38,11 @@ const MySettings = () => {
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,seeSettings7, setSeeSettings7,
-       handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings
+       handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
+       companySettings, setcompanySettings
      } = useApplicationSettings();
 
      const navigate = useNavigate()
-
 const { login_with_otp, login_with_web_auth, login_with_otp_email, send_password_via_sms,
   send_password_via_email,check_is_inactive,check_inactive_days,check_inactive_hrs,
   enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys
@@ -56,12 +57,14 @@ const {
 
 // const {send_manager_number_via_email , send_manager_number_via_sms, enable_2fa_for_store_manager} = storeManagerSettings
       const [seeSettings6, setSeeSettings6] = useState(false)
+      const [seeSettings8, setSeeSettings8] = useState(false)
      const [openLoad, setOpenLoad] = useState(false)
        
 
      const [open, setOpen] = useState(false);
      const [openError, setOpenError] = useState(false);
      const [loading, setloading] = useState(false)
+    const [openCreateAlert, setOpenCreateAlert] = useState(false)
 const [isloading, setisloading] = useState({
   loading1: false,
   loading2: false,
@@ -70,12 +73,129 @@ const [isloading, setisloading] = useState({
   loading5: false,
   loading6: false,
   loading7: false,
+  loading8: false,
   
 
 })
 
+const {company_name, contact_info, email_info} = companySettings
 
 
+const handleFormDataChangeForCompany = (e) => {
+  setcompanySettings((prevData)=> ({...prevData, [e.target.name]: e.target.value}))
+}
+
+const handleCloseCreateAlert = () => {
+  setOpenCreateAlert(false)
+}
+
+
+
+
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setcompanySettings(prevData => ({
+      ...prevData,
+      logo: file,
+      logo_preview: URL.createObjectURL(file)
+    }));
+  }
+};
+
+
+const handleGetCompanySettings = useCallback(
+  async(abortController) => {
+    try {
+      const response = await fetch('/api/get_company_settings', {
+        signal: abortController.signal // Add the abort signal to the fetch
+      })
+      const newData = await response.json()
+      if (response.ok) {
+        // setcompanySettings(newData)
+        const { contact_info, company_name, email_info, logo_url } = newData
+        setcompanySettings((prevData)=> ({...prevData, 
+          contact_info, company_name, email_info,
+        
+          logo_preview: logo_url
+        }))
+
+        console.log('company settings fetched', newData)
+      }else{
+        console.log('failed to fetch company settings')
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted')
+      } else {
+        console.log("error fetching company settings", error)
+      }
+    }
+  },
+  [setcompanySettings],
+)
+
+useEffect(() => {
+  const abortController = new AbortController()
+  
+  handleGetCompanySettings(abortController)
+  
+  return () => {
+    // This cleanup function runs when component unmounts
+    abortController.abort()
+  }
+}, [handleGetCompanySettings])
+
+
+
+const handleCreateCompanySettings = async (e) => {
+  e.preventDefault()
+try {
+  setisloading({...isloading, loading8: true})
+  const formData = new FormData();
+  formData.append('company_name', companySettings.company_name);
+  formData.append('contact_info', companySettings.contact_info);
+  formData.append('email_info', companySettings.email_info);
+
+  if (companySettings.logo) {
+    formData.append('logo', companySettings.logo);
+  }
+  const response = await fetch('/api/company_settings', {
+    method: 'POST',
+   
+    body: formData
+  })
+
+
+  const newData = await response.json()
+  if (response.ok) {
+    console.log('company settings created', newData)
+    const { contact_info, company_name, email_info, logo_url } =
+     newData;
+
+
+    setisloading({...isloading, loading8: false})
+
+
+    setcompanySettings(prevData => ({
+      ...prevData, 
+      contact_info, 
+      company_name, 
+      email_info,
+      logo_preview: logo_url
+    }));
+    setOpenCreateAlert(true)
+  } else {
+    setisloading({...isloading, loading8: false})
+
+
+    console.log('failed to create company settings')
+  }
+} catch (error) {
+  console.log('error creating company settings',error)
+  setisloading({...isloading, loading8: false})
+}
+}
 
 
 
@@ -1035,6 +1155,10 @@ const defaultOptions = {
 };
 
 
+
+
+
+
   return (
 
 <>
@@ -1099,10 +1223,28 @@ const defaultOptions = {
      </Backdrop>
   }
 
+
+
+
+
+{isloading.loading8 &&  <Backdrop open={openLoad} 
+sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} 
+  width={400} />
+    
+     </Backdrop>
+  }
+
 <div id="accordion-open" data-accordion="open" className='mt-9'>
   <SettingsAlert open={open} handleClose={handleClose}/>
   <SettingsAlertError openError={openError} handleCloseError={handleCloseError}/>
-<SettingsOffLineAlert   handleCloseOfflineError={handleCloseOfflineError} openOfflineError={openOfflineError}/>
+<SettingsOffLineAlert   handleCloseOfflineError={handleCloseOfflineError}
+ openOfflineError={openOfflineError}/>
+
+
+ <CompanySettingsCreateAlert  openCreateAlert={openCreateAlert}
+  handleCloseCreateAlert={handleCloseCreateAlert}/>
   <h2 id="accordion-open-heading-1">
 
 
@@ -2015,6 +2157,159 @@ Is Created(email)"  />
 
   </motion.div>
   </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 id="accordion-open-heading-2">
+    <button type="button"   onClick={()=> setSeeSettings8(!seeSettings8)} className="flex items-center justify-between
+     w-full p-5 
+    
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
+    hover:dark:text-white hover:text-black
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/> 
+      Company </span>
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+       fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
+      </svg>
+    </button>
+  </h2>
+
+
+  <form onSubmit={handleCreateCompanySettings}>
+    <motion.div variants={variantDiv} 
+      transition={{duration:0.5, ease: "easeInOut"}} 
+      initial='hidden' 
+      animate={seeSettings8 ? "visible" : "hidden"} 
+      id="accordion-open-body-2" 
+      className={''} 
+      aria-labelledby="accordion-open-heading-2">
+
+      <ThemeProvider theme={materialuitheme}>
+        <p className='text-black p-3 font-light edu_ustralia_font text-lg tracking-widest'>
+          Company Settings
+        </p>
+        
+        <Stack direction='column' className='myTextField' sx={{
+          '& .MuiTextField-root': { 
+            m: 1, 
+            width: '90ch',  
+            marginTop: '30px',  
+            '& label.Mui-focused': {
+              color: 'black',
+              fontSize: '16px'
+            },
+            '& .MuiOutlinedInput-root': {
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "black",
+                borderWidth: '3px',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'black',
+              }
+            } 
+          },
+        }} spacing={{xs: 1, sm: 2}}>
+
+          {/* Existing text fields */}
+          <TextField  
+            name='company_name'
+            value={company_name}
+            onChange={handleFormDataChangeForCompany}
+            label='Company Name' 
+            type='text'
+          />
+
+          <TextField  
+            onChange={handleFormDataChangeForCompany}
+            name='email_info'
+            value={email_info}
+            label='Email Info' 
+            type='text'
+          />
+
+          <TextField  
+            onChange={handleFormDataChangeForCompany}
+            name='contact_info'
+            value={contact_info}
+            label='Company Contact Info' 
+            type='text'
+          />
+
+          {/* Add the new image upload section */}
+          <div className="flex flex-col gap-4 p-4">
+            <label className="text-lg font-medium  dark:text-black text-white">Company Logo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="logo-upload"
+            />
+            
+            <label 
+              htmlFor="logo-upload"
+              className="flex items-center justify-center p-4 border-2
+               border-dashed border-gray-300 rounded-lg cursor-pointer
+                hover:border-gray-400"
+            >
+              {companySettings.logo_preview ? (
+                <div className="relative">
+                  <img 
+                    src={companySettings.logo_preview}
+                    alt="Logo preview" 
+                    className="max-w-xs max-h-48 object-contain"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setcompanySettings(prev => ({...prev, logo: null, logo_preview: null}));
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div className="text-gray-500">
+                  <p>Click to upload company logo</p>
+                  <p className="text-sm">PNG, JPG up to 5MB</p>
+                </div>
+              )}
+            </label>
+          </div>
+
+        </Stack>
+
+        <div className='p-5'>
+          <button type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
+            shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
+            hover:translate-y-[3px] rounded-md">
+            {isloading.loading8 && <ImSpinner9 className={`${isloading.loading8 && 'animate-spin'}`} />} 
+            UPDATE SETTINGS
+          </button>
+        </div>
+
+      </ThemeProvider>
+    </motion.div>
+  </form>
+
 </div>
 
 </>

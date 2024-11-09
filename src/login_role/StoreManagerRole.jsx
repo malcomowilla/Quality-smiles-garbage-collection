@@ -17,6 +17,7 @@ import StoreManagerInvalidOtpAlert from '../Alert/StoreManagerInvalidOtpAlert'
 import { GoPerson } from "react-icons/go";
 import StoreManagerLogout from '../Alert/StoreManagerLogout'
 import StoreManagerOtpEmail from '../Alert/StoreManagerOtpEmail'
+import { motion } from "framer-motion";
 
 
 // openOtpEmailSent, handleCloseOtpEmailSent StoreManagerOtpEmail
@@ -31,12 +32,22 @@ import StoreManagerOtpEmail from '../Alert/StoreManagerOtpEmail'
     openStoreManagerLogout, handleCloseStoreManagerLogout,
     materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
     seeSettings3, setSeeSettings3,  setsettingsformData,  handleCustomerFormDataChange,
-    settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
-     handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
-     seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,
-     setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
-     settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets
+    settingsformDataForProvider, setsettingsforProvider, openOfflineError, 
+     setOpenOfflineError,
+     handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,
+     handleStoreFormDataChange,
+     seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,
+     handleFormDataChangeForStoreManager,
+     setstoreManagerSettings,adminFormSettings, setAdminFormSettings, 
+     handleFormDataChangeForAdmin,
+     settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,
+     companySettings
   } = useApplicationSettings()
+
+
+
+  const {company_name, contact_info, email_info, logo_preview} = companySettings
+
 
 const {send_manager_number_via_sms, send_manager_number_via_email, 
   enable_2fa_for_store_manager
@@ -351,256 +362,386 @@ if (enable_2fa_for_store_manager == true) {
  handleCloseProviderInvalidCode={handleCloseProviderInvalidCode}/>
 <StoreManagerInvalidOtpAlert openProviderInvalidOtp={openProviderInvalidOtp} handleCloseProviderInvalidOtp={handleCloseProviderInvalidOtp} />
 
-    <div    className='bg-white h-screen flex justify-center items-center'>
-{enable_2fa_for_store_manager  ?  (
+{enable_2fa_for_store_manager  ? (
+        <>
+
+
+{otpSent  ? (
   <>
-{otpSent ? (
+     <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen
+      flex flex-col">
+            <div className="w-full bg-white shadow-sm py-4 px-4 flex flex-col 
+            items-center">
+            <motion.div 
+  initial={{ y: 20, opacity: 0 }}
+  animate={{ y: 0, opacity: 1 }}
+  transition={{ 
+    type: "spring",
+    stiffness: 100,
+    damping: 10
+  }}
+  className="absolute w-full sm:top-[420px] xl:top-[80px] lg:top-[420px] 
+  max-sm:top-[420px]"
+>
+  <div className="relative mx-auto max-w-sm">
+    {/* Glowing background effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-white
+     to-blue-100 
+      blur-xl opacity-70 rounded-3xl transform -translate-y-4 scale-95">
+    </div>
 
+    {/* Main content */}
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400 }}
+      className="relative bg-white rounded-2xl shadow-2xl p-6 backdrop-blur-sm 
+        border border-gray-100/20"
+    >
+      {/* Logo */}
+      <motion.div
+        whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+        transition={{ duration: 0.5 }}
+        className="relative mx-auto w-fit"
+      >
+        <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-md"></div>
+        <img 
+          src={logo_preview} 
+          alt="logo" 
+          className="relative w-24 h-24 rounded-full object-contain 
+            shadow-lg ring-4 ring-white"
+        />
+      </motion.div>
 
- 
-<form    onSubmit={handleVerifyOtp} className="flex max-w-md flex-col gap-4">
-
-
-<div>
-
-<h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
-   
-
-    Login With Your OTP
-    
-    <GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
-    </h2>
-
-<div className="mb-2 block playwrite-de-grund  ">
-  <Label htmlFor="repeat-password" value='Customer Code' />
-</div>
-
-    
-
-<div  className='relative'>
-<TextInput name="otp"  value={otp}  onChange={(e) => setOtp(e.target.value)}
-type={seeManagerNumber ? 'password' : 'text'} 
- required shadow  
-
-
- style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
-/>
-
-  <div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
-  flex items-center pr-1 cursor-pointer'>
- { seeManagerNumber  ?   <FaEyeSlash   />  : <FaEye/>
-
-
-}
-
+      {/* Company Name */}
+      <motion.div 
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mt-4 text-center"
+      >
+        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+          from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
+          font-bold tracking-wide">
+          {company_name}
+        </h1>
+        <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-blue-600 
+          rounded-full mx-auto mt-2">
+        </div>
+      </motion.div>
+    </motion.div>
   </div>
+</motion.div>
+            </div>
+
+            <div className="flex-1 flex justify-center items-center px-4">
+              <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
+                <div className="text-center">
+                  <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Enter OTP</h2>
+                  <p className="text-gray-600">Check your device for the code</p>
+                </div>
+
+                <div>
+                  <Label htmlFor="otp" value="OTP" className="block mb-2 text-gray-700" />
+                  <div className="relative">
+                    <TextInput
+                      name="otp"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      type={seeManagerNumber? 'password' : 'text'}
+                      required
+                      shadow
+                      className="w-full px-4 py-3 rounded-lg border focus:ring-2
+                       focus:ring-green-500"
+                      style={{backgroundColor: 'white', width: '100%'
+                        , paddingRight: '40px', color: 'black'}}
+                    />
+                    <div onClick={() => setseeManagerNumber(!seeManagerNumber)} 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                      {seeManagerNumber ? <FaEyeSlash /> : <FaEye />}
+                    </div>
+                  </div>
+                </div>
 
 
-
-
-
-
-</div>
-
-</div>
-
-<Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
-
-
-
-<div role="status">
-{ loading &&
-<svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600 fill-red-700`}
-viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-
-20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
- 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
- 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
- 39.0409Z" fill="currentFill"/>
-</svg>
-}
-
-</div>
-
-Login Into Your Portal</Button>
-<ArrowBackIcon style={{color: 'black'}}   className='cursor-pointer'  onClick={handleGoBack}/>
-
-</form>
-
-    ) : (
-   
-
-<form    onSubmit={handleStoreManagerSignIn} className="flex max-w-md flex-col gap-4">
-
-
-<div>
-
-<h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl'>
-
-
-Login With Your Management Number</h2>
-
-<div className="mb-2 block playwrite-de-grund  ">
-<Label htmlFor="repeat-password" value='Service Provider Code' />
-</div>
-
-
-
-
-<div  className='relative'>
-<TextInput name="manager_number"  value={storeManagerLogin.manager_number}    onChange={handleChange} 
-type={seeManagerNumber ? 'password' : 'text'} 
-required shadow  
-
-
-style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
-/>
-
-<div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
-flex items-center pr-1 cursor-pointer'>
-{seeManagerNumber  ?   <FaEyeSlash   />  : <FaEye/>
-
-
-}
-
-</div>
-
-
-
-
-
-
-</div>
-
-</div>
-
-<Button className='playwrite-de-grund flex ' type="submit" disabled={loading}>
-
-
-
-<div role="status">
-{ loading &&
-<svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600
- fill-red-700`}
-viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-
-20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-39.0409Z" fill="currentFill"/>
-</svg>
-}
-
-</div>
-
-Login In </Button>
-
-<Link className='' to='/choose_role'>
-    <p className='playwrite-de-grund text-black'>Go Back</p>
-    <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
-    </Link> 
- 
-
-</form>
-    )}    
+                <Button type="submit" disabled={loading}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg">
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Verifying...
+                    </div>
+                  ) : (
+                    'Verify & Login'
+                  )}
+                </Button>
+              </form>
+            </div>
+          </div>
   </>
-): 
-<form    onSubmit={handleStoreManagerSignIn} className="flex max-w-md flex-col gap-4">
+) : <>
+
+<div className="bg-gradient-to-b from-blue-50 to-white min-h-screen flex
+         justify-center items-center px-4 relative">
+
+<motion.div 
+  initial={{ y: 20, opacity: 0 }}
+  animate={{ y: 0, opacity: 1 }}
+  transition={{ 
+    type: "spring",
+    stiffness: 100,
+    damping: 10
+  }}
+  className="absolute w-full sm:top-[420px] xl:top-[80px] lg:top-[420px] max-sm:top-[420px]"
+>
+  <div className="relative mx-auto max-w-sm">
+    {/* Glowing background effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-white to-blue-100 
+      blur-xl opacity-70 rounded-3xl transform -translate-y-1 scale-95">
+    </div>
+
+    {/* Main content */}
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400 }}
+      className="relative bg-white rounded-2xl shadow-2xl p-6 backdrop-blur-sm 
+        border border-gray-100/20"
+    >
+      {/* Logo */}
+      <motion.div
+        whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+        transition={{ duration: 0.5 }}
+        className="relative mx-auto w-fit"
+      >
+        <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-md"></div>
+        <img 
+          src={logo_preview} 
+          alt="logo" 
+          className="relative w-24 h-24 rounded-full object-contain 
+            shadow-lg ring-4 ring-white"
+        />
+      </motion.div>
+
+      {/* Company Name */}
+      <motion.div 
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mt-4 text-center"
+      >
+        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+          from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
+          font-bold tracking-wide">
+          {company_name}
+        </h1>
+        <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-blue-600 
+          rounded-full mx-auto mt-2">
+        </div>
+      </motion.div>
+    </motion.div>
+  </div>
+</motion.div>
+
+         
+
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+          <form onSubmit={handleStoreManagerSignIn} className="flex flex-col gap-6">
+            <div className="text-center">
+              <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-600">Login with your manager number</p>
+            </div>
+
+            <div>
+              <Label htmlFor="manager_number" value="Manager Number" className="block mb-2 text-gray-700" />
+              <div className="relative">
+                {storeManagerLogin.manager_number ? (
+                  <TextInput
+                    name="manager_number"
+                    value={storeManagerLogin.manager_number}
+                    onChange={handleChange}
+                    type={seeManagerNumber ? 'password' : 'text'}
+                    required
+                    shadow
+                    className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-500"
+                    style={{backgroundColor: 'white', width: '100%', paddingRight: '40px'}}
+                  />
+
+                  
+                ) : (
+                  <TextInput
+                    name="manager_number"
+                    value={storeManagerLogin.manager_number}
+                    onChange={handleChange}
+                    type={seeManagerNumber ? 'password' : 'text'}
+                    required
+                    shadow
+
+                    className="w-full px-4 py-3 rounded-lg border
+                    t
+                    focus:ring-2
+                     focus:ring-green-500"
+                    style={{backgroundColor: 'white', color: 'black',  width: '100%', paddingRight: '40px'}}
+                  />
+                )}
+
+                
+    <div onClick={() => setseeManagerNumber(!seeManagerNumber)} 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                    {seeManagerNumber ? <FaEyeSlash /> : <FaEye />}
+                  </div>
+                </div>
+              </div>
+
+              <Button type="submit" disabled={loading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg">
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Logging in...
+                  </div>
+                ) : (
+                  'Login'
+                )}
+              </Button>
+
+              <div onClick={handleGoBack} className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
+                <ArrowBackIcon />
+                <span>Back to Selection</span>
+              </div>
+            </form>
+          </div>
+        </div>
+</>
 
 
-<div>
+}
 
-<h2 className='text-black mb-10 playwrite-de-grund font-bold text-xl flex gap-4 max-sm:gap-1'>
+       
+        </>
+      ) : (
 
+        
+<>
 
-Login With Your Management Number
-<GoPerson className='text-green-700 text-2xl max-sm:text-3xl'/>
-</h2>
+        <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen flex
+         justify-center items-center px-4 relative">
 
-<div className="mb-2 block playwrite-de-grund  ">
-<Label className='text-lg' htmlFor="repeat-password" value='Store Manager Code' />
-</div>
+<motion.div 
+  initial={{ y: 20, opacity: 0 }}
+  animate={{ y: 0, opacity: 1 }}
+  transition={{ 
+    type: "spring",
+    stiffness: 100,
+    damping: 10
+  }}
+  className="absolute w-full sm:top-[420px] xl:top-[80px] lg:top-[420px] max-sm:top-[420px]"
+>
+  <div className="relative mx-auto max-w-sm">
+    {/* Glowing background effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-white to-blue-100 
+      blur-xl opacity-70 rounded-3xl transform -translate-y-1 scale-95">
+    </div>
 
+    {/* Main content */}
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400 }}
+      className="relative bg-white rounded-2xl shadow-2xl p-6 backdrop-blur-sm 
+        border border-gray-100/20"
+    >
+      {/* Logo */}
+      <motion.div
+        whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+        transition={{ duration: 0.5 }}
+        className="relative mx-auto w-fit"
+      >
+        <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-md"></div>
+        <img 
+          src={logo_preview} 
+          alt="logo" 
+          className="relative w-24 h-24 rounded-full object-contain 
+            shadow-lg ring-4 ring-white"
+        />
+      </motion.div>
 
+      {/* Company Name */}
+      <motion.div 
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mt-4 text-center"
+      >
+        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+          from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
+          font-bold tracking-wide">
+          {company_name}
+        </h1>
+        <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-blue-600 
+          rounded-full mx-auto mt-2">
+        </div>
+      </motion.div>
+    </motion.div>
+  </div>
+</motion.div>
 
+         
 
-<div  className='relative'>
-<TextInput name="manager_number"  value={storeManagerLogin.manager_number}    onChange={handleChange} 
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+          <form onSubmit={handleStoreManagerSignIn} className="flex flex-col gap-6">
+            <div className="text-center">
+              <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
+              <h2 className="text-xl font-bold text-gray-900
+              itim-regular mb-2">Welcome Back</h2>
+              <p className="text-gray-600">Login with your manager number</p>
+            </div>
+
+            <div>
+              <Label htmlFor="manager_number" value="Manager Number"
+               className="block mb-2 text-gray-700" />
+              <div className="relative">
+              
+
+              <TextInput name="manager_number"  value={storeManagerLogin.manager_number}    
+onChange={handleChange} 
 type={seeManagerNumber ? 'password' : 'text'} 
 required shadow  
 
 
 style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
 />
+                
+    <div onClick={() => setseeManagerNumber(!seeManagerNumber)} 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                    {seeManagerNumber ? <FaEyeSlash /> : <FaEye />}
+                  </div>
+                </div>
+              </div>
 
-<div  onClick={()=> setseeManagerNumber(!seeManagerNumber)} className='absolute   inset-y-0 right-0 text-lg text-black 
-flex items-center pr-1 cursor-pointer'>
-{seeManagerNumber  ?   <FaEyeSlash   />  : <FaEye/>
+              <Button type="submit" disabled={loading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 
+                rounded-lg">
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent
+                     rounded-full animate-spin" />
+                    Logging in...
+                  </div>
+                ) : (
+                  'Login'
+                )}
+              </Button>
 
-
-}
-
-</div>
-
-
-
-
-
-
-</div>
-
-</div>
-
-<Button className='playwrite-de-grund flex ' type="submit" disabled={loading}>
-
-
-
-<div role="status">
-{ loading &&
-<svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'}  dark:text-gray-600
- fill-red-700`}
-viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-
-20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-39.0409Z" fill="currentFill"/>
-</svg>
-}
-
-</div>
-
-Login In </Button>
-
-<Link className='' to='/choose_role'>
-    <p className='playwrite-de-grund text-black'>Go Back</p>
-    <ArrowBackIcon style={{color: 'black'}}  className='cursor-pointer'/>
-    </Link> 
- 
-
-</form>}
-
-    
-
-</div>
+              <div onClick={handleGoBack} className="flex items-center justify-center 
+              gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
+                <ArrowBackIcon />
+                <span>Back to Selection</span>
+              </div>
+            </form>
+          </div>
+        </div>
+        </>
+      )}
   
   </>
   );

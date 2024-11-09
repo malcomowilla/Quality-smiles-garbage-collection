@@ -1,4 +1,3 @@
-
 import { RiArrowGoBackFill } from "react-icons/ri";
 import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
 import {useState, useEffect, useCallback} from 'react'
@@ -11,6 +10,7 @@ import AnimationDone from '../animation/done_tick-animation.json'
 import ExpiredPasswordAlert from '../Alert/ExpiredPasswordAlert'
 import FailedPassword from '../Alert/FailedPassword'
 import {useApplicationSettings} from '../settings/ApplicationSettings'
+import { motion } from 'framer-motion';
 
 
 
@@ -22,16 +22,21 @@ const ResetPassword = () => {
     // const { token } = useParams();
     const { search } = useLocation()
     const token = new URLSearchParams(search).get('token');
-    const {adminFormSettings, materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
-      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
-      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
+    const {adminFormSettings, materialuitheme, seeSettings1, setSeeSettings1, 
+      seeSettings2, setSeeSettings2, 
+      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData, 
+       handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError, 
+       setOpenOfflineError,
        handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
-       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets} = useApplicationSettings()
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,
+       companySettings, setcompanySettings } = useApplicationSettings()
   
     const {enable_2fa_for_admin_passkeys} = adminFormSettings
 
+    const {company_name, contact_info, email_info, logo_preview} = companySettings
 
     const [loading, setloading] = useState(false)
     const [password, setPassword] = useState('')
@@ -262,6 +267,91 @@ const handleCloseConfirmationAlert = ()=> {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 100
+      }
+    }
+  };
+
+
+
+
+
+
+
+  const handleGetCompanySettings = useCallback(
+    async(abortController) => {
+      try {
+        const response = await fetch('/api/get_company_settings', {
+          signal: abortController.signal // Add the abort signal to the fetch
+        })
+        const newData = await response.json()
+        if (response.ok) {
+          // setcompanySettings(newData)
+  
+          const { contact_info, company_name, email_info, logo_url } = newData
+          setcompanySettings((prevData)=> ({...prevData, 
+            contact_info, company_name, email_info,
+          
+            logo_preview: logo_url
+          }))
+  
+          console.log('company settings fetched', newData)
+        }else{
+          console.log('failed to fetch company settings')
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Fetch aborted')
+        } else {
+          console.log("error fetching company settings", error)
+        }
+      }
+    },
+    [setcompanySettings],
+  )
+  
+  useEffect(() => {
+    const abortController = new AbortController()
+    
+    handleGetCompanySettings(abortController)
+    
+    return () => {
+      // This cleanup function runs when component unmounts
+      abortController.abort()
+    }
+  }, [handleGetCompanySettings])
+  
+  
+
+
+
+
+
+
+
+
+
+
+
   return (
     <>
     <PasswordConfirmationAlert openConfirmationAlert={openConfirmationAlert} 
@@ -290,94 +380,147 @@ handleCloseexpiredAlertAlert={handleCloseexpiredAlertAlert}/>
   
   {done  &&  <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     
-    <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
+    <Lottie className='relative z-50' options={defaultOptions2} 
+    height={400} width={400} />
       
        </Backdrop> }
 
-    <section    className="bg-gray-50 h-screen relative z-50   grid 
-       xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
-       ">
+    <motion.section
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-br from-emerald-50 to-white 
+        dark:from-gray-900 dark:to-gray-800"
+    >
+      <div className="container mx-auto px-4 py-8 min-h-screen flex
+       items-center justify-center">
+        <motion.div 
+          variants={itemVariants}
+          className="w-full max-w-md space-y-8"
+        >
+          {/* Logo Section */}
+          <motion.div 
+            className="text-center space-y-4"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <img 
+              className="mx-auto h-20 w-20 rounded-full shadow-lg ring-4
+               ring-emerald-50" 
+              src={logo_preview} 
+              alt={company_name} 
+            />
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Reset Your Password
+            </h2>
+          </motion.div>
 
-    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
-              <div className='mb-9'>
-              <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
-            <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
-           <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
-        </a>
-              </div>
-      
-      
-        
-        <div className="  rounded-lg shadow-2xl    md:mt-0 sm:max-w-[40rem] xl:p-0  w-full">
-      
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
-                <h1 className="text-xl font-bold leading-tight  playwrite-de-grund  tracking-tight text-gray-900 md:text-2xl ">
-                    Reset Password
-                </h1>
-                           
-              
-                <form className="space-y-4 md:space-y-6"  onSubmit={handleResetPassword}>
-                
-                <div className='flex flex-col relative'>
-                    <div className='absolute self-end bottom-0 p-2 text-black cursor-pointer'  onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
-                  <ion-icon  name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
-                      </div>
-                        <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
-                         text-black"> Password</label>
-                        <input  value={password}   onChange={(e)=> setPassword(e.target.value)}  
-                          type={isSeenPassWord  ? 'text' : 'password'} name="password" id="password" className=" border  focus:border-2
-                          text-black  playwrite-de-grund    w-full sm:text-lg rounded-lg 
-                          focus:ring-green-400 
-                           border-black
-                           block  p-2.5  focus:border-green-700
-                            "/>
-                    </div>
+          {/* Form Section */}
+          <motion.div 
+            variants={itemVariants}
+            className="bg-white dark:bg-gray-800 px-6 py-8 rounded-2xl shadow-xl 
+              space-y-6 backdrop-blur-xl backdrop-filter"
+          >
+            <form onSubmit={handleResetPassword} className="space-y-6">
+              {/* Password Input */}
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  New Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    type={isSeenPassWord ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                      dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsSeenPassword(!isSeenPassWord)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  >
+                    <ion-icon 
+                      name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}
+                      style={{ width: 20, height: 20 }}
+                    />
+                  </button>
+                </div>
+              </motion.div>
 
+              {/* Confirm Password Input */}
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Confirm Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    type={isSeenPassWord2 ? 'text' : 'password'}
+                    value={password_confirmation}
+                    onChange={(e) => setpassword_confirmation(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                      dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsSeenPassword2(!isSeenPassWord2)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  >
+                    <ion-icon 
+                      name={isSeenPassWord2 ? "eye-outline" : "eye-off-outline"}
+                      style={{ width: 20, height: 20 }}
+                    />
+                  </button>
+                </div>
+              </motion.div>
 
+              {/* Action Buttons */}
+              <motion.div variants={itemVariants} className="space-y-4 pt-4">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 px-4 bg-emerald-600 text-white font-medium 
+                    rounded-xl shadow-lg hover:bg-emerald-700 
+                    hover:shadow-emerald-500/25 transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500 
+                    focus:ring-offset-2 disabled:opacity-50 flex items-center 
+                    justify-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <img 
+                        src="/images/logo/iconsreload2.png" 
+                        className="w-5 h-5 animate-spin" 
+                        alt="loading" 
+                      />
+                      <span>Resetting Password...</span>
+                    </>
+                  ) : 'Reset Password'}
+                </motion.button>
 
-
-                    
-                    <div className='flex flex-col relative'>
-                    <div className='absolute self-end bottom-0 p-2 text-black cursor-pointer'  
-                    onClick={()=> setIsSeenPassword2(!isSeenPassWord2)}>
-                  <ion-icon  name={isSeenPassWord2 ? "eye-outline" : "eye-off-outline"}></ion-icon>
-                      </div>
-                        <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
-                         text-black">Repeat Password</label>
-                        <input onChange={(e)=>setpassword_confirmation(e.target.value)} 
-                        value={password_confirmation}      type={isSeenPassWord2  ? 'text' : 'password'} name="password_confirmation
-                        " id="password_confirmation" className=" border  focus:border-2
-                          text-black  playwrite-de-grund    w-full sm:text-lg rounded-lg 
-                          focus:ring-green-400 
-                           border-black
-                           block  p-2.5  focus:border-green-700
-                            "/>
-                    </div>
-                    
-                    <div className="flex items-start">
-                        
-                        <div  onClick={handleGoBack} className="ml-3 text-xl handlee-regular cursor-pointer text-black ">
-                         
-                       <RiArrowGoBackFill />
-                       <p className='font-bold'>Go Back</p>
-                        </div>
-                    </div>
-  
-                    <div className='flex justify-center'>
-                    <button type='submit' disabled={loading} className="btn btn-active ">Submit Password
-                  
-                  <img src="/images/logo/iconsreload2.png"  className={`w-5 h-5 ${loading ? 'animate-spin' : 'hidden'}`} 
-                   alt="reload" />
-                  </button>  
-                    </div>
-  
-                 
-                </form>
-            </div>
-        </div>
-    </div>
-    
-  </section>
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={handleGoBack}
+                  className="w-full flex items-center justify-center space-x-2 
+                    py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 
+                    dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 
+                    dark:hover:bg-gray-600 transition-all duration-200"
+                >
+                  <RiArrowGoBackFill className="w-5 h-5" />
+                  <span>Go Back</span>
+                </motion.button>
+              </motion.div>
+            </form>
+          </motion.div>
+        </motion.div>
+      </div>
+    </motion.section>
         
     
     </>

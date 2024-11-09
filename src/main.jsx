@@ -5,6 +5,7 @@ import './index.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ApplicationSettings from './settings/ApplicationSettings'
 import { BrowserRouter as Router } from 'react-router-dom';
+import { NotificationProvider } from './context/NotificationContext';
 
 
 
@@ -18,9 +19,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
       <ThemeProvider theme={theme}>
         <Router>
+        <NotificationProvider>
+
       <ApplicationSettings>
     <App />
     </ApplicationSettings>
+    </NotificationProvider>
     </Router>
     </ThemeProvider >
     

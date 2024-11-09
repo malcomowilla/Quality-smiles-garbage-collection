@@ -71,10 +71,13 @@ const getSmsBalance  = useCallback(
 
     <>
 
-    <LoginSuccessAlert  handleCloseLoginSuccess={handleCloseLoginSuccess}  openLoginSuccess={openLoginSuccess}/>
-    <div  className='h-screen bg-black p-4 dark:bg-white   overflow-x-hidden'>
+    <LoginSuccessAlert  handleCloseLoginSuccess={handleCloseLoginSuccess}
+      openLoginSuccess={openLoginSuccess}/>
+    <div  className='h-screen bg-black p-4 dark:bg-white  
+     overflow-x-hidden'>
       
-      <motion.div variants={variantDiv} transition={{duration:0.3, ease: "easeInOut",
+      <motion.div variants={variantDiv} transition={{duration:0.3,
+       ease: "easeInOut",
   }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"} >
       <Header/>
 

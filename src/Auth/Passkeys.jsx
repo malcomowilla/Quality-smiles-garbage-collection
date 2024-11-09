@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
 import { useState, useEffect, useCallback } from 'react';
@@ -16,6 +15,7 @@ import Backdrop from '@mui/material/Backdrop';
 import AnimationDone from '../animation/done_tick-animation.json'
 import { IoArrowUndoSharp } from "react-icons/io5";
 
+import { motion } from 'framer-motion';
 
 const Passkeys = () => {
   const network = useNetworkState();
@@ -53,10 +53,13 @@ const goBack = useNavigate()
     handleChangePhoneNumber,
     setImagePreview,
     imagePreview,
-    setUpdateFormData,updateFormData
+    setUpdateFormData,updateFormData,
+    setcompanySettings,
+    companySettings
 
   } = useApplicationSettings();
 
+  const {company_name, contact_info, email_info, logo_preview} = companySettings
 
 
   const navigate = useNavigate();
@@ -272,148 +275,239 @@ const handleChange = (e) => {
     
   }, [fetchUpdatedProfile]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 15
+      }
+    }
+  };
+
+
+
+
+
+const handleGetCompanySettings = useCallback(
+  async(abortController) => {
+    try {
+      const response = await fetch('/api/get_company_settings', {
+        signal: abortController.signal // Add the abort signal to the fetch
+      })
+      const newData = await response.json()
+      if (response.ok) {
+        // setcompanySettings(newData)
+
+        const { contact_info, company_name, email_info, logo_url } = newData
+        setcompanySettings((prevData)=> ({...prevData, 
+          contact_info, company_name, email_info,
+        
+          logo_preview: logo_url
+        }))
+
+        console.log('company settings fetched', newData)
+      }else{
+        console.log('failed to fetch company settings')
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted')
+      } else {
+        console.log("error fetching company settings", error)
+      }
+    }
+  },
+  [setcompanySettings],
+)
+
+useEffect(() => {
+  const abortController = new AbortController()
+  
+  handleGetCompanySettings(abortController)
+  
+  return () => {
+    // This cleanup function runs when component unmounts
+    abortController.abort()
+  }
+}, [handleGetCompanySettings])
+
+
 
   return (
-    <SkeletonTheme baseColor="#202020" highlightColor="#444">
-     
-
-
-{/* 
-     {isloading && (
-        <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-          {!done ? (
-            <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-          ) : (
-            <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
-          )}
-        </Backdrop>
-      )} */}
-
-
-
-
-
-
-
-{isloading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-  
-<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-  
-   </Backdrop>
-}
-
-{done  &&  <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-  
-  <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
-    
-     </Backdrop> }
-
-        <section
-          className=" h-screen relative z-50 grid 
-        xl:grid-cols-1 max-sm:grid-cols-1 max-sm:bg-small-screens max-md:bg-small-screens md:bg-small-screens"
-        >
-          <SignupAlert open={open} handleClose={handleClose} />
-          <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <a href="#" className="flex items-center mb-2 text-2xl font-semibold text-white">
-              {/* <img className="w-20 h-20 mr-2 rounded-full" src="/images/logo/logo-small.png" alt="logo" /> */}
-
-          <img src={imagePreview} alt="logo" className='w-20 h-20 mr-2 rounded-full' />
-              <p className='playwrite-de-grund'>{ 'Quality Smiles'}</p>
-            </a>
-            <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-              <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
-                <h1 className="text-xl leading-tight playwrite-de-grund tracking-wide  text-white md:text-2xl">
-                  Signup with passkeys
-                </h1>
-                <form className="space-y-4 md:space-y-6" onSubmit={registerWebAuthn}>
-                  <div className="flex flex-col relative">
-                    {/* <label htmlFor="email" className="block mb-2 text-xl playwrite-de-grund text-white">
-                      Your email
-                    </label> */}
-                    {/* <div className="absolute self-end bottom-0 p-2">
-                      <img src="/images/logo/icons8-gmail-100.png" className="w-8 h-8" alt="gmail" />
-                    </div> */}
-                    {/* <p className="handlee-regular text-rose-800 tracking-widest text-lg uppercase">
-                      {seeError && registrationError}
-                    </p> */}
-                    {/* <input
-                      type="email"
-                      value={email}
-                      onChange={(e)=>handleChange(e)}
-                      name="email"
-                      id="email"
-                      className="border bg-transparent focus:border text-white rounded-lg focus:ring-green-400 
-                      handlee-regular sm:text-lg border-black block w-full max-w-xl p-2.5 focus:border-green-700"
-                    /> */}
-                  </div>
-                
-
-                  <div className="flex flex-col relative">
-                    <div className="absolute self-end bottom-0 p-2">
-                      <img src="/images/logo/icons8-username-64.png" className="w-8 h-8" alt="username" />
-                    </div>
-                    <label htmlFor="user_name" className="block mb-2 text-xl playwrite-de-grund text-white">
-                      Your Username
-                    </label>
-                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
-                      {seeError && usernameError}
-                    </p>
-                    <input
-                      value={user_name}
-                      onChange={(e)=>handleChange(e)}
-                      type="text"
-                      name="user_name"
-                      className="border focus:border text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
-                    />
-
-
-
-{/* 
-<label htmlFor="email" className="block mb-2 text-xl playwrite-de-grund text-white">
-                      Your Email
-                    </label>
-                    <p className="handlee-regular uppercase text-rose-800 tracking-widest text-lg">
-                      {seeError && usernameError}
-                    </p>
-                    <input
-                      value={email}
-                      onChange={(e)=>handleChange(e)}
-                      type="text"
-                      name="email"
-                      className="border focus:border text-white handlee-regular sm:text-lg rounded-lg focus:ring-green-400 bg-transparent border-black block w-full p-2.5 focus:border-green-700"
-                    /> */}
-                  </div>
-
-               
-                  <div className="flex justify-center">
-                    <button type="submit" className="btn btn-active playwrite-de-grund
-                    
-                     bg-green-500    text-white">
-                      Create Account
-                      <img
-                        src="/images/logo/iconsreload2.png"
-                        className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}
-                        alt="reload"
-                      />
-                    </button>
-                  </div>
-
-                  <p className="text-lg font-extrabold playwrite-de-grund text-white">
-                    Already have an account?{' '}
-                    <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
-                      <Link className="underline" to="/kasspass-key-signin">
-                        Login here
-                      </Link>
-                    </a>
-                  </p >
-                    <IoArrowUndoSharp className='w-10 h-10 cursor-pointer text-white' onClick={handleGoBack}/>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50 
+        dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+    >
+      <SignupAlert open={open} handleClose={handleClose} />
       
-    </SkeletonTheme>
+      {/* Loading States */}
+      {isloading && (
+        <Backdrop 
+          open={openLoad} 
+          sx={{ 
+            color: '#fff', 
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backdropFilter: 'blur(8px)'
+          }}
+        >
+          <Lottie options={defaultOptions} height={400} width={400} />
+        </Backdrop>
+      )}
+
+      {done && (
+        <Backdrop 
+          open={openLoad} 
+          sx={{ 
+            color: '#fff', 
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backdropFilter: 'blur(8px)'
+          }}
+        >
+          <Lottie options={defaultOptions2} height={400} width={400} />
+        </Backdrop>
+      )}
+
+      <div className="container mx-auto px-4 min-h-screen flex items-center justify-center">
+        <motion.div 
+          variants={itemVariants}
+          className="w-full max-w-md"
+        >
+          {/* Logo Section */}
+          <motion.div 
+            className="flex flex-col items-center mb-8"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <img 
+              src={logo_preview} 
+              alt={company_name}
+              className="w-24 h-24 rounded-2xl shadow-lg ring-4 ring-emerald-100/50"
+            />
+            <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+              {company_name}
+            </h1>
+          </motion.div>
+
+          {/* Main Card */}
+          <motion.div 
+            variants={itemVariants}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl 
+              shadow-xl p-8 space-y-6"
+          >
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
+              Create Your Passkey
+            </h2>
+
+            <form onSubmit={registerWebAuthn} className="space-y-6">
+              {/* Username Input */}
+              <motion.div 
+                variants={itemVariants}
+                className="space-y-2"
+              >
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Username
+                </label>
+                {seeError && (
+                  <p className="text-rose-500 text-sm font-medium">
+                    {usernameError}
+                  </p>
+                )}
+                <div className="relative">
+                  <input
+                    value={user_name}
+                    onChange={handleChange}
+                    name="user_name"
+                    className="w-full px-4 py-3 pl-12 rounded-xl border border-gray-200 
+                      dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 
+                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      transition-all duration-200"
+                    placeholder="Enter username"
+                  />
+                  <img 
+                    src="/images/logo/icons8-username-64.png" 
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                    alt="username" 
+                  />
+                </div>
+              </motion.div>
+
+              {/* Action Buttons */}
+              <motion.div 
+                variants={itemVariants}
+                className="space-y-4 pt-4"
+              >
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full py-3 px-4 bg-emerald-600 text-white font-medium 
+                    rounded-xl shadow-lg hover:bg-emerald-700 
+                    hover:shadow-emerald-500/25 transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500 
+                    focus:ring-offset-2 disabled:opacity-50 flex items-center 
+                    justify-center space-x-2"
+                  disabled={isloading}
+                >
+                  {isloading ? (
+                    <>
+                      <img 
+                        src="/images/logo/iconsreload2.png" 
+                        className="w-5 h-5 animate-spin" 
+                        alt="loading" 
+                      />
+                      <span>Creating Account...</span>
+                    </>
+                  ) : 'Create Account'}
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={handleGoBack}
+                  className="w-full flex items-center justify-center space-x-2 
+                    py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 
+                    dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 
+                    dark:hover:bg-gray-600 transition-all duration-200"
+                >
+                  <IoArrowUndoSharp className="w-5 h-5" />
+                  <span>Go Back</span>
+                </motion.button>
+              </motion.div>
+
+              {/* Sign In Link */}
+              <motion.div 
+                variants={itemVariants}
+                className="text-center pt-4"
+              >
+                <Link 
+                  to="/kasspass-key-signin"
+                  className="text-emerald-600 hover:text-emerald-700 
+                    font-medium transition-colors"
+                >
+                  Already have an account? Sign in
+                </Link>
+              </motion.div>
+            </form>
+          </motion.div>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 

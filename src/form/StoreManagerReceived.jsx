@@ -1,193 +1,203 @@
-
-import {Link, useNavigate} from 'react-router-dom'
-import {useState, useEffect} from 'react'
-import {useApplicationSettings} from '../settings/ApplicationSettings'
-import { encode } from 'open-location-code';
-import { CiLogout } from "react-icons/ci";
-import CustomerDeleteLoginAlert from '../Alert/CustomerDeleteLoginAlert'
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-import CustomerConfirmationAlert from '../Alert/CustomerConfirmationAlert'
-import CustomerConfirmAlertError from '../Alert/CustomerConfirmAlertError'
-import { FaHandPointLeft } from "react-icons/fa6";
-import { BiLogOut } from "react-icons/bi";
-import { FaHandPointRight } from "react-icons/fa6";
-import StoreManagerReceivedAlert from '../Alert/StoreManagerReceivedAlert'
-import StoreManagerReceivedError from '../Alert/StoreManagerReceivedError'
-
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+import { Button, Label, TextInput } from "flowbite-react";
+import { useNavigate } from 'react-router-dom';
+import { FaHandPointLeft, FaBoxOpen } from "react-icons/fa";
+import { MdInventory } from "react-icons/md";
+import { useApplicationSettings } from '../settings/ApplicationSettings';
+import StoreManagerReceivedAlert from '../Alert/StoreManagerReceivedAlert';
+import StoreManagerReceivedError from '../Alert/StoreManagerReceivedError';
 
 const StoreManagerReceived = () => {
-const navigate = useNavigate()
-const goBack = useNavigate()
-    const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
-        customerLatitude, customer, setCustomer, setCustomerLatitude, 
-        storeManagerSet, setStoreManagerSet,
-        handleChangeStoreSet, } = useApplicationSettings()
-       
-         
-        const [open, setOpen] = useState(false);
-        const [loading, setloading] = useState(false)
-        const [openConfirmationAlert, setopenConfirmationAlert] = useState(false)
-        const [openConfirmAlertError, setopenConfirmAlertError] = useState(false)
-      const [openStoreManagerReceived, setopenStoreManagerReceived] = useState(false)
-      const [openStoreManagerError, setopenStoreManagerError] = useState(false)
-      
-      const handleCloseStoreManagerError = ()=>{
-        setopenStoreManagerError(false)
+  const navigate = useNavigate();
+  const { storeManagerSet, handleChangeStoreSet, companySettings } = useApplicationSettings();
+  const {company_name, contact_info, email_info, logo_preview} = companySettings
+  const [loading, setloading] = useState(false);
+  const [openStoreManagerReceived, setopenStoreManagerReceived] = useState(false);
+  const [openStoreManagerError, setopenStoreManagerError] = useState(false);
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.2
       }
-        const handleCloseStoreManagerReceived = ()=>{
-          setopenStoreManagerReceived(false)
-        }
+    },
+    exit: { opacity: 0, y: -20 }
+  };
 
-
-
-
-
-
-
-
-
-
-
-
-const handleGoBack = ()=> {
-    goBack(-1)
-}
-
-
-
-
-
-
-const confirmBag = async(e)=> {
-  e.preventDefault()
-  try {
-    setloading(true)
-    const response = await fetch('/api/confirm_bag_received_from_customer',{
-      method: 'POST',
-      credentials: 'include',
-
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(storeManagerSet)
-
-    })
-    if (response.ok) {
-      setloading(false)
-      setopenStoreManagerReceived(true)
-    } else {
-      setloading(false)
-      setopenStoreManagerError(true)
-
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { type: "spring", stiffness: 300 }
     }
-  } catch (error) {
-    setloading(false)
-    setopenStoreManagerError(true)
-  }
-}
+  };
 
-
-
-
+  const confirmBag = async(e) => {
+    e.preventDefault();
+    try {
+      setloading(true);
+      const response = await fetch('/api/confirm_bag_received_from_customer', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(storeManagerSet)
+      });
+      
+      setloading(false);
+      if (response.ok) {
+        setopenStoreManagerReceived(true);
+      } else {
+        setopenStoreManagerError(true);
+      }
+    } catch (error) {
+      setloading(false);
+      setopenStoreManagerError(true);
+    }
+  };
 
   return (
+    <>
+      <AnimatePresence mode="wait">
+        {openStoreManagerReceived && (
+          <StoreManagerReceivedAlert 
+            openStoreManagerReceived={openStoreManagerReceived} 
+            handleCloseStoreManagerReceived={() => setopenStoreManagerReceived(false)}
+          />
+        )}
+        {openStoreManagerError && (
+          <StoreManagerReceivedError  
+            openStoreManagerError={openStoreManagerError} 
+            handleCloseStoreManagerError={() => setopenStoreManagerError(false)}
+          />
+        )}
+      </AnimatePresence>
 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-8
+        flex items-center justify-center"
+      >
+        <motion.section 
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="max-w-2xl mx-auto"
+        >
+          {/* Logo Section */}
+          <motion.div 
+            variants={itemVariants}
+            className="text-center mb-12"
+          >
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: 360 }}
+              transition={{ duration: 0.5 }}
+              className="inline-block mb-4"
+            >
+              <img 
+                src={logo_preview}
+                className="w-24 h-24 rounded-full shadow-2xl" 
+                alt={company_name}
+              />
+            </motion.div>
+            <motion.h1 
+              variants={itemVariants}
+              className="text-4xl md:text-5xl playwrite-de-grund tracking-wides
+              t text-gray-900 font-serif font-light"
+            >
+              {company_name}
+            </motion.h1>
+          </motion.div>
 
-   <>
-  
-<StoreManagerReceivedAlert openStoreManagerReceived={openStoreManagerReceived} 
-handleCloseStoreManagerReceived={handleCloseStoreManagerReceived}/>
-<StoreManagerReceivedError  openStoreManagerError={openStoreManagerError} 
-handleCloseStoreManagerError={handleCloseStoreManagerError}
-/>
-<section className="bg-white  h-screen flex items-center">
-
-<div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-
-  
-<div className='flex justify-center'>
-        
-        <div className=''>
-            <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-2xl' alt="quality-smiles" />
-        </div>
+          {/* Main Card */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <MdInventory className="text-4xl text-blue-600" />
+              <h2 className="text-xl font-bold text-gray-900 playwrite-de-grund">
+                Confirm Received Bags
+              </h2>
             </div>
-<div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
 
-                 Quality Smiles
-                  
-        </div>
-      
-     <div className='flex justify-center'> <p className='playwrite-de-grund text-black font-bold'>Confirm Received Bag</p> </div>
-    <form onSubmit={confirmBag} className='' >
-       
+            <form onSubmit={confirmBag} className="space-y-6">
+              <motion.div
+                variants={itemVariants}
+                className="relative"
+              >
+                <Label 
+                  htmlFor="bags-received" 
+                  className="text-gray-700 playwrite-de-grund mb-2 block"
+                >
+                  Number Of Bags Received
+                </Label>
+                <div className="relative">
+                  <FaBoxOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <TextInput
+                    id="bags-received"
+                    type="number"
+                    name="number_of_bags_received"
+                    value={storeManagerSet.number_of_bags_received}
+                    onChange={handleChangeStoreSet}
+                    className="pl-10"
+                    placeholder="Enter number of bags"
+                    style={{
+                      backgroundColor: 'white',
+                      color: 'black'
+                    }}
+                  />
+                </div>
+              </motion.div>
 
-{/* 
-<div className='flex flex-row gap-4'>
-   <Link to='/customer_role'><img src="/images/logo/icons8-arrow-64.png" className='w-8 h-8' alt="arrow" /></Link>
-   <span  className='text-black'>Go Back</span>
+              {/* Action Buttons */}
+              <div className="space-y-4 pt-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl 
+                    py-3 flex items-center justify-center gap-2 shadow-lg transform transition-all duration-200"
+                >
+                  {loading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    />
+                  ) : null}
+                  Confirm Reception
+                </motion.button>
 
-</div> */}
+                <motion.button
+                  whileHover={{ scale: 1.02, x: -5 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate(-1)}
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 py-3"
+                >
+                  <FaHandPointLeft />
+                  <span className="playwrite-de-grund">Go Back</span>
+                </motion.button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.section>
+      </motion.div>
+    </>
+  );
+};
 
-<div className='p-7'>
-
-      
-      <div>
-        <div className="block playwrite-de-grund">
-          <Label htmlFor="repeat-password" value="Number Of Bags Received" style={{ color: 'black'}} />
-        </div>
-        <TextInput className='py-4'  type="text" onChange={handleChangeStoreSet} 
-         value={storeManagerSet.number_of_bags_received}  name='number_of_bags_received'
-         style={{backgroundColor: 'white', color: 'black'}}  shadow />
-      </div>
-      </div>
-
-      
-        <div className='mt-9 '>
-
-       
-
-<div className='text-black text-xl cursor-pointer playwrite-de-grund p-3'  onClick={handleGoBack}>
-            <FaHandPointLeft className='w-10 h-10' />
-            <p>Back</p>
-            </div>
-       
-
-      
-       
-      <Button className='playwrite-de-grund flex '  disabled={loading} type="submit">
-        <div role="status">
-          { loading &&
-        <svg aria-hidden="true" className={`inline w-4 h-4 text-gray-200  ${loading && 'animate-spin'} 
-         dark:text-gray-600 fill-red-700`}
-        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-         0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-         91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-         9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-         <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-         
-         20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-          46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-           10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-           79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-           39.0409Z" fill="currentFill"/>
-        </svg>
-          }
-        
-        </div>
-          
-          Confirm </Button>
-        </div>
-       
-
-    </form>
-</div>
-</section>
-   </>
-  )
-}
-
-export default StoreManagerReceived
+export default StoreManagerReceived;
 
 
 

@@ -12,22 +12,23 @@ import {useEffect, useState, useCallback, lazy, Suspense} from 'react'
 const Signup = lazy(() => import ('./Auth/Signup'))
 // import {HomePage} from './Home/HomePage'
 const HomePage = lazy(() => import ('./Home/HomePage'))
-// import SignIn from './Auth/SignIn'
+import SignIn from './Auth/SignIn'
 
-const SignIn = lazy(()=>  import ('./Auth/SignIn'
-))
-
+// const SignIn = lazy(()=>  import ('./Auth/SignIn'
+// ))
+const HomePageSpecificCompany = lazy(() => import ('./Home/HomePageSpecificCompany.jsx'))
 
 // import Admin from './Admin/Admin'
 
 const Admin = lazy(()=> import ('./Admin/Admin'))
+import { AnimatePresence } from 'framer-motion';
 
 
 // import Services from './services/Services'
 const Services = lazy(()=> import ('./services/Services'))
 
 
-
+const ContactSales = lazy(() => import ('./Home/ContactSales'))
 import {useApplicationSettings} from './settings/ApplicationSettings'
 
 // import Location from './location/Location'
@@ -104,23 +105,26 @@ import ProtectAuthProvider from './Auth/ProtectAuthProvider'
 // const ProtectAuthProvider = lazy(()=> import('./Auth/ProtectAuthProvider'))
 import NotFound from './404/NotFound'
 // const NotFound = lazy(()=> import('./404/NotFound'))
-// import StoreManager from './store/StoreManager'
-const StoreManager = lazy(()=> import('./store/StoreManager'))
+import StoreManager from './store/StoreManager'
+
 // const StoreManager = lazy(()=> import('./store/StoreManager'))
-// import StoreManagerRole from './login_role/StoreManagerRole'
-const StoreManagerRole = lazy(()=> import('./login_role/StoreManagerRole'))
-// import StoreManagerForm  from './form/StoreManagerForm'
-const StoreManagerForm = lazy(()=> import('./form/StoreManagerForm'))
+// const StoreManager = lazy(()=> import('./store/StoreManager'))
+import StoreManagerRole from './login_role/StoreManagerRole'
+// const StoreManagerRole = lazy(()=> import('./login_role/StoreManagerRole'))
+import StoreManagerForm  from './form/StoreManagerForm'
+// const StoreManagerForm = lazy(()=> import('./form/StoreManagerForm'))
 // import ProtectAuthStoreManager from './Auth/ProtectAuthStoreManager'
 const ProtectAuthStoreManager = lazy(()=> import('./Auth/ProtectAuthStoreManager'))
 import { Online, Offline, Detector } from "react-detect-offline";
 // import OfflineMessage from './offline_message/OfflineMessage';
-const OfflineMessage = lazy(()=> import('./online_message/OnlineMessage'))
+
+const OfflineMessage = lazy(()=> import('./offline_message/OfflineMessage'))
 import OnlineMessage from './online_message/OnlineMessage'
 import AppOfflineAlert from './Alert/AppOfflineAlert'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+const ServiceProviderReports = lazy(()=> import('./components/ServiceProvider/ServiceProviderReports'))
 // import ForgotPassword from './Auth/ForgotPassword'
 
 const ForgotPassword = lazy(()=> import('./Auth/ForgotPassword'))
@@ -144,6 +148,7 @@ const WebAuthRegistration = lazy(()=> import('./Auth/WebAuthRegistration') )
 const StoreManagerReceived = lazy(()=> import ('./form/StoreManagerReceived'))
 // import CustomerPayment from './form/CustomerPayment'
 const CustomerPayment = lazy(()=> import ('./form/CustomerPayment'))
+const CustomerChat = lazy(() => import ('./chat/CustomerChat'))
 // import Calendar from './calendar/Calendar'
 const Calendar = lazy(()=> import ('./calendar/Calendar'))
 import { messaging, getToken , onMessage} from './firebase/firebase';
@@ -252,6 +257,48 @@ import ChooseRoleServiceProvider from './choose_role/ChooseRoleServiceProvider'
 
 
 
+const NetworkStatus = () => {
+  const [networkStatus, setNetworkStatus] = useState({
+    isOnline: navigator.onLine,
+    showMessage: true
+  });
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setNetworkStatus({ isOnline: true, showMessage: true });
+      // Auto hide online message after 3 seconds
+      setTimeout(() => {
+        setNetworkStatus(prev => ({ ...prev, showMessage: false }));
+      }, 3000);
+    };
+
+    const handleOffline = () => {
+      setNetworkStatus({ isOnline: false, showMessage: true });
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+return (
+    <AnimatePresence mode="wait">
+      {networkStatus.showMessage && (
+        networkStatus.isOnline ? (
+          <OnlineMessage 
+            onClose={() => setNetworkStatus(prev => ({ ...prev, showMessage: false }))}
+          />
+        ) : (
+          <OfflineMessage />
+        )
+      )}
+    </AnimatePresence>
+  );
+};
 
 
 
@@ -409,7 +456,6 @@ useEffect(() => {
 
   return (
     <>
-
 <Notifications /> 
 
 <ToastContainer position='top-center' transition={Slide} autoClose={false}/>
@@ -448,7 +494,8 @@ useEffect(() => {
 
 
 
-      <Route index path='/'  element={
+
+<Route  path='/contact-sales'  element={
          <Suspense fallback={<div> 
 
           <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -458,10 +505,49 @@ useEffect(() => {
        </Backdrop>
        
          </div>}>
-        <HomePage/>
-        
+        <ContactSales/>
         </Suspense>
         }/>
+
+
+
+<Route  path='/home-page'  element={ 
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <HomePageSpecificCompany/>
+        </Suspense>
+        }/>
+
+
+
+
+
+
+
+
+<Route index path='/' element={ 
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+         <HomePage/>
+        </Suspense>
+        }/>
+
+
+
 
 
 
@@ -732,6 +818,8 @@ useEffect(() => {
 
 
 
+
+
 <Route path='/admin/service-provider' element={
   <Suspense fallback={<div> 
 
@@ -746,6 +834,23 @@ useEffect(() => {
   </Suspense>
   }/>
 
+
+
+
+
+<Route path='/admin/service-provider/reports' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <ServiceProviderReports/>
+  </Suspense>
+  }/>
 
 
 <Route path='/admin/user-management' element={
@@ -1003,6 +1108,26 @@ useEffect(() => {
   />
 
 
+
+
+
+<Route path='/customer-chat' element={
+  <Suspense fallback={<div> 
+
+    <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+
+ </Backdrop>
+ 
+   </div>}>
+  <CustomerChat/>
+  </Suspense>
+  }
+  />
+
+
+
 <Route path='/customer-request' element={
   <Suspense fallback={<div> 
 
@@ -1201,20 +1326,25 @@ useEffect(() => {
       <OfflineMessage />
   )} />
 
-{
- 
-}
+
+
+
+
+<Detector  render={({ online }) => (
+    online ? <OnlineMessage /> : null
       
+  )} />
 
+      
+<NetworkStatus />
+ 
 {/* 
-
 {
   <Online>
         <AppOfflineAlert showOnlineMessage={showOnlineMessage} handleCloseOfflineMessage={handleCloseOfflineMessage}/> 
         </Online> 
 } */}
       
-
     </>
   )
 }

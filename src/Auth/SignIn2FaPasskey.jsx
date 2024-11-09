@@ -348,213 +348,215 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
 
 
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 100
+      }
+    }
+  };
+
   return (
     <>
+      <ToastContainer position='top-center' transition={Slide} autoClose={8000} />
+      <LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
+      <OtpSentEmailAlert openOtpSentEmailAlert={openOtpSentEmailAlert} handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert} />
+      <OtpSentSmsAlert handleCloseOtpSentAlert={handleCloseOtpSentAlert} openOtpSentAlert={openOtpSentAlert} />
+      <LogoutSuccess openLogoutSuccess={openLogoutSuccess} handleCloseLogoutSuccess={handleCloseLogoutSuccess} />
 
+      {/* Loading States */}
+      <Backdrop 
+        open={isloading || done} 
+        sx={{ 
+          color: '#fff', 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backdropFilter: 'blur(8px)'
+        }}
+      >
+        <Lottie 
+          options={done ? defaultOptions2 : defaultOptions} 
+          height={400} 
+          width={400} 
+        />
+      </Backdrop>
 
-<ToastContainer position='top-center' transition={Slide} autoClose={8000}/>
+      <motion.section
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="min-h-screen bg-gradient-to-br from-emerald-50 to-white 
+          dark:from-gray-900 dark:to-gray-800"
+      >
+        <div className="container mx-auto px-4 min-h-screen flex items-center justify-center">
+          <motion.div 
+            variants={itemVariants}
+            className="w-full max-w-md space-y-8"
+          >
+            {/* Logo Section */}
+            <motion.div 
+              className="flex flex-col items-center"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <img 
+                className="w-20 h-20 rounded-full shadow-lg ring-4 ring-emerald-50" 
+                src="/images/logo/logo-small.png" 
+                alt="logo"
+              />
+              <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+                Quality Smiles
+              </h1>
+            </motion.div>
 
+            {/* Form Section */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl 
+                rounded-2xl shadow-xl p-8"
+            >
+              <form onSubmit={handleSignIn} className="space-y-6">
+                {/* Email Input */}
+                <motion.div variants={itemVariants}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Email Address
+                  </label>
+                  <div className="mt-1 relative">
+                    <input
+                      type="email"
+                      name="email"
+                      value={email}
+                      onChange={(e) => {
+                        handleFormDataChangeSignin(e);
+                        emailValue.set(e.target.value);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                        dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                        focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                        transition-all duration-200"
+                    />
+                    <img 
+                      src="/images/logo/icons8-gmail-100.png" 
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                      alt="email" 
+                    />
+                  </div>
+                </motion.div>
 
-<LogoutSession  openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession}/>
-
-<OtpSentEmailAlert  openOtpSentEmailAlert={openOtpSentEmailAlert}  handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert}/>
-    <OtpSentSmsAlert handleCloseOtpSentAlert={handleCloseOtpSentAlert}   openOtpSentAlert={openOtpSentAlert}
-    />
-    <LogoutSuccess openLogoutSuccess={openLogoutSuccess} handleCloseLogoutSuccess={handleCloseLogoutSuccess} />
-
-    
-
-{isloading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-  
-  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-    
-     </Backdrop>
-  }
-  
-  {done  &&  <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-    
-    <Lottie className='relative z-50' options={defaultOptions2} height={400} width={400} />
-      
-       </Backdrop> }
-    <section    className="bg-gray-50 h-screen relative z-50   grid 
-       xl:grid-cols-1 max-sm:grid-cols-1 max-md:grid-cols-1 md:grid-cols-1
-     bg-small-screens2   ">
-
-    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 ">
-              <div className='mb-9'>
-              <a  className="flex items-center mb-6    text-2xl font-semibold text-gray-900 dark:text-white">
-            <img className="w-20 h-20 mr-2   rounded-full" src="/images/logo/logo-small.png" alt="logo"/>
-           <p className='text-black playwrite-de-grund  text-4xl '>Quality Smiles </p>    
-        </a>
-              </div>
-      
-        <h2 className=" text-2xl  leading-tight tracking-tight text-wrap playwrite-de-grund   font-bold mb-4 text-gray-900    ">
-          Sign-In to your account and start managing your organization
-
-          </h2>
-        
-        <div className="rounded-lg shadow   md:mt-0 sm:max-w-[40rem] xl:p-0 ">
-      
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8  rounded-lg">
-                <h1 className="text-xl font-bold leading-tight  playwrite-de-grund  tracking-tight text-gray-900 md:text-2xl ">
-                    Login Into Your Account 
-                </h1>
-             
-                <form className="space-y-4 md:space-y-6 " onSubmit={handleSignIn}>
-                
-                    <div className='flex flex-col relative'>
-                    <p className='handlee-regular  text-rose-800 
-                                               tracking-widest text-xl'> { seeError && registrationError}</p>
-                        <label htmlFor="email" className="block mb-2  playwrite-de-grund text-xl 
-                         text-gray-900 ">Your email</label>
-                           <div className='absolute self-end bottom-0 p-2'>
-                      <img src="/images/logo/icons8-gmail-100.png"  className='w-8 h-8' alt="gmail" />
-
-                      </div>
-
-                        <motion.input
-                           
-                  type="email"
-                  onChange={  (e)=> {
-                    handleFormDataChangeSignin(e)
-                    emailValue.set(e.target.value)
-                  } }
-                style={{width: emailWidth}} transition={{duration:5, ease: "easeOut",
-  }}    name="email"  value={email} id="email" 
-                        className={` border  focus:border-2 
-                          text-white  handlee-regular  transition-all duration-1000 sm:text-lg rounded-lg
-                           focus:ring-green-400 bg-transparent
-                           border-black 
-                           block  p-2.5   focus:border-green-700
-                            `}
-  
-                            />
-  
+                {/* Phone Input (Conditional) */}
+                {(enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') && (
+                  <motion.div variants={itemVariants}>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Phone Number
+                    </label>
+                    <div className="mt-1 relative">
+                      <input
+                        type="text"
+                        name="phone_number"
+                        value={phone_number}
+                        onChange={handleChangePhoneNumber}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                          dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                          focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                          transition-all duration-200"
+                      />
+                      <FaPhone className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500" />
                     </div>
+                  </motion.div>
+                )}
 
+                {/* Password Input */}
+                <motion.div variants={itemVariants}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Password
+                  </label>
+                  <div className="mt-1 relative">
+                    <input
+                      type={isSeenPassWord ? 'text' : 'password'}
+                      name="password"
+                      value={password}
+                      onChange={(e) => {
+                        handleFormDataChangeSignin(e);
+                        passwordValue.set(e.target.value);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                        dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                        focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                        transition-all duration-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsSeenPassword(!isSeenPassWord)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                    >
+                      <ion-icon 
+                        name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}
+                        style={{ width: 20, height: 20 }}
+                      />
+                    </button>
+                  </div>
+                </motion.div>
 
+                {/* Action Buttons */}
+                <motion.div variants={itemVariants} className="space-y-4">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    className="w-full py-3 px-4 bg-emerald-600 text-white font-medium 
+                      rounded-xl shadow-lg hover:bg-emerald-700 
+                      hover:shadow-emerald-500/25 transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-emerald-500 
+                      focus:ring-offset-2 disabled:opacity-50 flex items-center 
+                      justify-center space-x-2"
+                    disabled={isloading}
+                  >
+                    {isloading ? (
+                      <>
+                        <img 
+                          src="/images/logo/iconsreload2.png" 
+                          className="w-5 h-5 animate-spin" 
+                          alt="loading" 
+                        />
+                        <span>Signing in...</span>
+                      </>
+                    ) : 'Sign In'}
+                  </motion.button>
 
-{enable_2fa_for_admin === true || enable_2fa_for_admin === 'true' ? (
-   <div className='relative flex flex-col'>
-   <label htmlFor="number" className="block mb-2 playwrite-de-grund text-lg 
-    text-gray-900 ">Your Phone Number</label>
-   {/* <PhoneInput value={phone}
-onChange={setPhone}   type="text" name="email" id="email" className="border  focus:border-2
-text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-sm:text-lg border-black
-block w-full p-2.5  focus:border-green-700
-       "
-
-       /> */}
-
-
-<div className='absolute self-end bottom-0 p-2'>
-
-<FaPhone className='text-blue-500 w-6 h-6'/>
-
-                      </div>
-<input value={phone_number}
-onChange={handleChangePhoneNumber}   type="text" name="phone_number" id="phone_number" className="border  focus:border-2
-text-white rounded-lg focus:ring-green-400 bg-transparent  handlee-regular 
-sm:text-lg border-black
-block w-full p-2.5  focus:border-green-700
-       "
-
-       />
-
-</div>
-
-): '' }
-                   
-                   {/* type={isSeenPassWord  ? 'password' : 'text'} */}
-                    <div className='flex flex-col relative'>
-                    <div className='absolute self-end bottom-0 p-2 text-white' 
-                     onClick={()=> setIsSeenPassword(!isSeenPassWord)}>
-                  <ion-icon   style={{width: 20, height: 20}} name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}></ion-icon>
-                      </div>
-                        <label htmlFor="password" className="block mb-2   playwrite-de-grund text-lg
-                         text-black">Password</label>
-                        <motion.input       transition={{duration:5, ease: "easeOut",
-  }}   onChange={(e)=>{
-    handleFormDataChangeSignin(e)
-    passwordValue.set(e.target.value)
-  }} value={password} type='password' name="password" id="password"className="border 
-   focus:border-2
-                          text-white  handlee-regular   transition-all duration-1000 sm:text-lg rounded-lg 
-                          focus:ring-green-400 bg-transparent
-                           border-black
-                           block  p-2.5  focus:border-green-700
-                            "/>
-                    </div>
-                    
-                       
-                        <div className="ml-3 text-lg handlee-regular flex gap-x-7">
-                          
-                          <Link to='/forgot_password'> <p className='text-lg tracking-wide font-bold 
-                          underline text-white
-                          '>Forgot your password?</p></Link>
-                        </div>
-                        
-
-
-
-
-
-
-  {!enable_2fa_for_admin_passkeys ? (
-
-<Tooltip
-title={<>
-
-<div className='p-4'>
-  
-{/* Add */}
-<GoPasskeyFill  className='w-20 h-20'/>
-  </div>
-  </>}
-  
-placement="top"
-arrow
-
->
-
-     <div>
-     <Link  className='text-black font-extrabold  text-lg tracking-wider handlee-regular
-      underline' to='/kasspass-key-signin'>login with passkey?
-       </Link>
-   </div>
-
-   </Tooltip>
-  ) : ''}
-
-
-       
-
-                    <div className='flex justify-center'>
-                    <button type='submit' className="btn btn-active ">Login
-                  
-                  <img src="/images/logo/iconsreload2.png"  
-                  className={`w-5 h-5 ${isloading ? 'animate-spin' : 'hidden'}`}  alt="reload" />
-                  </button>  
-                    </div>
-  
-                 
-                </form>
-            </div>
+                  {!enable_2fa_for_admin_passkeys && (
+                    <Link 
+                      to="/kasspass-key-signin"
+                      className="block text-center text-emerald-600 
+                        hover:text-emerald-700 font-medium transition-colors"
+                    >
+                      Sign in with passkey
+                    </Link>
+                  )}
+                </motion.div>
+              </form>
+            </motion.div>
+          </motion.div>
         </div>
-    </div>
-    
-  </section>
+      </motion.section>
+    </>
+  );
+};
 
-
-
-
-
-  </>
-  )
-}
-
-export default SignIn2FaPasskey
+export default SignIn2FaPasskey;
 
 
 

@@ -11,6 +11,7 @@ import { BiLogOut } from "react-icons/bi";
 import { SiMoneygram } from "react-icons/si";
 import { motion } from "framer-motion"
 import CustomerLogin from '../Alert/CustomerLogin'
+import { BiMessageDots } from "react-icons/bi";
 
 
 // openLoginCustomerSuccessfully,handleCloseLoginCustomerSuccessfully}
@@ -20,7 +21,7 @@ const navigate = useNavigate()
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
         customerLatitude, customer, setCustomer, setCustomerLatitude, openLogoutCustomerSucessfully,
         handleCloseLogoutCustomerSuccessfully,setopenLogoutCustomerSucessfully,openLoginCustomerSuccessfully,
-        handleCloseLoginCustomerSuccessfully
+        handleCloseLoginCustomerSuccessfully,handleCustomerLogout
       } = useApplicationSettings()
        
          
@@ -29,7 +30,9 @@ const navigate = useNavigate()
         const [openConfirmationAlert, setopenConfirmationAlert] = useState(false)
         const [openConfirmAlertError, setopenConfirmAlertError] = useState(false)
 
-        
+        const {companySettings,setcompanySettings} = useApplicationSettings()
+
+        const {company_name, contact_info, email_info, logo_preview} = companySettings
 
         const handleCloseConfirmAlertError = (event, reason)=> {
           if (reason === 'clickaway') {
@@ -120,29 +123,6 @@ useEffect(() => {
 
 
 
-const handleLogout = async() => {
-
-  try {
-    const response = await fetch('/api/logout_customer', {
-      method: 'DELETE',
-      credentials: 'include'
-
-    })
-if (response.ok) {
-  navigate('/customer_role')
-  setopenLogoutCustomerSucessfully(true)
-  localStorage.removeItem('customer');
-
-} else {
-  console.log('failed')
-}
-
-  } catch (error) {
-    console.log(error)
-    setOpen(true)
-  }
-}
-
 
 
 
@@ -171,117 +151,112 @@ if (response.ok) {
     handleCloseLoginCustomerSuccessfully={handleCloseLoginCustomerSuccessfully}/>
    <CustomerConfirmationAlert openConfirmationAlert={openConfirmationAlert}
      handleCloseConfirmationAlert={handleCloseConfirmationAlert}
+
 />
    <CustomerDeleteLoginAlert open={open}  handleClose={handleClose} />
    <CustomerConfirmAlertError openConfirmAlertError={openConfirmAlertError}
     handleCloseConfirmAlertError={handleCloseConfirmAlertError}
    />
   
-<section className="bg-white  h-screen grid grid-auto-fit items-center">
-<div className='p-9'>
-  <Link to='/customer-ticket-status'>
-<motion.button whileHover={{
-    scale: 1.2,
-    transition: { duration: 0.5 },
-
-    
-  }} className='bg-yellow-600 rounded-md text-sm  p-1'>
-  <p className='text-white'>
-    <img src="/images/logo/support_customer.png" className='w-8 h-8' alt="support-ticket" />
-    Support Ticket</p>
-</motion.button>
-</Link>
-
-
-
-  <Link to='/customer-payment'>
-<motion.div whileHover={{
-    scale: 1.2,
-    transition: { duration: 0.5 },
-
-    
-  }}   whileTap={{ scale: 0.9 }}  className='flex p-3 border-2 mt-4 border-green-800
-    ml-4  text-black cursor-pointer   w-[120px] gap-x-4  playwrite-de-grund rounded-md'>
-      <SiMoneygram className='text-green-700'/>
-      To Up   </motion.div> </Link>
-
-</div>
-
-<div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
-    
-<div className='flex justify-center'>
-    <img src="/images/logo/logo-small.png" className='w-20 h-20 rounded-full shadow-lg' alt="quality-smiles" />
-</div>
-<div className=' text-black mb-10  sm:text-5xl max-sm:text-4xl playwrite-de-grund   tracking-widest'>
-                 Quality Smiles
-        </div>
-        
-    <div className='flex justify-between'>
-        
-    <h2 className="mb-4   playwrite-de-grund  text-xl font-bold text-gray-900 dark:text-white ">
-       Confirm Plastic Bag Received  </h2>
-
-   
-
-
+<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white
+flex justify-center items-center">
+  <div className="bg-white shadow-sm px-4 py-3 flex justify-between
+   items-center fixed top-0 w-full z-10">
+    <div className="flex items-center gap-3">
+      <img src={logo_preview} className="w-10 h-10 rounded-full" alt={company_name} />
+      <h1 className="text-2xl font-semibold text-gray-900 itim-regular
+      ">{company_name}</h1>
     </div>
-    <form onSubmit={confirmBag} >
-       
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      onClick={handleCustomerLogout}
+      className="text-gray-600 hover:text-gray-900"
+    >
+      <BiLogOut size={40} />
+    </motion.button>
+  </div>
 
-<div>
-    <p className='text-black font-extrabold playwrite-de-grund'>Your Bag Is Full? <span className='underline font-light'>
-      <Link to='/customer-request'>
-    request here</Link></span></p>
-</div>
-{/* 
-<div className='flex flex-row gap-4'>
-   <Link to='/customer_role'><img src="/images/logo/icons8-arrow-64.png" className='w-8 h-8' alt="arrow" /></Link>
-   <span  className='text-black'>Go Back</span>
 
-</div> */}
-        <div className='mt-9 flex gap-x-[50px]'>
+  <div className="pt-20 px-4 pb-6 max-w-lg mx-auto">
+    <div className="grid grid-cols-2 gap-4 mb-8">
+      <Link to='/customer-ticket-status'>
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          className="bg-white p-4 rounded-xl shadow-sm border border-gray-100
+           flex flex-col items-center gap-2"
+        >
+          <div className="flex flex-col items-center">
+            <img src="/images/logo/support_customer.png" className="w-12 h-12"
+             alt="support-ticket" />
+            <span className="text-lg font-medium text-gray-700
+            itim-regular">Support Ticket</span>
+            
+            <Link 
+              to="/customer-chat"
+              className="mt-2 flex items-center gap-1 text-sm text-green-600 
+              hover:text-green-700 bg-green-50 px-3 py-1 rounded-full"
+            >
+              <BiMessageDots className="w-4 h-4" />
+              Chat Support
+            </Link>
+          </div>
+        </motion.div>
+      </Link>
 
-<div className='text-black text-xl cursor-pointer playwrite-de-grund p-3' onClick={handleLogout}>
-            <BiLogOut />
-            <p>Logout</p>
-            </div>
-       
-            <button type="submit"    disabled={loading} className="py-2.5 px-5 me-2 mb-2 text-sm font-medium
-             text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200
-               hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100
-                  dark:border-gray-600 playwrite-de-grund
-                dark:hover:text-white hover:bg-teal-700">
-                  
-                  { loading &&
-        <svg aria-hidden="true" className={`inline w-10 h-10 text-gray-200  ${loading && 'animate-spin'} 
-         dark:text-gray-600 fill-red-800`}
-        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 
-         0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 
-         91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 
-         9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-         <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167
-         
-         20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541
-          46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505
-           10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 
-           79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 
-           39.0409Z" fill="currentFill"/>
-        </svg>
-          }
-                  
-                  confirm received
-                
-                
-                </button>
+      <Link to='/customer-payment'>
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-2"
+        >
+          <SiMoneygram className="text-green-600 w-12 h-12" />
+          <span className="text-sm font-medium text-gray-700">Top Up</span>
+        </motion.div>
+      </Link>
+    </div>
 
-    
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <h2 className="text-2xl font-semibold text-gray-900 
+      mb-6 itim-regular">Confirm Plastic Bag</h2>
+      
+      <form onSubmit={confirmBag}>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          type="submit"
+          disabled={loading}
+          className="w-full bg-green-600 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 
+            disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Confirming...</span>
+            </>
+          ) : (
+           <p className="itim-regular text-lg">Confirm Received</p>
+          )}
+        </motion.button>
+      </form>
+    </div>
+
+    <Link to='/customer-request'>
+      <motion.div
+        whileTap={{ scale: 0.95 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex justify-between items-center"
+      >
+        <div>
+          <h3 className="text-2xl font-semibold text-gray-900
+          itim-regular">Bag Full?</h3>
+          <p className="text-lg text-gray-600">Request a new bag here</p>
         </div>
-       
-
-    </form>
+        <div className="text-green-600 p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </motion.div>
+    </Link>
+  </div>
 </div>
-</section>
    </>
   )
 }

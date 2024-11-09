@@ -5,7 +5,8 @@ import {
     FiShare,
     FiPlusSquare,
   } from "react-icons/fi";
-  import { motion } from "framer-motion";
+
+  import { motion, AnimatePresence } from "framer-motion";
   import { Dispatch, SetStateAction, useState, useEffect, useCallback } from "react";
   import { IoIosLogOut } from "react-icons/io";
   import {useApplicationSettings} from '../settings/ApplicationSettings'
@@ -18,6 +19,7 @@ import {
   import Avatar from '@mui/material/Avatar';
   import Stack from '@mui/material/Stack';
   import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+  import { createConsumer } from '@rails/actioncable';
 
 //   import { IconType } from "react-icons";
 // onClick={() => setOpen((pv) => !pv)}
@@ -25,18 +27,25 @@ import {
   const Profile = ({open, setOpen}) => {
 const navigate = useNavigate()
 const [isOpenEditProfile, setisOpenEditProfile] = useState(false)
+const [onlineStatus, setOnlineStatus] = useState({});
+const [connectionStatus, setConnectionStatus] = useState('connected');
 
 const {id, imagePreview, setUpdateFormData, updateFormData, setImagePreview, user_name, user,
 setopenLogoutSuccess,
 handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,
     setopenLoginSuccess,
     materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
-      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData,  handleCustomerFormDataChange,
-      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  setOpenOfflineError,
-       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,handleStoreFormDataChange,
-       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
+      seeSettings3, setSeeSettings3, settingsformData, setsettingsformData, 
+       handleCustomerFormDataChange,
+      settingsformDataForProvider, setsettingsforProvider, openOfflineError,  
+      setOpenOfflineError,
+       handleCustomerFormDataChangeForProvider,settingsForStore, setsettingsForStore,
+       handleStoreFormDataChange,
+       seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,
+       handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
-       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,adminFormSettings,setopenLogoutSession
+       settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,adminFormSettings,
+       setopenLogoutSession
 } = useApplicationSettings()
 
 
@@ -248,7 +257,6 @@ function stringToColor(string) {
 
 
 
-
 function stringAvatar(name) {
 
   const nameParts = name.split(' ').filter(Boolean)
@@ -269,7 +277,142 @@ function stringAvatar(name) {
 }
 
 
+useEffect(() => {
+  let heartbeatInterval;
+  let subscription;
 
+  const setupPresenceChannel = () => {
+    const cable = createConsumer("ws://localhost:4000/cable");
+    
+    subscription = cable.subscriptions.create("PresenceChannel", {
+      connected() {
+        console.log("Connected to presence channel!");
+        setConnectionStatus('connected');
+        
+        // Start sending heartbeats
+        heartbeatInterval = setInterval(() => {
+          if (this.connected) {
+            this.perform('heartbeat');
+          }
+        }, 25000); // Send heartbeat every 25 seconds
+      },
+      
+      received(data) {
+        console.log('last seen', data.last_seen)
+        setOnlineStatus(prev => ({
+          ...prev,
+          [data.user_id]: {
+            online: data.online,
+            lastSeen: data.last_seen
+          }
+        }));
+      },
+      
+      disconnected() {
+        console.log("Disconnected from presence channel!");
+        setConnectionStatus('disconnected');
+        clearInterval(heartbeatInterval);
+        
+        // Update local status to offline
+        setOnlineStatus(prev => ({
+          ...prev,
+          [id]: {
+            online: false,
+            lastSeen: new Date()
+          }
+        }));
+      }
+    });
+  };
+
+  // Setup connection status monitoring
+  const handleOnline = () => {
+    console.log('Browser online');
+    setupPresenceChannel();
+  };
+
+  const handleOffline = () => {
+    console.log('Browser offline');
+    setConnectionStatus('disconnected');
+    subscription?.unsubscribe();
+    clearInterval(heartbeatInterval);
+    
+    // Update local status to offline
+    setOnlineStatus(prev => ({
+      ...prev,
+      [id]: {
+        online: false,
+        lastSeen: new Date()
+      }
+    }));
+  };
+
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
+
+  // Initial setup
+  if (navigator.onLine) {
+    setupPresenceChannel();
+  } else {
+    setConnectionStatus('disconnected');
+  }
+
+  return () => {
+    window.removeEventListener('online', handleOnline);
+    window.removeEventListener('offline', handleOffline);
+    subscription?.unsubscribe();
+    clearInterval(heartbeatInterval);
+  };
+}, [id]);
+
+
+
+
+const MenuItem = ({ icon, text, onClick }) => {
+  return (
+    <motion.div
+      variants={{
+        open: { y: 0, opacity: 1 },
+        closed: { y: 20, opacity: 0 }
+      }}
+      whileHover={{ scale: 1.03, x: 4 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      className='flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 
+        transition-colors cursor-pointer'
+    >
+      <span className='text-gray-400'>{icon}</span>
+      <span className='text-gray-600 font-medium'>{text}</span>
+    </motion.div>
+  );
+};
+
+
+
+  // Add this to your render method where you want the status indicator
+  const OnlineIndicator = ({ userId }) => {
+    const status = onlineStatus[userId];
+    const isOffline = connectionStatus === 'disconnected' || !status?.online;
+    
+    return (
+      <div className="relative">
+        <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2
+         border-white rounded-full ${
+          isOffline ? 'bg-gray-400' : 'bg-green-500'
+        }`} />
+
+        
+        {isOffline && (
+          <div className="absolute bottom-5 right-0 text-xs text-black">
+            {connectionStatus === 'disconnected' 
+              ? 'Offline (No connection)' 
+              : `Last seen: ${formatLastSeen(status?.lastSeen)}`
+            }
+          </div>
+        )}
+      </div>
+    );
+  };
 
 
 
@@ -277,67 +420,121 @@ function stringAvatar(name) {
 
     <>
 
-    <EditProfile isOpenEditProfile={isOpenEditProfile} setisOpenEditProfile={setisOpenEditProfile} />
-      <div className="p-8 pb-56 flex items-center justify-center ">
-        <motion.div animate={open ? "open" : "closed"} className="relative">
-        
-        <div className='flex gap-x-2   max-sm:fixed max-sm:top-[169px] max-sm:right-[60px]' 
-         onClick={() => setOpen((pv) => !pv)}>
-
-<Avatar style={{width: 60, height: 60}}    {...stringAvatar(user_name)} />
-
-
-{/* 
-<div className="avatar placeholder online">
-  <div className="bg-teal-600 text-white w-16 rounded-full">
-    <span className="text-3xl">D</span>
-  </div>
-</div> */}
-        {/* <img src={imagePreview}  className='w-[55px] h-[55px] rounded-full shadow-xl' alt="profile-picture" /> */}
-
-        
-        <div className='text-wrap xl:block max-sm:block md:max-sm:hidden max-md:block max-sm:text-sm '>
-        <p className='dark:text-black text-white font-extrabold '>{user_name}</p>
-    <p className='dark:text-black text-white'>{user === 'super_administrator' ? 'SuperAdmin' : null}</p>
-    <p className='dark:text-black text-white'>{user === 'administrator' ? 'Admin' : null}</p>
-    <p className='dark:text-black text-white'>{user === 'store_manager' ? 'StoreManager' : null}</p>
-    <p className='dark:text-black text-white'>{user === 'customer' ? 'Customer' : null}</p>
-    <p className='dark:text-black text-white'>{user === 'agent' ? 'Agent' : null}</p>
-    <p className='dark:text-black text-white'>{user === 'customer_support' ? 'Customer Support' : null}</p>
-
-    
-
-
-        
-
-        </div>
-
-      </div>
-
-          <motion.ul
-            initial={wrapperVariants.closed}
-            variants={wrapperVariants}
-            style={{ originY: "top", translateX: "-50%" }}
-            className="flex flex-col gap-2 p-6 rounded-lg bg-white shadow-xl absolute 
-            top-[120%] left-[50%] w-48
-             overflow-hidden"
+<EditProfile 
+        isOpenEditProfile={isOpenEditProfile} 
+        setisOpenEditProfile={setisOpenEditProfile} 
+      />
+      
+      <div className="fixed top-0 right-[100px] max-md:right-[150px] p-4 sm:relative sm:p-8 sm:pb-56 
+        flex items-center justify-center z-50">
+       <motion.div 
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={open ? {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.2 }
+  } : {
+    opacity: 0.95,
+    scale: 0.95,
+    transition: { duration: 0.2 }
+  }}
+  className="relative"
+>
+          {/* Profile Trigger Button */}
+          <motion.div 
+            className='flex items-center gap-x-2 bg-white/10 backdrop-blur-lg 
+              rounded-full p-2 cursor-pointer'
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setOpen((pv) => !pv)}
           >
-           <div className='p-5'>
-           <RiDeleteBack2Line  onClick={() => setOpen(false)}  className='text-black text-xl w-8 h-8'/>
-            </div> 
-            <div className='flex gap-3 hover:bg-green-200 p-2 hover:rounded-md' onClick={()=> setisOpenEditProfile(true)}>
-            <LiaEdit className='text-black text-lg w-5 h-5' />
-            <p className='text-black playwrite-de-grund '>Edit Profile</p>
-              </div>
-          
+            <div className="relative">
+              <motion.div
+                whileHover={{ rotate: 10 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
 
+<Avatar 
+                  style={{
+                    width: 65,
+                    height: 65,
+                    boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+                  }}    
+                  {...stringAvatar(user_name)} 
+                />
+              </motion.div>
+              <OnlineIndicator userId={id} />
+            </div>
 
-             <div className='flex gap-3  hover:bg-green-200 p-2 hover:rounded-md' onClick={logout}>
-             <CiLogout className='text-black text-lg w-5 h-5'/>
-             <p className='text-black playwrite-de-grund'>Logout</p>
-             </div>
-             
-          </motion.ul>
+            <motion.div 
+              className='text-wrap hidden sm:block'
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <p className='dark:text-black text-white font-semibold text-sm'>
+                {user_name}
+              </p>
+              <p className='dark:text-black text-white text-xs opacity-75'>
+                {user === 'super_administrator' && 'SuperAdmin'}
+                {user === 'administrator' && 'Admin'}
+                {user === 'store_manager' && 'StoreManager'}
+                {user === 'customer' && 'Customer'}
+                {user === 'agent' && 'Agent'}
+                {user === 'customer_support' && 'Customer Support'}
+              </p>
+            </motion.div>
+          </motion.div>
+           {/* Dropdown Menu */}
+           <AnimatePresence>
+            {open && (
+              <motion.ul
+                initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-1 p-4 rounded-2xl bg-white shadow-xl 
+                  absolute top-[120%] right-0 w-64 sm:w-48 overflow-hidden
+                  border border-gray-100"
+              >
+                {/* Close Button */}
+                <motion.div 
+                  className='flex justify-end mb-2'
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <RiDeleteBack2Line  
+                    onClick={() => setOpen(false)}  
+                    className='text-black hover:text-gray-600 text-xl'
+                  />
+                </motion.div>
+
+                {/* Menu Items */}
+                <motion.div 
+                  className='flex flex-col gap-2'
+                  variants={{
+                    open: {
+                      transition: { staggerChildren: 0.07, delayChildren: 0.2 }
+                    },
+                    closed: {
+                      transition: { staggerChildren: 0.05, staggerDirection: -1 }
+                    }
+                  }}
+                >
+                    <MenuItem
+                    icon={<LiaEdit className='text-black' />}
+                    text="Edit Profile"
+                    onClick={() => setisOpenEditProfile(true)}
+                  />
+                  <MenuItem
+                    icon={<CiLogout  className='text-black'/>}
+                    text="Logout"
+                    onClick={logout}
+                  />
+                </motion.div>
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
       </>
@@ -402,4 +599,17 @@ function stringAvatar(name) {
   const actionIconVariants = {
     open: { scale: 1, y: 1 },
     closed: { scale: 0, y: -7 },
+  };
+
+ 
+  // Helper function to format last seen time
+  const formatLastSeen = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = (now - date) / 1000; // difference in seconds
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
   };

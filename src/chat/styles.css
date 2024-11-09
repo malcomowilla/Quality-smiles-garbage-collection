@@ -1,0 +1,45 @@
+/* Add these styles for emoji picker */
+.emoji-picker-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.emoji-picker-container em-emoji-picker {
+  --background-rgb: 255, 255, 255;
+  --border-radius: 12px;
+  --category-icon-size: 20px;
+  --font-size: 14px;
+  --rgb-accent: 34, 197, 94; /* Green-500 color */
+  --rgb-background: 255, 255, 255;
+  --rgb-color: 0, 0, 0;
+  --rgb-input: 255, 255, 255;
+  height: 400px;
+  min-height: 400px;
+  max-height: 400px;
+  width: 320px;
+  overflow: hidden;
+}
+
+/* Dark mode support */
+.dark .emoji-picker-container em-emoji-picker {
+  --background-rgb: 31, 41, 55;
+  --rgb-background: 31, 41, 55;
+  --rgb-color: 255, 255, 255;
+  --rgb-input: 55, 65, 81;
+}
+
+/* Animation for emoji picker */
+.emoji-picker-container {
+  animation: emoji-slide-up 0.2s ease-out;
+}
+
+@keyframes emoji-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 
