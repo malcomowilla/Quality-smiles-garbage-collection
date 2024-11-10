@@ -403,8 +403,8 @@ fetchCurrentUser()
       setloading(false);
       setTimeout(() => {
         navigate('/admin/dashboard')
-      }, 2000);
-    }, 2500);
+      }, 1000);
+    }, 1900);
 
 
 
@@ -760,11 +760,12 @@ fetchCurrentUser()
             >
               <img 
                 className="w-20 h-20 mb-4 rounded-full shadow-lg transform hover:scale-105 transition-transform" 
-                src="/images/logo/logo-small.png" 
-                alt="logo"
+                src={logo_preview}
+                alt={company_name}
               />
               <h1 className="text-3xl font-bold text-gray-900">
-                AITechs Solutions
+                {company_name}
+
               </h1>
             </motion.div>
 
@@ -786,6 +787,7 @@ fetchCurrentUser()
                   <div className="relative">
                     <input
                       type="email"
+                      name='email'
                       value={email}
                       onChange={handleFormDataChangeSignin}
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 
@@ -811,6 +813,7 @@ fetchCurrentUser()
                   </label>
                   <div className="relative">
                     <input
+                    name='password'
                       type={isSeenPassWord ? 'password' : 'text'}
                       value={password}
                       onChange={handleFormDataChangeSignin}
@@ -950,7 +953,8 @@ fetchCurrentUser()
                       whileHover={{ scale: 1.1 }}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
                     >
-                      <img src="/images/logo/icons8-gmail-100.png" className="w-6 h-6" alt="email" />
+                      <img src="/images/logo/icons8-gmail-100.png"
+                       className="w-6 h-6" alt="email" />
                     </motion.span>
                   </div>
                 </motion.div>

@@ -1225,20 +1225,34 @@ useEffect(() => {
 }, [handlegetstoreManagerSettings,setstoreManagerSettings]);
 
 
-
 useEffect(() => {
   const handleStorageChange = (event) => {
-    console.log('event key', event)
-    if (event.key === 'acha umbwakni') {
+    // Add detailed logging
+    console.log('Storage Event:', event);
+    console.log('Current Path:', window.location.pathname);
+    
+    // Check if we're in the customer portal by checking the current URL
+    const isCustomerPortal = window.location.pathname.startsWith('/customer') 
+    console.log('Is Customer Portal:', isCustomerPortal);
+    console.log('Event Key:', event.key);
+    
+    if (event.key === 'acha umbwakni' && !isCustomerPortal) {
       const acha_umbwakni = localStorage.getItem('acha umbwakni');
+      console.log('Acha Umbwakni Value:', acha_umbwakni);
+      
       if (!acha_umbwakni || acha_umbwakni === 'null') {
-        // If the value is removed or set to null, navigate to the signin page
-        if (adminFormSettings.enable_2fa_for_admin_passkeys) {
-          navigate('/signup2fa_passkey')
-        }else{
+        console.log('Should Redirect:', true);
+        console.log('2FA Enabled:', adminFormSettings.enable_2fa_for_admin_passkeys);
+        
+        // Only redirect if we're NOT in the customer portal
+        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+            adminFormSettings.enable_2fa_for_admin_passkeys === 'true') {
+          console.log('Redirecting to: /signup2fa_passkey');
+          navigate('/signup2fa_passkey');
+        } else {
+          console.log('Redirecting to: /signin');
           navigate('/signin');
         }
-        
       }
     }
   };
@@ -1246,16 +1260,63 @@ useEffect(() => {
   // Listen for changes in localStorage across tabs
   window.addEventListener('storage', handleStorageChange);
 
+  // Add immediate check for localStorage value
+  const checkStorage = () => {
+    console.log('Checking storage...');
+    const acha_umbwakni = localStorage.getItem('acha umbwakni');
+    console.log('Current acha_umbwakni value:', acha_umbwakni);
+  };
+  checkStorage();
 
-
-  // Clean up the event listener when the component unmounts
   return () => {
     window.removeEventListener('storage', handleStorageChange);
   };
-}, [navigate]);
+}, [navigate, adminFormSettings.enable_2fa_for_admin_passkeys]);
 
 
 
+
+
+useEffect(() => {
+  const handleStorageChange = (event) => {
+    // Add detailed logging
+    console.log('Storage Event:', event);
+    console.log('Current Path:', window.location.pathname);
+    
+    // Check if we're in the customer portal by checking the current URL
+    const adminPortal = window.location.pathname.startsWith('/admin') 
+    console.log('Is Customer Portal:', adminPortal);
+    console.log('Event Key:', event.key);
+    
+    if (event.key === 'customer' && !adminPortal) {
+      const customer = localStorage.getItem('customer');
+      console.log('Customer Value:', customer);
+      
+      if (!customer || customer === 'null') {
+        console.log('Should Redirect:', true);
+        console.log('2FA Enabled:', adminFormSettings.enable_2fa_for_admin_passkeys);
+        navigate('/customer_role');
+        // Only redirect if we're NOT in the customer portal
+      
+      }
+    }
+  };
+
+  // Listen for changes in localStorage across tabs
+  window.addEventListener('storage', handleStorageChange);
+
+  // Add immediate check for localStorage value
+  const checkStorage = () => {
+    console.log('Checking storage...');
+    const acha_umbwakni = localStorage.getItem('acha umbwakni');
+    console.log('Current acha_umbwakni value:', acha_umbwakni);
+  };
+  checkStorage();
+
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+  };
+}, [navigate, adminFormSettings.enable_2fa_for_admin_passkeys]);
 
 
 const handlegetAdminSettings = useCallback(

@@ -316,6 +316,7 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
         setloading(false)
         console.log('signin  failed')
         setRegistrationError(actualUserDataInJson.error)
+        toast.error(actualUserDataInJson.error);
         setSeeError(true)
         // setSigninFormData({})
     }   

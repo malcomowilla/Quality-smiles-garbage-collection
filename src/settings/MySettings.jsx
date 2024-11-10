@@ -1,4 +1,3 @@
-
 import {  ThemeProvider } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -23,12 +22,30 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import {useNavigate} from 'react-router-dom'
 import Alert from '@mui/material/Alert';
 import CompanySettingsCreateAlert from '../Alert/CompanySettingsCreateAlert'
+import { AnimatePresence } from 'framer-motion';
+import { IoIosArrowDown } from "react-icons/io";
 
 // openCreateAlert, handleCloseCreateAlert
 
-
-
-
+const SettingsCheckbox = ({ label, description, checked, onChange, name }) => (
+  <div className="mb-4 p-4  rounded-lg shadow-sm">
+    <FormControlLabel
+      className="dark:text-black text-white mb-1"
+      control={
+        <Checkbox 
+          checked={checked}
+          onChange={onChange}
+          name={name}
+          color="default"
+        />
+      }
+      label={<span className="font-medium">{label}</span>}
+    />
+    <p className="ml-8 text-sm text-white dark:text-black">
+      {description}
+    </p>
+  </div>
+);
 
 const MySettings = () => {
     const { materialuitheme, seeSettings1, setSeeSettings1, seeSettings2, setSeeSettings2, 
@@ -1276,51 +1293,48 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
    
     <ThemeProvider theme={materialuitheme}>
 
-    <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox  color="default" />}
-     label="Require Email At Signup" />
+    <SettingsCheckbox
+      label="Login with OTP"
+      description="When enabled, administrators will receive a one-time 
+      password via SMS during two-factor authentication login. This adds an extra layer of security by requiring both password and SMS verification."
+      checked={login_with_otp}
+      onChange={handleFormDataChangeForAdmin}
+      name="login_with_otp"
+    />
 
-     <Tooltip title={<p className='text-lg'>send a one time password via sms when an admin logs in via two
-       factor authentication </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
-         checked={login_with_otp} color="default"/>} 
-      label="during two factor authentication login send otp(one time password) via sms" name='login_with_otp' />
-</Tooltip>
+    <SettingsCheckbox
+      label="Login with Email OTP"
+      description="When enabled, administrators will receive a one-time password via email during two-factor authentication login. This provides an alternative verification method using email instead of SMS."
+      checked={login_with_otp_email}
+      onChange={handleFormDataChangeForAdmin}
+      name="login_with_otp_email"
+    />
 
+    <SettingsCheckbox
+      label="Enable Two-Factor Authentication (2FA)"
+      description="Requires administrators to verify their identity using both a password and a verification code. This significantly enhances account security by adding an additional verification step."
+      checked={enable_2fa_for_admin}
+      onChange={handleFormDataChangeForAdmin}
+      name="enable_2fa_for_admin"
+    />
 
-<Tooltip title={<p className='text-lg'>send a one time password via email when an admin logs in via two
-  factor authentication </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
-         checked={login_with_otp_email} color="default"/>} 
-      label="during two factor authentication login send otp(one time password) via email" name='login_with_otp_email' />
-</Tooltip>
+    <SettingsCheckbox
+      label="Enable Two-Factor Authentication for Admin Passkeys"
+      description="Allows administrators to use passkeys in addition to passwords for two-factor authentication. This provides an extra layer of security."
+      checked={enable_2fa_for_admin_passkeys}
+      onChange={handleFormDataChangeForAdmin}
+      name="enable_2fa_for_admin_passkeys"
+    />
 
+    <SettingsCheckbox
+      label="Logout an admin after a period of inactivity"
+      description="When enabled, administrators will be logged out automatically after a specified period of inactivity."
+      checked={check_is_inactive}
+      onChange={handleFormDataChangeForAdmin}
+      name="check_is_inactive"
+    />
 
-<Tooltip title={<p className='text-lg'>enable two factor authentication for admin </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox onChange={handleFormDataChangeForAdmin}
-         checked={enable_2fa_for_admin} color="default"/>} 
-      label="enable 2FA (two factor authentication) for admins (password + otp verification)" name='enable_2fa_for_admin' />
-</Tooltip>
-
-
-<Tooltip title={<p className='text-lg'>enable two factor authentication for admin </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
-      checked={enable_2fa_for_admin_passkeys} onChange={handleFormDataChangeForAdmin}
-         color="default"/>} 
-      label="enable 2FA (two factor authentication) for admins (password + passkeys)" 
-      
-      name='enable_2fa_for_admin_passkeys'
-      />
-</Tooltip>
-
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox
-      checked={check_is_inactive} onChange={handleFormDataChangeForAdmin} color="default" />} 
-      label="Logout  an admin after a period of inactivity"  name='check_is_inactive' />
-
-
-
-
-
-</ThemeProvider >
+    </ThemeProvider>
 
       <Box
        className='dark:text-black myTextField'
@@ -1333,115 +1347,153 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 <ThemeProvider theme={materialuitheme}>
 
 
-
-<TextField sx={{
-  '& label.Mui-focused':{
-    color: 'gray'
-  },
-width: {
-xs: '30%'
-},
-
-'& .MuiOutlinedInput-root': {
+{/* Admin Inactivity Settings */}
+<div className="space-y-6 p-4  rounded-lg shadow-sm">
+  <h3 className="text-lg font-medium text-white dark:text-black">Inactivity Timeout Settings</h3>
   
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "black",
-    borderWidth: '3px'
-    },
- '&.Mui-focused fieldset':  {
-    borderColor: 'black', // Set border color to transparent when focused
+  <div className="space-y-4">
+    <div>
+      <TextField 
+        sx={{
+          width: '100%',
+          '& label.Mui-focused': { color: 'gray' },
+          '& .MuiOutlinedInput-root': {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "black",
+              borderWidth: '3px'
+            }
+          }
+        }}
+        id="inactive-hours"
+        label="Logout After Inactivity (Hours)"
+        type="number"
+        name="check_inactive_hrs"
+        onChange={handleFormDataChangeForAdmin}
+        value={check_inactive_hrs}
+        helperText="Automatically log out administrators after this many hours of inactivity. Enter 0 to disable hour-based logout."
+      />
+    </div>
 
-  }
-},
-}}
-          id="outlined-multiline-flexible"
-          label="Logout Admin after a period of inactivity(hrs)"
+    <div>
+      <TextField 
+        sx={{
+          width: '100%',
+          '& label.Mui-focused': { color: 'gray' },
+          '& .MuiOutlinedInput-root': {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "black",
+              borderWidth: '3px'
+            }
+          }
+        }}
+        id="inactive-days"
+        label="Logout After Inactivity (Days)"
+        type="number"
+        name="check_inactive_days"
+        onChange={handleFormDataChangeForAdmin}
+        value={check_inactive_days}
+        helperText="Automatically log out administrators after this many days of inactivity. Useful for long-term security. Enter 0 to disable day-based logout."
+      />
+    </div>
 
-type='number'
-name='check_inactive_hrs'
-onChange={handleFormDataChangeForAdmin}
-value={check_inactive_hrs}
-        />
+    <div>
+      <TextField 
+        sx={{
+          width: '100%',
+          '& label.Mui-focused': { color: 'gray' },
+          '& .MuiOutlinedInput-root': {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "black",
+              borderWidth: '3px'
+            }
+          }
+        }}
+        id="inactive-minutes"
+        label="Logout After Inactivity (Minutes)"
+        type="number"
+        name="check_inactive_minutes"
+        onChange={handleFormDataChangeForAdmin}
+        value={check_inactive_minutes}
+        helperText="Automatically log out administrators after this many minutes of inactivity. Recommended for high-security environments. Enter 0 to disable minute-based logout."
+      />
+    </div>
+  </div>
 
+  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md mt-4">
+    <p className="text-sm text-gray-600 dark:text-gray-300">
+      <strong>How it works:</strong> The system will log out administrators after any of these time periods are reached. 
+      For example, setting 2 hours, 1 day, and 30 minutes will trigger a logout after either 2 hours, 1 day, or 30 minutes 
+      of inactivity, whichever comes first.
+    </p>
+  </div>
+</div>
 
+{/* User Invitation Settings */}
+<div className="space-y-6 p-4  rounded-lg shadow-sm mt-6">
+  <h3 className="text-lg font-medium text-white dark:text-black">User Invitation Settings</h3>
 
+  <div className="space-y-4">
+    <div className="p-4  rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox
+            checked={send_password_via_email}
+            onChange={handleFormDataChangeForAdmin}
+            name="send_password_via_email"
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium">Send Invite Via Email</p>
+            <p className="text-sm text-white dark:text-black mt-1">
+              When enabled, new users will receive their login credentials and initial password through email. 
+              This is the recommended method for business email addresses.
+            </p>
+          </div>
+        }
+      />
+    </div>
 
-<TextField sx={{
-  '& label.Mui-focused':{
-    color: 'gray'
-  },
-width: {
-xs: '30%'
-},
+    <div className="p-4  rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox
+            checked={send_password_via_sms}
+            onChange={handleFormDataChangeForAdmin}
+            name="send_password_via_sms"
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium">Send Invite Via SMS</p>
+            <p className="text-sm text-white dark:text-black mt-1">
+              When enabled, new users will receive their login credentials and initial password through SMS. 
+              This method ensures immediate delivery to mobile devices and is useful when email access is limited.
+            </p>
+          </div>
+        }
+      />
+    </div>
+  </div>
 
-'& .MuiOutlinedInput-root': {
-  
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "black",
-    borderWidth: '3px'
-    },
- '&.Mui-focused fieldset':  {
-    borderColor: 'black', // Set border color to transparent when focused
-
-  }
-},
-}}
-          id="outlined-multiline-flexible"
-          label="Logout Admin after a period of inactivity(days)"
-value={check_inactive_days}
-onChange={handleFormDataChangeForAdmin}
-name='check_inactive_days'
-type='number'
-        />
-
-
-<TextField sx={{
-  '& label.Mui-focused':{
-    color: 'gray'
-  },
-width: {
-xs: '30%'
-},
-
-'& .MuiOutlinedInput-root': {
-  
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "black",
-    borderWidth: '3px'
-    },
- '&.Mui-focused fieldset':  {
-    borderColor: 'black', // Set border color to transparent when focused
-
-  }
-},
-}}
-          id="outlined-multiline-flexible"
-          label="Logout Admin after a period of inactivity(minutes)"
-value={check_inactive_minutes}
-onChange={handleFormDataChangeForAdmin}
-name='check_inactive_minutes'
-type='number'
-        />
-
-
-
+  <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+      <strong>Security Note:</strong> It's recommended to enable at least one invitation method to ensure 
+      new users can securely receive their login credentials. For maximum security, consider enabling both 
+      methods for critical user accounts.
+    </p>
+  </div>
+</div>
 </ThemeProvider >
 
         </Box>
         <ThemeProvider theme={materialuitheme}>
 
-        <Tooltip title={<p className='text-lg'>send  password via email to a user after they get invited to the sytem</p>}>
-        <FormControlLabel   name='send_password_via_email' className='dark:text-black'  control={<Checkbox color="default"
-        checked={send_password_via_email} onChange={handleFormDataChangeForAdmin}/>} 
-        label="Send Invite To User Via Email" />
-       </Tooltip>
-
-
-       <Tooltip title={<p className='text-lg'>send  password via sms to a user after they get invited to the sytem</p>}>
-        <FormControlLabel  className='dark:text-black'  name='send_password_via_sms' control={<Checkbox color="default"
-        checked={send_password_via_sms} onChange={handleFormDataChangeForAdmin}/>} 
-        label="Send Invite To User Via Sms" />
-       </Tooltip>
+      
 
 
 
@@ -1505,53 +1557,39 @@ type='number'
   <FormGroup>
           
 
-    <FormControlLabel   className=' dark:text-black' sx={{
-       width:{
-        xs: '25%',
-        sm: '30%',
-        marginTop: 20
-        
-      }
-    }}  control={<Checkbox color="default" />} label="Automatically Send Reminder SMS for Expiring Payments"  />
+    <SettingsCheckbox
+      label="Auto-Generated Customer Code"
+      description="Automatically generates unique identification codes for customers. This ensures consistent and organized customer numbering across the system."
+      checked={settingsformData.use_auto_generated_number}
+      onChange={handleCustomerFormDataChange}
+      name="use_auto_generated_number"
+    />
 
 
-
-<FormControlLabel  className=' dark:text-black' control={<Checkbox color="default" onChange={handleCustomerFormDataChange}
-
-checked={settingsformData.use_auto_generated_number}
-/>}   label="Use Auto GeneratedNumber 
- As Customer Code"  name='use_auto_generated_number'/>
-
-
-
-<Tooltip title={<p className='text-lg'>Here the customers  will receive 
-  the customer code after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms
-       </p>}>
-<FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
- checked={settingsformData.send_sms_and_email} onChange={handleCustomerFormDataChange}
-/>}   name='send_sms_and_email'    label="Send Customer Code Once a Customer 
-Is Created(Sms)"  />
-
-</Tooltip >
-
-<FormControlLabel  className='dark:text-black' control={<Checkbox  color="default" 
- checked={settingsformData.enable_2fa} onChange={handleCustomerFormDataChange}
-/>}   name='enable_2fa'    label="Enable 2FA(Two Factor Authentication) for customer login(otp verification)"  />
-
-
-
-<Tooltip title={<p className='text-lg'>Here the customers  will receive 
-  the customer code after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login authenticating two times instead of once,all this will be done via email
-       </p>}>
-<FormControlLabel name='send_email'  className='dark:text-black' checked={settingsformData.send_email} control={<Checkbox  color="default" 
+<SettingsCheckbox
+  label="Send Customer Code via SMS"
+  description="Automatically sends the customer's unique code via SMS when their account is created. If 2FA is enabled, they will also receive one-time passwords for login verification."
+  checked={settingsformData.send_sms_and_email}
   onChange={handleCustomerFormDataChange}
-/>}      label="Send Customer Code Once a Customer 
-Is Created(email)"  />
-</Tooltip>
+  name="send_sms_and_email"
+/>
+
+<SettingsCheckbox
+  label="Enable 2FA for Customer Login"
+  description="Allows customers to use two-factor authentication for login. This adds an extra layer of security by requiring both a password and a verification code."
+  checked={settingsformData.enable_2fa}
+  onChange={handleCustomerFormDataChange}
+  name="enable_2fa"
+/>
+
+
+<SettingsCheckbox
+  label="Send Customer Code via Email"
+  description="Automatically sends the customer's unique code via email when their account is created. If 2FA is enabled, they will also receive one-time passwords for login verification."
+  checked={settingsformData.send_email}
+  onChange={handleCustomerFormDataChange}
+  name="send_email"
+/>
 
 
 
@@ -1674,86 +1712,199 @@ Is Created(email)"  />
 <form onSubmit={handleUpdateProvider}>
   <FormGroup>
           
-      <FormControlLabel  name='use_auto_generated_number_for_service_provider' className=' dark:text-black' 
-      control={<Checkbox color="default"  onChange={handleCustomerFormDataChangeForProvider}
-      checked={settingsformDataForProvider.use_auto_generated_number_for_service_provider}/>
-    
-    
-    } label="Use Auto GeneratedNumber As Service Provider Code"  />
-
-
-<FormControlLabel name='enable_2fa_for_service_provider'  className=' dark:text-black'
- 
-       label="enable 2FA for service provider (Two Factor Authentication)"
-       control={<Checkbox color="default"  onChange={handleCustomerFormDataChangeForProvider}
-        checked={settingsformDataForProvider.enable_2fa_for_service_provider}/>}
+      <SettingsCheckbox
+        label="Auto-Generated Provider Code"
+        description="Automatically generates unique identification codes for service providers, ensuring consistent and organized provider numbering."
+        checked={settingsformDataForProvider.use_auto_generated_number_for_service_provider}
+        onChange={handleCustomerFormDataChangeForProvider}
+        name="use_auto_generated_number_for_service_provider"
       />
 
 
-<Tooltip title={<p className='text-lg'>
-  Here the service providers  will receive 
-  the service provider code after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login authenticating two times instead of once,all this will be done via email
-  </p>}>
-<FormControlLabel name='send_email_for_provider'   className=' dark:text-black' 
-       label="Send Service Provider
-      Code Once Service Provider Has Been Created(Email)"
-       control={<Checkbox color="default" onChange={handleCustomerFormDataChangeForProvider} 
-       checked={settingsformDataForProvider.send_email_for_provider}/>}
+<SettingsCheckbox
+  label="Enable 2FA for Service Provider"
+  description="Requires service providers to verify their identity using both a password and a verification code. This significantly enhances account security by adding an additional verification step."
+  checked={settingsformDataForProvider.enable_2fa_for_service_provider}
+  onChange={handleCustomerFormDataChangeForProvider}
+  name="enable_2fa_for_service_provider"
+/>
+
+{/* Service Provider Notification Settings */}
+<div className="space-y-6 p-4 rounded-lg shadow-sm">
+  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Service Provider Communication Settings</h3>
+
+  <div className="space-y-4">
+    <div className="p-4  rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox
+            checked={settingsformDataForProvider.send_email_for_provider}
+            onChange={handleCustomerFormDataChangeForProvider}
+            name="send_email_for_provider"
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium text-white dark:text-black">Send Provider Code Via Email</p>
+            <p className="text-sm text-white dark:text-black mt-1">
+              When enabled, service providers will receive:
+              <ul className="list-disc ml-5 mt-2">
+                <li>Their unique provider code immediately after account creation</li>
+                <li>Login credentials and access instructions</li>
+                <li>Two-factor authentication codes (if 2FA is enabled)</li>
+                <li>Important account notifications and updates</li>
+              </ul>
+              Best for providers who regularly check their email.
+            </p>
+          </div>
+        }
       />
-</Tooltip>
+    </div>
 
+    <div className="p-4 rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox
+            checked={settingsformDataForProvider.send_sms_and_email_for_provider}
+            onChange={handleCustomerFormDataChangeForProvider}
+            name="send_sms_and_email_for_provider"
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium  text-white dark:text-black">Send Provider Code Via SMS</p>
+            <p className="text-sm text-white dark:text-black mt-1">
+              When enabled, service providers will receive:
+              <ul className="list-disc ml-5 mt-2">
+                <li>Their unique provider code via text message</li>
+                <li>Mobile-friendly login instructions</li>
+                <li>SMS-based verification codes (if 2FA is enabled)</li>
+                <li>Time-sensitive notifications</li>
+              </ul>
+              Recommended for immediate delivery and providers who are frequently mobile.
+            </p>
+          </div>
+        }
+      />
+    </div>
+  </div>
 
+  <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-blue-800 dark:text-blue-200">
+      <strong>Communication Tip:</strong> For optimal provider communication:
+      <ul className="list-disc ml-5 mt-2">
+        <li>Enable both email and SMS for critical notifications</li>
+        <li>Use email for detailed instructions and documentation</li>
+        <li>Use SMS for urgent updates and time-sensitive information</li>
+        <li>Consider your providers' preferred communication methods</li>
+      </ul>
+    </p>
+  </div>
+</div>
+            </FormGroup>
 
+{/* Service Provider Code Settings */}
+<div className="space-y-6 p-4  rounded-lg shadow-sm mt-6">
+  <h3 className="text-lg font-medium text-white dark:text-black">Service Provider Code Configuration</h3>
 
-<Tooltip title={<p className='text-lg'>Here the service providers  will receive 
-  the service provider code after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms
-  </p>}>
-      <FormControlLabel  className=' dark:text-black' control={<Checkbox  color="default"   
-       onChange={handleCustomerFormDataChangeForProvider}
-      checked={settingsformDataForProvider.send_sms_and_email_for_provider
-      }
-      />} label="Send Service Provider
-      Code Once Service Provider Has Been Created(SMS)" name='send_sms_and_email_for_provider' />
-   </Tooltip>
+  <div className="space-y-4">
+    <div>
+      <TextField  
+        name='prefix'   
+        value={settingsformDataForProvider.prefix}  
+        onChange={handleCustomerFormDataChangeForProvider}
+        className='myTextField'
+        label='Service Provider Code Prefix'
+        fullWidth
+        sx={{
+          '& label.Mui-focused': { color: 'black' },
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'black',
+              borderWidth: '3px'
+            }
+          }
+        }}
+        helperText={
+          <div className="mt-1">
+            <p>The prefix that will appear at the start of every service provider code.</p>
+            <ul className="list-disc ml-4 mt-1 text-sm text-white dark:text-black">
+              <li>Example: Using prefix "SP" will generate codes like SP001, SP002</li>
+              <li>Keep it short and meaningful (2-3 characters recommended)</li>
+              <li>Use uppercase letters for better readability</li>
+            </ul>
+          </div>
+        }
+      />
+    </div>
 
-      
-      </FormGroup>
-  <Stack direction='row'  className='myTextField'  sx={{
-           
-           '& .MuiTextField-root': { m: 1, width: '90ch', textTransform: 'uppercase',   '& label.Mui-focused': {
-             color: 'black',
-             fontSize: '16px'
-             },
-         '& .MuiOutlinedInput-root': {
-           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-             borderColor: "black",
-             borderWidth: '3px',
-             },
-          '&.Mui-focused fieldset':  {
-             borderColor: 'black', 
-             
-           }
-         } },
-         }}   spacing={{
-             xs: 1,
-             sm: 2
-           }}>
-   
-            
-   <TextField  name='prefix'   value={settingsformDataForProvider.prefix}  onChange={handleCustomerFormDataChangeForProvider}
-     className='myTextField '
-             label='Service Provider Code No Prefix' ></TextField>
-           
-   
-   <TextField name='minimum_digits'  value={settingsformDataForProvider.minimum_digits} onChange={handleCustomerFormDataChangeForProvider} className='myTextField '   
-                type='number'  label='Service Provider Code Minimum Digits(Zeros will be added to the front, eg SUB001 for
-                 three digits)'></TextField>
-   
-           </Stack>
+    <div>
+      <TextField 
+        name='minimum_digits'  
+        value={settingsformDataForProvider.minimum_digits} 
+        onChange={handleCustomerFormDataChangeForProvider} 
+        className='myTextField'   
+        type='number'  
+        label='Minimum Digits for Provider Code'
+        fullWidth
+        sx={{
+          '& label.Mui-focused': { color: 'black' },
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'black',
+              borderWidth: '3px'
+            }
+          }
+        }}
+        helperText={
+          <div className="mt-1">
+            <p>The minimum number of digits that will follow the prefix in the provider code.</p>
+            <ul className="list-disc ml-4 mt-1 text-sm text-white dark:text-black">
+              <li>Example: Setting 3 digits with prefix "SP" will generate: SP001, SP002, ..., SP999</li>
+              <li>Leading zeros will be added automatically to maintain the specified length</li>
+              <li>Choose based on your expected number of providers:</li>
+              <ul className="list-circle ml-6 mt-1">
+                <li>3 digits: Up to 999 providers</li>
+                <li>4 digits: Up to 9,999 providers</li>
+                <li>5 digits: Up to 99,999 providers</li>
+              </ul>
+            </ul>
+          </div>
+        }
+      />
+    </div>
+  </div>
+
+  <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+      <strong>Format Example:</strong> With prefix "SP" and 3 minimum digits:
+      <ul className="list-disc ml-5 mt-2">
+        <li>First provider: SP001</li>
+        <li>Tenth provider: SP010</li>
+        <li>Hundredth provider: SP100</li>
+      </ul>
+      <strong>Note:</strong> Changes to these settings will only affect newly created provider codes, 
+      existing codes will remain unchanged.
+    </p>
+  </div>
+
+  <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-blue-800 dark:text-blue-200">
+      <strong>Best Practices:</strong>
+      <ul className="list-disc ml-5 mt-2">
+        <li>Choose a prefix that clearly identifies service providers (e.g., SP, PRV, DOC)</li>
+        <li>Set minimum digits based on your expected growth</li>
+        <li>Keep the total code length (prefix + digits) manageable</li>
+        <li>Consider using memorable patterns for easier reference</li>
+      </ul>
+    </p>
+  </div>
+</div>
+
            <div className='p-5'>
            <button  type='submit' className="px-6 py-2 font-medium bg-black text-white w-fit transition-all
  shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px]
@@ -1772,16 +1923,23 @@ Is Created(email)"  />
 
 
   <h2 id="accordion-open-heading-2">
-    <button type="button"   onClick={()=> setSeeSettings4(!seeSettings4)} className="flex items-center justify-between w-full p-5 
+    <button type="button"   onClick={()=> setSeeSettings4(!seeSettings4)}
+     className="flex items-center justify-between w-full p-5 
     
-    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200
+     focus:ring-4
     hover:dark:text-white hover:text-black
-    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
-     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700
+     dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+      data-accordion-target="#accordion-open-body-2" aria-expanded="false" 
+      aria-controls="accordion-open-body-2">
       <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>  Store Number?</span>
-      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 "
+       aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
-        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" 
+        strokeWidth="2" d="M9 5 5 1 1 5"/>
       </svg>
     </button>
   </h2>
@@ -1860,6 +2018,8 @@ Is Created(email)"  />
 
 
 
+
+
   <h2 id="accordion-open-heading-2">
     <button type="button"   onClick={()=> setSeeSettings5(!seeSettings5)} className="flex items-center justify-between w-full p-5 
     
@@ -1885,37 +2045,131 @@ Is Created(email)"  />
 
 
    <ThemeProvider theme={materialuitheme}>
-   <Tooltip title={<p className='text-lg'>Here the storemanagers  will receive 
-  the manager number after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login authenticating two times instead of once,all this will be done via sms </p>}>
-      <FormControlLabel  className='dark:text-black text-white'   control={<Checkbox 
-      onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.send_manager_number_via_sms}
-          color="default"/>} 
-      label="Send Manager Number Once StoreManager Has Been Created(SMS)"
- name='send_manager_number_via_sms' />
-</Tooltip>
 
+    
 
-<Tooltip title={<p className='text-lg'>Here the storemanagers  will receive 
-  the manager number after their account has been created to use for loging into their account, but 
-  if two factor authentication (otp verification) is enabled then he will receive additional details
-   (one time password) inorder to login hence authenticating two times instead of once,all this will be done via email </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
-      checked={storeManagerSettings.send_manager_number_via_email} onChange={handleFormDataChangeForStoreManager}
-          color="default"/>} 
-      label="Send Manager Number Once StoreManager Has Been Created(Email)" name='send_manager_number_via_email' />
-</Tooltip>
+{/* Store Manager Settings */}
+<div className="space-y-6 p-4  rounded-lg shadow-sm">
+  <h3 className="text-lg font-medium text-white dark:text-black">Store Manager Security & Communication</h3>
 
+  <div className="space-y-4">
+    {/* SMS Notification Setting */}
+    <div className="p-4  rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox 
+            onChange={handleFormDataChangeForStoreManager} 
+            checked={storeManagerSettings.send_manager_number_via_sms}
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium text-white dark:text-black">Send Manager Number via SMS</p>
+            <p className="text-sm text-white dark:text-black  mt-1">
+              When enabled, store managers will receive:
+              <ul className="list-disc ml-5 mt-2">
+                <li>Their unique manager ID via text message upon account creation</li>
+                <li>Initial login credentials and setup instructions</li>
+                <li>SMS-based verification codes for two-factor authentication (if enabled)</li>
+                <li>Important security notifications and updates</li>
+              </ul>
+              <p className="mt-2 text-sm italic">Recommended for immediate access and enhanced security</p>
+            </p>
+          </div>
+        }
+        name="send_manager_number_via_sms"
+      />
+    </div>
 
+    {/* Email Notification Setting */}
+    <div className="p-4 rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox 
+            checked={storeManagerSettings.send_manager_number_via_email}
+            onChange={handleFormDataChangeForStoreManager}
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium text-white dark:text-black">Send Manager Number via Email</p>
+            <p className="text-sm text-white dark:text-black  mt-1">
+              When enabled, store managers will receive:
+              <ul className="list-disc ml-5 mt-2">
+                <li>Their unique manager ID via email upon account creation</li>
+                <li>Detailed account setup documentation</li>
+                <li>Email-based verification codes for two-factor authentication (if enabled)</li>
+                <li>System access instructions and security guidelines</li>
+              </ul>
+              <p className="mt-2 text-sm italic">Best for maintaining a permanent record of account details</p>
+            </p>
+          </div>
+        }
+        name="send_manager_number_via_email"
+      />
+    </div>
 
-<Tooltip title={<p className='text-lg'>use two factor authentication for store manager login (password plus otp) </p>}>
-      <FormControlLabel  className='dark:text-black text-white'  control={<Checkbox 
-      onChange={handleFormDataChangeForStoreManager} checked={storeManagerSettings.enable_2fa_for_store_manager}
-          color="default"/>} 
-      label="enable 2FA for store manager(otp verification)" name='enable_2fa_for_store_manager' />
-</Tooltip>
+    {/* 2FA Setting */}
+    <div className="p-4  rounded-md">
+      <FormControlLabel
+        className="mb-2"
+        control={
+          <Checkbox 
+            onChange={handleFormDataChangeForStoreManager} 
+            checked={storeManagerSettings.enable_2fa_for_store_manager}
+            color="default"
+          />
+        }
+        label={
+          <div>
+            <p className="font-medium text-white dark:text-black">Enable Two-Factor Authentication (2FA)</p>
+            <p className="text-sm text-white dark:text-black  mt-1">
+              When enabled:
+              <ul className="list-disc ml-5 mt-2">
+                <li>Store managers must verify their identity using two different methods</li>
+                <li>Each login requires both password and a one-time verification code</li>
+                <li>Verification codes can be sent via SMS or email (based on settings above)</li>
+                <li>Provides enhanced protection against unauthorized access</li>
+              </ul>
+              <p className="mt-2 text-sm italic">Highly recommended for protecting sensitive store operations</p>
+            </p>
+          </div>
+        }
+        name="enable_2fa_for_store_manager"
+      />
+    </div>
+  </div>
 
+  {/* Security Tips Section */}
+  <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-blue-800 dark:text-blue-200">
+      <strong>Security Recommendations:</strong>
+      <ul className="list-disc ml-5 mt-2">
+        <li>Enable both SMS and email notifications for redundancy</li>
+        <li>Always enable 2FA for store managers handling sensitive data</li>
+        <li>Regularly review and update security settings</li>
+        <li>Train store managers on security best practices</li>
+      </ul>
+    </p>
+  </div>
+
+  {/* Important Notes */}
+  <div className="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md mt-4">
+    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+      <strong>Important Notes:</strong>
+      <ul className="list-disc ml-5 mt-2">
+        <li>Changes to these settings affect new accounts only</li>
+        <li>Existing store managers will need to be manually updated</li>
+        <li>At least one notification method should be enabled</li>
+        <li>2FA settings can be individually overridden for specific managers if needed</li>
+      </ul>
+    </p>
+  </div>
+</div>
 
 
   <FormGroup>

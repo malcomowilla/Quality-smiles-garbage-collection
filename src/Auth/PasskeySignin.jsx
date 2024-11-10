@@ -263,13 +263,7 @@ const newData = await createResponse.json()
       fetchCurrentUser()
     setTheme(app_theme)
     setopenLoginSuccess(true)
-    setTimeout(() => {
-      setDone(true);
-      setloading(false);
-      setTimeout(() => {
-        navigate('/admin/dashboard')
-      }, 2000);
-    }, 2500);
+    navigate('/admin/dashboard')
       // setTimeout(() => {
       //   // setDone(true);
       //   // setloading(false);
