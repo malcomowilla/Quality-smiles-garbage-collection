@@ -5,7 +5,12 @@ import path from "path"
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
+  build: {
+    outDir: 'dist', // This is the build output directory
+    assetsDir: 'assets', // Directory for assets inside outDir
+    emptyOutDir: true, // Empty the output directory before building
+  },
+  base: './',
   server: {
     mimeTypes: {
       js: 'application/javascript',
