@@ -9,7 +9,7 @@ import {
 import {useEffect, useState, useCallback, lazy, Suspense} from 'react'
 
 // import Signup from './Auth/Signup'
-const Signup = lazy(() => import ('./Auth/Signup'))
+// const Signup = lazy(() => import ('./Auth/Signup'))
 // import {HomePage} from './Home/HomePage'
 const HomePage = lazy(() => import ('./Home/HomePage'))
 import SignIn from './Auth/SignIn'
