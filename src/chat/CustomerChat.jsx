@@ -21,6 +21,7 @@ const CustomerChat = () => {
   const [supportAgent, setSupportAgent] = useState(null);
   const messagesEndRef = useRef(null);
   const [subscription, setSubscription] = useState(null);
+  const [error, setError] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,28 +72,92 @@ const CustomerChat = () => {
     setSubscription(sub);
   };
 
+  
+
+
   const sendMessage = async () => {
-    if (!text.trim()) return;
-    
     try {
       const response = await fetch('/api/send_chat_message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: text }),
+        body: JSON.stringify({ content: text })
       });
 
-      if (response.ok) {
+      if (response.status === 503) {
+        const data = await response.json();
+        setError(data);
+      } else if (response.ok) {
         setText('');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error:', error);
     }
   };
+
+
 
   return (
     <>
       {/* Chat Button */}
-      <section className='bg-white h-screen'>
+
+
+      {error && (
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
+            <div className="mb-4">
+              <h4 className="text-yellow-800 font-medium text-lg mb-2">
+                {error.error}
+              </h4>
+              <p className="text-yellow-600 text-sm mb-4">
+                {error.message}
+              </p>
+            </div>
+            
+            <div className="border-t pt-4">
+              <h5 className="font-medium text-gray-700 mb-2">
+                Alternative ways to reach us:
+              </h5>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>
+                  <span className="font-medium">Email:</span>{' '}
+                  <a href="mailto:support@example.com" 
+                  className="text-blue-500 hover:underline">
+                    support@example.com
+                  </a>
+                </p>
+                <p>
+                  <span className="font-medium">Phone:</span>{' '}
+                  <a href="tel:+1234567890" 
+                  className="text-blue-500 hover:underline">
+                    +1 (234) 567-890
+                  </a>
+                </p>
+                <p>
+                <span className="font-medium">Phone:</span>{' '}
+                  <a href="tel:+1234567890" 
+                  className="text-blue-500 hover:underline">
+                    +1 (234) 567-890
+                  </a>
+                </p>
+                <p>
+                  <span className="font-medium">Business Hours:</span>{' '}
+                  Mon-Fri, 9:00 AM - 5:00 PM
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setError(null)}
+              className="mt-4 w-full bg-yellow-100 text-yellow-700 
+              py-2 px-4 rounded-md hover:bg-yellow-200 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        )}
+
+
+
+
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -102,6 +167,9 @@ const CustomerChat = () => {
           <BiMessageDots className="w-6 h-6" />
         </button>
       )}
+      <section className='bg-white h-screen'>
+
+     
 
       {/* Chat Window */}
       {isOpen && (

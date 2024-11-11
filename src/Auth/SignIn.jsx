@@ -18,11 +18,11 @@ import LogoutSuccess from '../Alert/LogoutSuccess'
 import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
 import OtpSentEmailAlert from '../Alert/OtpSentEmailAlert'
 import LogoutSession from '../Alert/LogoutSession'
-import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { FaPhone } from "react-icons/fa";
-
 import { GoPasskeyFill } from "react-icons/go";
 import Tooltip from '@mui/material/Tooltip';
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
 // OtpSentEmailAlert openOtpSentEmailAlert, handleCloseOtpSentEmailAlert

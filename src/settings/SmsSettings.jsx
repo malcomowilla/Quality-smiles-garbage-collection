@@ -11,7 +11,9 @@ import { useApplicationSettings } from '../settings/ApplicationSettings';
 import SmsTemplateDeniedAlert from '../Alert/SmsTemplateDeniedAlert'
 import SmsTemplateErrorAlert from '../Alert/SmsTemplateError'
 import { IoKeyOutline, IoLockClosedOutline } from "react-icons/io5";
+import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 
+import 'react-toastify/dist/ReactToastify.css'
 // openSmsTemplateError, handleCloseSmsTemplateError 
 
 const templateData = {
@@ -106,11 +108,15 @@ const handleSubmit = async (e) => {
     });
 
     if (response.ok) {
+      toast.success('SMS Settings Saved Successfully');
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
+    }else{
+      toast.error('Error Saving SMS Settings')
     }
   } catch (error) {
     console.error('Error saving SMS settings:', error);
+    toast.error('Error Saving SMS Settings')
   } finally {
     setLoading(false);
   }
@@ -207,6 +213,7 @@ useEffect(() => {
         setopenTemplateError(true)
       }
       if (response.ok) {
+        toast.success('SMS Templates Saved Successfully');
         setopenTemplateAlert(true)
         const admin_otp_confirmation_template = newData.admin_otp_confirmation_template
          const payment_reminder_template = newData.payment_reminder_template   
@@ -230,6 +237,7 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
         console.log('sms template', newData)
       } else {
         setloading(false)
+        toast.error('Error Saving SMS Templates')
         setOpenLoad(false)
         setopenSmsTemplateError(true)
         console.log('error', newData.error)
@@ -237,6 +245,7 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
     } catch (error) {
       setopenSmsTemplateError(true)
       setloading(false)
+      toast.error('Error Saving SMS Templates')
       setOpenLoad(false)
       console.log(error)
     }
@@ -244,6 +253,7 @@ const service_provider_otp_confirmation_template = newData.service_provider_otp_
   return (
 
     <>
+<ToastContainer position='top-center' transition={Slide}  autoClose={10000}/>
 
 <SmsTemplateErrorAlert openSmsTemplateError={openSmsTemplateError}  handleCloseSmsTemplateError={handleCloseSmsTemplateError}/>
 

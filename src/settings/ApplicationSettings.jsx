@@ -1280,21 +1280,21 @@ useEffect(() => {
 useEffect(() => {
   const handleStorageChange = (event) => {
     // Add detailed logging
-    console.log('Storage Event:', event);
-    console.log('Current Path:', window.location.pathname);
+    // console.log('Storage Event:', event);
+    // console.log('Current Path:', window.location.pathname);
     
     // Check if we're in the customer portal by checking the current URL
     const adminPortal = window.location.pathname.startsWith('/admin') 
-    console.log('Is Customer Portal:', adminPortal);
-    console.log('Event Key:', event.key);
+    // console.log('Is Customer Portal:', adminPortal);
+    // console.log('Event Key:', event.key);
     
     if (event.key === 'customer' && !adminPortal) {
       const customer = localStorage.getItem('customer');
-      console.log('Customer Value:', customer);
+      // console.log('Customer Value:', customer);
       
       if (!customer || customer === 'null') {
-        console.log('Should Redirect:', true);
-        console.log('2FA Enabled:', adminFormSettings.enable_2fa_for_admin_passkeys);
+        // console.log('Should Redirect:', true);
+        // console.log('2FA Enabled:', adminFormSettings.enable_2fa_for_admin_passkeys);
         navigate('/customer_role');
         // Only redirect if we're NOT in the customer portal
       

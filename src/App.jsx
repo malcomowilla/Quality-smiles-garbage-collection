@@ -477,7 +477,7 @@ useEffect(() => {
        <Routes>
 
 
-{/* 
+
        <Route  path='/signup'  element={
          <Suspense fallback={<div> 
 
@@ -490,7 +490,7 @@ useEffect(() => {
          </div>}>
         <Signup/>
         </Suspense>
-        }/> */}
+        }/>
 
 
 

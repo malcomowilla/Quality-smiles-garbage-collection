@@ -1691,7 +1691,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
      aria-controls="accordion-open-body-3">
       <span className="flex items-center">
       <IoSettingsOutline className='p-1 text-3xl'/>
-        Service Provider Account?</span>
+        Service Provider Account</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
       </svg>
@@ -1934,7 +1934,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
       data-accordion-target="#accordion-open-body-2" aria-expanded="false" 
       aria-controls="accordion-open-body-2">
-      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>  Store Number?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Store Number</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 "
        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
@@ -2027,7 +2027,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>     Store Manager?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Store Manager</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -2245,7 +2245,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>  Ticket Number?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Ticket Number</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
@@ -2333,7 +2333,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
      hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
-      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/> Calendar?</span>
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Calendar</span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
