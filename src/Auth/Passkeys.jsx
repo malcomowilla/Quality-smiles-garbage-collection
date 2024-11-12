@@ -169,7 +169,7 @@ const handleChange = (e) => {
         rp: {
           name: "aitechs",
         },
-        origin: '"https://aitechs-sas-garbage-solution.onrender.com',
+        origin: 'https://aitechs-sas-garbage-solution.onrender.com',
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {

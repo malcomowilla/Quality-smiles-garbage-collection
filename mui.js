@@ -5,6 +5,7 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
       },
+
       components: {
         MuiDataGrid: {
           styleOverrides: {
