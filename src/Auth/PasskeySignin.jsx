@@ -234,6 +234,7 @@ setDone(false)
     const credentialJson = {
       id: credential.id,
       rawId: arrayBufferToBase64Url(credential.rawId),
+      challenge: challenge,
       type: credential.type,
       response: {
         clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
@@ -253,7 +254,7 @@ setDone(false)
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ credential:credentialJson, email, 
         user_name, my_user_name,
-        challenge: challenge  })
+          })
     });
 
 const newData = await createResponse.json()
