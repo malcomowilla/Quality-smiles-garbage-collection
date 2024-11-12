@@ -1435,65 +1435,65 @@ useEffect(() => {
 
 
 
-const handlegetcustomerSettings = useCallback(
-  async()=> {
-       const storedData = JSON.parse(localStorage.getItem("customer settings"));
+// const handlegetcustomerSettings = useCallback(
+//   async()=> {
+//        const storedData = JSON.parse(localStorage.getItem("customer settings"));
      
-       const requestParams = {
-         use_auto_generated_number:storedData.use_auto_generated_number,
-         send_sms_and_email:storedData.send_sms_and_email,
-         send_email: storedData.send_email,
-         enable_2fa: storedData.enable_2fa
+//        const requestParams = {
+//          use_auto_generated_number:storedData.use_auto_generated_number,
+//          send_sms_and_email:storedData.send_sms_and_email,
+//          send_email: storedData.send_email,
+//          enable_2fa: storedData.enable_2fa
           
        
-       };
-     try {
-       const response = await fetch(`/api/get_customer_settings?${new URLSearchParams(requestParams)}`, {
-       method: 'GET',
-       signal: controller.signal,  
+//        };
+//      try {
+//        const response = await fetch(`/api/get_customer_settings`, {
+//        method: 'GET',
+//        signal: controller.signal,  
 
-       headers: {
-         "Content-Type"  : 'application/json'
-       },
-       })
+//        headers: {
+//          "Content-Type"  : 'application/json'
+//        },
+//        })
 
-    clearTimeout(id);
-
-
-       const newData = await response.json()
+//     clearTimeout(id);
 
 
-       if (response.status === 401) {
-        if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
-          adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+//        const newData = await response.json()
+
+
+//        if (response.status === 401) {
+//         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
+//           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
+//           toast.error(
+//             <div>
+//               <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+//                 <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+//                   </span></div></p>
+//             </div>,
            
-          );
-          navigate('/signup2fa_passkey')
-          setopenLogoutSession(true)
+//           );
+//           navigate('/signup2fa_passkey')
+//           setopenLogoutSession(true)
        
-        }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+//         }else{
+//           toast.error(
+//             <div>
+//               <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+//                 <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+//                   </span></div></p>
+//             </div>,
            
-          );
-           navigate('/signin')
-           setopenLogoutSession(true)
+//           );
+//            navigate('/signin')
+//            setopenLogoutSession(true)
            
        
-        }
-      }
+//         }
+//       }
 
 
 
@@ -1501,38 +1501,38 @@ const handlegetcustomerSettings = useCallback(
 
 
 
-       if (response.ok) {
-       // const use_auto_generated_number = newData.use_auto_generated_number
-       // const prefix = newData.prefix
-       // const minimum_digits = newData.minimum_digits
+//        if (response.ok) {
+//        // const use_auto_generated_number = newData.use_auto_generated_number
+//        // const prefix = newData.prefix
+//        // const minimum_digits = newData.minimum_digits
      
      
-       const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
-        enable_2fa, enable_2fa_for_service_provider} = newData[0]
-       setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
-        send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
+//        const {prefix, minimum_digits, use_auto_generated_number,send_sms_and_email,send_email,
+//         enable_2fa, enable_2fa_for_service_provider} = newData[0]
+//        setsettingsformData({...settingsformData, prefix,  minimum_digits, use_auto_generated_number,
+//         send_sms_and_email,send_email, enable_2fa, enable_2fa_for_service_provider
        
-       })
+//        })
        
-       } else {
-       console.log('failed to fetch')
-       }
-       } catch (error) {
-       console.log(error)
-       setOpenOfflineError(true)
+//        } else {
+//        console.log('failed to fetch')
+//        }
+//        } catch (error) {
+//        console.log(error)
+//        setOpenOfflineError(true)
        
-       }
-     },
+//        }
+//      },
  
-[]
-)
+// []
+// )
 
 
   
 
-useEffect(() => {
-  handlegetcustomerSettings()
-}, [handlegetcustomerSettings, setsettingsformData]);
+// useEffect(() => {
+//   handlegetcustomerSettings()
+// }, [handlegetcustomerSettings, setsettingsformData]);
 
 
 
