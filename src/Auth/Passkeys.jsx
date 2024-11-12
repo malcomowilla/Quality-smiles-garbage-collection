@@ -125,9 +125,10 @@ const handleChange = (e) => {
     });
   
     const options = await response.json();
-  
+    const challenge = options.challenge;
 
     if (response.ok) {
+      
       setisloading(false);
       setOpenLoad(false);
       setDone(false);
@@ -176,7 +177,7 @@ const handleChange = (e) => {
           attestationObject: arrayBufferToBase64Url(credential.response.attestationObject),
           clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON)
         },
-
+        challenge: challenge
 
       };
 
