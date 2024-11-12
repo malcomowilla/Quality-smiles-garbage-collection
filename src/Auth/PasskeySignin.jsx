@@ -144,80 +144,149 @@ async function authenticateWebAuthn(e) {
   setOpenLoad(true);
   setDone(false);
 
-  // Step 1: Request the challenge from the server
   const response = await fetch('/api/webauthn/authenticate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, user_name, my_user_name })
-  });
+    body: JSON.stringify({ email, user_name, my_user_name  })
+  })
 
   const options = await response.json();
+  const challenge = options.challenge;
+
+
 
   if (response.ok) {
-    // Step 2: Convert the challenge and allowCredentials to Uint8Array
-    const publicKey = {
-      ...options,
-      challenge: base64UrlToUint8Array(options.challenge), // Convert challenge to Uint8Array
-      allowCredentials: options.allowCredentials.map(cred => ({
-        ...cred,
-        id: base64UrlToUint8Array(cred.id) // Convert credential IDs to Uint8Array
-      }))
+    setloading(false)
+
+    setOpenLoad(false)
+    setSeeError(false)
+setDone(false)
+
+
+
+  
+  setSeeError(false)
+  } else {
+    setloading(false)
+        setRegistrationError(options.error)
+        setSeeError(true)
+        setOpenLoad(false)
+        setDone(false);
+  }
+
+
+  // function base64UrlToBase64(base64Url) {
+  //   if (typeof base64Url !== 'string') {
+  //     throw new TypeError('Expected base64Url to be a string');
+  //   }
+  //   return base64Url.replace(/_/g, '/').replace(/-/g, '+');
+  // }
+
+  function base64UrlToUint8Array(base64Url) {
+    const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+
+  // function base64UrlToBase64(base64Url) {
+  //   return base64Url.replace(/_/g, '/').replace(/-/g, '+');
+  // }
+
+  // if (typeof options.allowCredentials.id === 'string') {
+  //   options.challenge = Uint8Array.from(atob(base64UrlToBase64(options.challenge)), c => c.charCodeAt(0));
+  // }  
+
+
+  // if (options.allowCredentials) {
+  //   options.allowCredentials = options.allowCredentials.map(cred => ({
+  //     ...cred,
+  //     id: Uint8Array.from(atob(base64UrlToBase64(cred.id)), c => c.charCodeAt(0))
+  //   }));
+  // }
+
+  // if (typeof options.challenge === 'string') {
+  //   options.challenge = Uint8Array.from(atob(base64UrlToBase64(options.challenge)), c => c.charCodeAt(0));
+  // }
+
+
+  const publicKey = {
+    ...options,
+    challenge: base64UrlToUint8Array(options.challenge),
+    allowCredentials: options.allowCredentials.map(cred => ({
+      ...cred,
+      id: base64UrlToUint8Array(cred.id)
+    }))
+  };
+
+
+  try {
+    // const credentialSignin = await navigator.credentials.get({ publicKey: options });
+    const credential = await navigator.credentials.get({ publicKey: publicKey });
+
+
+    // Prepare the credential response
+    const credentialJson = {
+      id: credential.id,
+      rawId: arrayBufferToBase64Url(credential.rawId),
+      type: credential.type,
+      response: {
+        clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
+        authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
+        signature: arrayBufferToBase64Url(credential.response.signature),
+        userHandle: arrayBufferToBase64Url(credential.response.userHandle)
+      }
+
+
     };
 
-    try {
-      // Step 3: Request the user's credentials
-      const credential = await navigator.credentials.get({ publicKey });
 
-      // Prepare the credential response
-      const credentialJson = {
-        id: credential.id,
-        rawId: arrayBufferToBase64Url(credential.rawId),
-        type: credential.type,
-        response: {
-          clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
-          authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
-          signature: arrayBufferToBase64Url(credential.response.signature),
-          userHandle: arrayBufferToBase64Url(credential.response.userHandle)
-        }
-      };
 
-      // Step 4: Send the credential to the backend for verification
-      const createResponse = await fetch('/api/webauthn/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialJson, email, user_name, my_user_name, challenge: options.challenge }) // Include the challenge here if needed
-      });
 
-      const newData = await createResponse.json();
+    const createResponse = await fetch('/api/webauthn/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential:credentialJson, email, 
+        user_name, my_user_name,
+        challenge: challenge  })
+    });
 
-      if (createResponse.ok) {
-        setSeeError(false);
-        setOpenLoad(false);
-        setloading(false);
-        fetchCurrentUser();
-        setTheme(app_theme);
-        setopenLoginSuccess(true);
-        navigate('/admin/dashboard');
-      } else {
-        setloading(false);
-        setSeeError(true);
-        setOpenLoad(false);
-        setopenPasskeyError(true);
-        setpasskeyError(newData.error);
-        console.log(`passkey error => ${newData.error}`);
-      }
-    } catch (err) {
+const newData = await createResponse.json()
+
+    if (createResponse.ok) {
+      setSeeError(false);
+      setOpenLoad(false);
       setloading(false);
+      fetchCurrentUser()
+    setTheme(app_theme)
+    setopenLoginSuccess(true)
+    navigate('/admin/dashboard')
+      // setTimeout(() => {
+      //   // setDone(true);
+      //   // setloading(false);
+      //   setTimeout(() => {
+      //     navigate('/admin/location')
+      //   }, 1000);
+      // }, 2500);
+    } else {
+      setloading(false);
+      // setRegistrationError(options.errors);
       setSeeError(true);
       setOpenLoad(false);
-      console.error('Error during WebAuthn credential creation:', err);
+      setopenPasskeyError(true)
+      setpasskeyError(newData.error)
+      console.log(`passkey error =>${newData.error}`)
     }
-  } else {
+  } catch (err) {
     setloading(false);
-    setRegistrationError(options.error);
     setSeeError(true);
     setOpenLoad(false);
-    setDone(false);
+    console.error('Error during WebAuthn credential creation:', err);
   }
 }
 
