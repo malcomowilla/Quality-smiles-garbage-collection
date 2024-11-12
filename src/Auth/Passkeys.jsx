@@ -167,9 +167,9 @@ const handleChange = (e) => {
       const credentialJson = {
         id: credential.id,
         rp: {
-          name: "quality-smiles",
+          name: "aitechs",
         },
-        origin: 'http://localhost:5173',
+        origin: '"https://aitechs-sas-garbage-solution.onrender.com',
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {
