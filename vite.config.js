@@ -17,11 +17,14 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-       
         target: 'https://aitechs-sas-garbage-solution-backend.onrender.com',
-        // target: 'http://localhost:4000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq, req, res, options) => {
+            proxyReq.setHeader('X-Original-Host', req.headers.host);
+          });
+        },
       },
     },
   },
