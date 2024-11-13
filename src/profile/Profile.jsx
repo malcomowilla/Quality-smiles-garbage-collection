@@ -185,45 +185,42 @@ useEffect(() => {
 
     const storedData = JSON.parse(localStorage.getItem("ojijo"));
     
-    const fetchUpdatedProfile = useCallback(
+    // const fetchUpdatedProfile = useCallback(
       
        
-      async() => {
-        const requestParams = {
-                id:storedData.id,
-              
-              }
+    //   async() => {
+      
         
 
-        const url = "/api/updated_admin?" + new URLSearchParams(requestParams)
-        const response = await fetch(url)
-        const newData = await response.json()
-        console.log('updated admin', newData)
-    try {
-      const {email, user_name, phone_number, profile_image } = newData
+    //     const url = "/api/current_user" 
+    //     const response = await fetch(url)
+    //     const newData = await response.json()
+    //     console.log('updated admin', newData)
+    // try {
+    //   const {email, user_name, phone_number, profile_image } = newData.user
       
-      if (response.ok) {
-        setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
-        // setUpdateFormData((prev)=> (
-        //   {...prev, email, phone_number, user_name }
-        // ))
-        setImagePreview(newData.profile_image)
-        console.log(`get updated adminn${newData.profile_image_url}`)
-      } else {
-        console.log('error geting updated admin')
-      }
-    } catch (error) {
-      console.log(error)
-    }
+    //   if (response.ok) {
+    //     setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
+    //     // setUpdateFormData((prev)=> (
+    //     //   {...prev, email, phone_number, user_name }
+    //     // ))
+    //     setImagePreview(newData.profile_image)
+    //     console.log(`get updated adminn${newData.profile_image_url}`)
+    //   } else {
+    //     console.log('error geting updated admin')
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
     
-      },
-      [],
-    )
+    //   },
+    //   [],
+    // )
     
-    useEffect(() => {
-      fetchUpdatedProfile()
+    // useEffect(() => {
+    //   fetchUpdatedProfile()
       
-    }, [fetchUpdatedProfile]);
+    // }, [fetchUpdatedProfile]);
   
   
     

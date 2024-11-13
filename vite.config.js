@@ -15,9 +15,11 @@ export default defineConfig({
     mimeTypes: {
       js: 'application/javascript',
     },
+    
     proxy: {
       '/api': {
-        target: 'https://aitechs-sas-garbage-solution-backend.onrender.com',
+        // target: 'https://aitechs-sas-garbage-solution-backend.onrender.com',
+        target: 'http://localhost:4000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy) => {
