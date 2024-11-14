@@ -163,14 +163,14 @@ const handleChange = (e) => {
     try {
       const credential = await navigator.credentials.create({ publicKey: options });
   
-const subdomain = window.location.hostname
+  
       // Prepare the credential response
       const credentialJson = {
         id: credential.id,
         rp: {
           name: "aitechs",
         },
-        origin: `https://aitechs-sas-garbage-solution.onrender.com`,
+        origin: 'https://aitechs-sas-garbage-solution.onrender.com',
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {
@@ -187,8 +187,7 @@ const subdomain = window.location.hostname
       const createResponse = await fetch('/api/webauthn/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialJson, email, user_name,
-        })
+        body: JSON.stringify({ credential: credentialJson, email, user_name})
       });
   
       const createResponseJson = await createResponse.json();
