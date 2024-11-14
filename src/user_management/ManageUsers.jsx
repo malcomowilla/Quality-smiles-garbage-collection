@@ -226,7 +226,7 @@ useCallback(
   async() => {
 
     try {
-      const response = await fetch('/api/get_admins', {
+      const response = await fetch('/https://aitechs-sas-garbage-solution-backend.onrender.com/get_admins', {
         signal: controller.signal,  
 
       })

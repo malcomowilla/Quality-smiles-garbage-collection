@@ -403,7 +403,7 @@ useEffect(() => {
             />
           </div>
 
-          <div className="flex-grow pl-3 kalam-light">
+          <div className="flex-grow pl-3 kalam-light ">
             <h2 className="text-lg font-semibold dark:text-white">{user_name}</h2>
             {userTyping && (
               <div className="text-sm text-green-600">
