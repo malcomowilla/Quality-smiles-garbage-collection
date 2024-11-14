@@ -170,7 +170,7 @@ const subdomain = window.location.hostname
         rp: {
           name: "aitechs",
         },
-        origin: `https://${subdomain}`,
+        origin: `https://aitechs-sas-garbage-solution.onrender.com`,
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {
@@ -188,7 +188,6 @@ const subdomain = window.location.hostname
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: credentialJson, email, user_name,
-          origin: `https://${subdomain}`,
         })
       });
   
