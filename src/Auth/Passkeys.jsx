@@ -163,14 +163,14 @@ const handleChange = (e) => {
     try {
       const credential = await navigator.credentials.create({ publicKey: options });
   
-  
+const subdomain = window.location.hostname
       // Prepare the credential response
       const credentialJson = {
         id: credential.id,
         rp: {
           name: "aitechs",
         },
-        origin: 'https://aitechs-sas-garbage-solution.onrender.com',
+        origin: `https://${subdomain}`,
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {
