@@ -187,7 +187,9 @@ const subdomain = window.location.hostname
       const createResponse = await fetch('/api/webauthn/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialJson, email, user_name})
+        body: JSON.stringify({ credential: credentialJson, email, user_name,
+          origin: `https://${subdomain}`,
+        })
       });
   
       const createResponseJson = await createResponse.json();
