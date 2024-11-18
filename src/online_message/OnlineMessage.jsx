@@ -77,10 +77,11 @@ const OnlineMessage = () => {
                     transition={{ delay: 0.2 }}
                     className="flex flex-col gap-1"
                   >
-                    <h3 className="text-lg font-semibold text-white dark:text-black">
+                    <h3 className="text-lg font-semibold
+                     dark:text-white text-black">
                       Back Online
                     </h3>
-                    <p className="text-sm  text-white dark:text-black">
+                    <p className="text-sm  dark:text-white text-black">
                       Your internet connection has been restored
                     </p>
                   </motion.div>

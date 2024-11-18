@@ -193,7 +193,7 @@ try {
 
     setisloading({...isloading, loading8: false})
 
-
+toast.success("company settings updated successfully")
     setcompanySettings(prevData => ({
       ...prevData, 
       contact_info, 
@@ -1266,13 +1266,19 @@ useEffect(() => {
 }, [handlegetcustomerSettings, setsettingsformData]);
 
 
-
+useEffect(() => {
+  // Set the logo_preview to the logo image in index.html if needed
+  const logoElement = document.getElementById('favicon');
+  if (logoElement && companySettings.logo_preview) {
+    logoElement.href = companySettings.logo_preview
+  }
+}, [companySettings.logo_preview]); 
 
 
   return (
 
 <>
-
+<ToastContainer position='bottom-center' transition={Slide}  autoClose={10000}/>
 
 {isloading.loading1 &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
   

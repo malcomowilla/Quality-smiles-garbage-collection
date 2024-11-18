@@ -51,11 +51,12 @@ const SignIn2FaPasskey = () => {
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,user_name,
-       openLogoutSession, handleCloseLogoutSession
+       openLogoutSession, handleCloseLogoutSession,companySettings
  } = useApplicationSettings()
 
 
 
+ const {company_name, contact_info, email_info, logo_preview} = companySettings
 
 
 
@@ -373,6 +374,31 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
     }
   };
 
+
+
+
+  const TypingAnimation = ({ text }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const typingSpeed = 100; // Speed in milliseconds
+
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < text.length - 1) {
+        setDisplayedText((prev) => prev + text[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <span className="text-2xl font-bold text-emerald-600">{displayedText}</span>;
+};
+
   return (
     <>
       <ToastContainer position='top-center' transition={Slide} autoClose={8000} />
@@ -397,6 +423,7 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
         />
       </Backdrop>
 
+
       <motion.section
         initial="hidden"
         animate="visible"
@@ -404,6 +431,8 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
         className="min-h-screen bg-gradient-to-br from-emerald-50 to-white 
           dark:from-gray-900 dark:to-gray-800"
       >
+
+    
         <div className="container mx-auto px-4 min-h-screen flex items-center justify-center">
           <motion.div 
             variants={itemVariants}
@@ -411,18 +440,42 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
           >
             {/* Logo Section */}
             <motion.div 
-              className="flex flex-col items-center"
+              className="flex flex-col items-center "
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
+
+            <div className='p-2'>
               <img 
-                className="w-20 h-20 rounded-full shadow-lg ring-4 ring-emerald-50" 
-                src="/images/logo/logo-small.png" 
-                alt="logo"
+                className="w-20 h-20 rounded-full shadow-lg ring-4
+                 ring-emerald-50" 
+                src={logo_preview}
+                alt={company_name}
               />
-              <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
-                Quality Smiles
-              </h1>
+
+</div>
+                  
+  <div className="text-center mb-4">
+          <TypingAnimation text={`Weelcome to ${company_name}`} />
+        </div>
+              {/* <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+                {company_name}
+
+
+              </h1> */}
+            </motion.div>
+
+            {/* New Stunning Message Section */}
+            <motion.div 
+              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+              variants={itemVariants}
+            >
+              <h2 className="text-2xl font-bold text-emerald-600">
+                Enter and start the journey to manage your business!
+              </h2>
+              <p className="text-gray-700 mt-2">
+                Join us in transforming your business experience with our powerful tools and features.
+              </p>
             </motion.div>
 
             {/* Form Section */}
@@ -431,6 +484,8 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
               className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl 
                 rounded-2xl shadow-xl p-8"
             >
+              <h1 className="text-3xl font-bold text-gray-900
+   dark:text-white mb-6">Sign In</h1>
               <form onSubmit={handleSignIn} className="space-y-6">
                 {/* Email Input */}
                 <motion.div variants={itemVariants}>
@@ -446,9 +501,12 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
                         handleFormDataChangeSignin(e);
                         emailValue.set(e.target.value);
                       }}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 
-                        dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
-                        focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      className="w-full px-4 py-3 rounded-xl border
+                       border-gray-200 
+                        dark:border-gray-700 bg-white/50
+                         dark:bg-gray-900/50
+                        focus:ring-2 focus:ring-emerald-500
+                         focus:border-transparent dark:text-white text-black
                         transition-all duration-200"
                     />
                     <img 
@@ -471,10 +529,13 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
                         name="phone_number"
                         value={phone_number}
                         onChange={handleChangePhoneNumber}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 
-                          dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
-                          focus:ring-2 focus:ring-emerald-500 focus:border-transparent
-                          transition-all duration-200"
+                        className="w-full px-4 py-3 rounded-xl border
+                         border-gray-200 
+                          dark:border-gray-700 bg-white/50
+                           dark:bg-gray-900/50
+                          focus:ring-2 focus:ring-emerald-500 
+                          focus:border-transparent
+                          transition-all duration-200 dark:text-white text-black"
                       />
                       <FaPhone className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500" />
                     </div>
@@ -498,7 +559,7 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 
                         dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
                         focus:ring-2 focus:ring-emerald-500 focus:border-transparent
-                        transition-all duration-200"
+                        transition-all duration-200 dark:text-white text-black"
                     />
                     <button
                       type="button"

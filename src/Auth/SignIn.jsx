@@ -22,7 +22,7 @@ import { FaPhone } from "react-icons/fa";
 import { GoPasskeyFill } from "react-icons/go";
 import Tooltip from '@mui/material/Tooltip';
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
-
+import TypingAnimation from './TypingAnimation'
 import 'react-toastify/dist/ReactToastify.css';
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
 // OtpSentEmailAlert openOtpSentEmailAlert, handleCloseOtpSentEmailAlert
@@ -56,6 +56,15 @@ const SignIn = () => {
  console.log('adminset',adminFormSettings)
 
  const [openLogoutSession, setopenLogoutSession] = useState(false)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -300,7 +309,8 @@ const app_theme = localStorage.getItem('theme_normal')
 
 if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
   if (login_with_otp_email === true || login_with_otp_email === 'true')  {
-    setopenOtpSentEmailAlert(true)
+    // setopenOtpSentEmailAlert(true)
+    toast.success("A One Time Password was just sent,please check your email account ")
   }
 
   if (login_with_otp === true || login_with_otp === 'true') {
@@ -417,7 +427,8 @@ fetchCurrentUser()
     } else {
         setloading(false)
         console.log('sigup  failed')
-        setopenOtpInvalid(true)
+        // setopenOtpInvalid(true)
+        toast.error('invalid one time password,try again')
         setRegistrationError(actualUserDataInJson.error)
         setSeeError(true)
     }   
@@ -564,7 +575,7 @@ fetchCurrentUser()
   return (
     <>
 
-<ToastContainer position='top-center' transition={Slide}  autoClose={10000}/>
+<ToastContainer position='top-center' transition={Slide}  autoClose={30000}/>
 
 <LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
 <OtpSentEmailAlert  openOtpSentEmailAlert={openOtpSentEmailAlert}  handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert}/>
@@ -621,11 +632,11 @@ fetchCurrentUser()
       >
         <img 
           className="w-20 h-20 rounded-full shadow-lg ring-4 ring-emerald-50" 
-          src="/images/logo/logo-small.png" 
-          alt="logo"
+          src={logo_preview}
+        alt={company_name}
         />
         <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
-          Quality Smiles
+          {company_name}
         </h1>
       </motion.div>
        {/* OTP Card */}
@@ -647,6 +658,7 @@ fetchCurrentUser()
             </label>
             <div className="relative">
               <motion.input
+              whileTap={{ scale: 1.05 }}
                 whileFocus={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
                 type={isSeenPassWord ? 'password' : 'text'}
@@ -659,7 +671,8 @@ fetchCurrentUser()
                   bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 
                   dark:border-gray-600 rounded-xl focus:ring-2 
                   focus:ring-emerald-500 focus:border-transparent
-                  transition-all duration-200"
+                  transition-all duration-200
+                  text-black dark:text-white"
                 maxLength="6"
                 placeholder="••••••"
                 />
@@ -742,13 +755,17 @@ fetchCurrentUser()
        </Backdrop> }
    
        <motion.section 
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 
-          dark:from-gray-900 dark:to-gray-800"
+       
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}
+       transition={{ duration: 0.5 }}
+          className="bg-gradient-to-br from-emerald-50
+   to-white dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-xl p-8"
+        
       >
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen">
+        <div className="flex flex-col items-center justify-center px-6 py-8
+         mx-auto h-screen">
           <motion.div 
             variants={itemVariants}
             className="w-full max-w-md"
@@ -763,36 +780,61 @@ fetchCurrentUser()
                 src={logo_preview}
                 alt={company_name}
               />
-              <h1 className="text-3xl font-bold text-gray-900">
-                {company_name}
 
-              </h1>
+<motion.div 
+              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+              variants={itemVariants}
+            >
+              <h2 className="text-2xl font-bold text-emerald-600">
+                Enter and start the journey to manage your business!
+              </h2>
+              <p className="text-gray-700 mt-2">
+                Join us in transforming your business experience with our powerful tools and features.
+              </p>
+            </motion.div>
+              <div className="text-center mb-4">
+          <TypingAnimation text={`Weelcome to ${company_name}`} />
+        </div>
             </motion.div>
 
             {/* Login Form */}
             <motion.div 
               variants={itemVariants}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl 
-                backdrop-blur-lg backdrop-filter p-8"
+            
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
+
             >
+                        <h1 className="text-3xl font-bold text-gray-900
+                         dark:text-white mb-6">Sign In</h1>
+
               <form onSubmit={handleSignIn} className="space-y-6">
+                
                 {/* Email Input */}
                 <motion.div 
+                whileHover={{ scale: 1.05 }}
                   variants={itemVariants}
-                  className="space-y-2"
+                  className="space-y-2 text-gray-900"
                 >
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <label className="text-sm font-medium 
+                         text-black dark:text-white">
                     Email
                   </label>
-                  <div className="relative">
+                  
+                  <motion.div className="relative " whileHover={{ scale: 1.05 }}>
                     <input
                       type="email"
                       name='email'
                       value={email}
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 
-                        focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50 dark:bg-gray-700"
+                      className="w-full px-4 py-3 rounded-lg border 
+                      border-gray-200 
+                        focus:border-emerald-500 focus:ring-2
+                         focus:ring-emerald-200 
+                        transition-all duration-200 bg-gray-50
+                         dark:bg-gray-700 text-black dark:text-white"
                       placeholder="Enter your email"
                     />
                     <motion.span 
@@ -801,12 +843,13 @@ fetchCurrentUser()
                     >
                       <img src="/images/logo/icons8-gmail-100.png" className="w-6 h-6" alt="email" />
                     </motion.span>
-                  </div>
+                  </motion.div>
                 </motion.div>
   {/* Password Input */}
   <motion.div 
                   variants={itemVariants}
                   className="space-y-2"
+                  whileHover={{ scale: 1.05 }}
                 >
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     Password
@@ -817,9 +860,11 @@ fetchCurrentUser()
                       type={isSeenPassWord ? 'password' : 'text'}
                       value={password}
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 
+                      className="w-full px-4 py-3 rounded-lg border
+                       border-gray-200 
                         focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50 dark:bg-gray-700"
+                        transition-all duration-200 bg-gray-50
+                         dark:bg-gray-700 text-black dark:text-white"
                       placeholder="Enter your password"
                     />
                     <motion.button
@@ -896,9 +941,11 @@ fetchCurrentUser()
        </Backdrop> }
 
        <motion.section 
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+       
+       
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 300 }}
         className="min-h-screen bg-gradient-to-br from-emerald-50
    to-white dark:from-emerald-900 dark:to-gray-800"
       >
@@ -917,23 +964,41 @@ fetchCurrentUser()
                 className="w-20 h-20 mb-4 rounded-full shadow-lg transform hover:scale-105 transition-transform" 
                 src={logo_preview}
                 alt={company_name}
+               
               />
-              <h1 className="text-3xl font-bold dark:text-white text-black ">
-                {company_name}
-              </h1>
+               <motion.div 
+              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+              variants={itemVariants}
+            >
+              <h2 className="text-2xl font-bold text-emerald-600">
+                Enter and start the journey to manage your business!
+              </h2>
+              <p className="text-gray-700 mt-2">
+                Join us in transforming your business experience with our powerful tools and features.
+              </p>
             </motion.div>
-
+              {/* <h1 className="text-3xl font-bold dark:text-white text-black ">
+                {company_name}
+              </h1> */}
+            </motion.div>
+            <div className="text-center mb-4">
+          <TypingAnimation text={`Weelcome to ${company_name}`} />
+        </div>
                 {/* Login Form */}
                 <motion.div 
               variants={itemVariants}
               className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl 
                 backdrop-blur-lg backdrop-filter p-8"
             >
+  <h1 className="text-3xl font-bold text-gray-900
+   dark:text-white mb-6">Sign In</h1>
+
               <form onSubmit={handleSignIn} className="space-y-6">
                 {/* Email Input */}
                 <motion.div 
                   variants={itemVariants}
-                  className="space-y-2"
+                  className="space-y-2 "
+                  whileHover={{ scale: 1.05 }}
                 >
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     Email
@@ -944,14 +1009,18 @@ fetchCurrentUser()
                       name='email'
                       value={email}
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 
-                        focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50 dark:bg-gray-700"
+                      className="w-full px-4 py-3 rounded-lg border
+                       border-gray-200  text-black dark:text-white
+                        focus:border-emerald-500 focus:ring-2
+                         focus:ring-emerald-200 
+                        transition-all duration-200 bg-gray-50
+                         dark:bg-gray-700"
                       placeholder="Enter your email"
                     />
                     <motion.span 
                       whileHover={{ scale: 1.1 }}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-3 top-1/2 
+                      transform -translate-y-1/2"
                     >
                       <img src="/images/logo/icons8-gmail-100.png"
                        className="w-6 h-6" alt="email" />
@@ -962,6 +1031,7 @@ fetchCurrentUser()
                   <motion.div 
                   variants={itemVariants}
                   className="space-y-2"
+                  whileHover={{ scale: 1.05 }}
                 >
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     Password
@@ -974,9 +1044,12 @@ fetchCurrentUser()
                       onChange={handleFormDataChangeSignin}
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 
                         focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50 dark:bg-gray-700"
+                        transition-all duration-200 bg-gray-50 dark:bg-gray-700
+                        text-black dark:text-white"
                       placeholder="Enter your password"
-                    />
+                      
+                      />
+                    
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       type="button"

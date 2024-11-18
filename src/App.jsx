@@ -4,10 +4,14 @@ import {
   createRoutesFromElements,
   Route,
   Routes, 
+  Navigate
 } from "react-router-dom";
 
-import {useEffect, useState, useCallback, lazy, Suspense} from 'react'
-
+import {useEffect, useState, useCallback, lazy,
+   Suspense} from 'react'
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './Theme';
+import DashboardSytemAdmin from './dashboard_system_admin/DashboardSytemAdmin'
 // import Signup from './Auth/Signup'
 const Signup = lazy(() => import ('./Auth/Signup'))
 // import {HomePage} from './Home/HomePage'
@@ -131,6 +135,7 @@ const ForgotPassword = lazy(()=> import('./Auth/ForgotPassword'))
 // import ResetPassword from './Auth/ResetPassword'
 const ResetPassword = lazy(()=> import('./Auth/ResetPassword'))
 import ProtectAuthAdmin from './Auth/ProtectAuthAdmin'
+import ProtectAuthSystemAdmin from './Auth/ProtectAuthSystemAdmin'
 // const ProtectAuthAdmin = lazy(()=> import('./Auth/ProtectAuthAdmin'))
 import AuthSettings from './settings/AuthSettings'
 // const AuthSettings = lazy(()=> import('./settings/AuthSettings'))
@@ -172,7 +177,8 @@ import Lottie from 'react-lottie';
 import LoadingAnimation from './animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import ChooseRoleServiceProvider from './choose_role/ChooseRoleServiceProvider'
-
+import LoginSytemAdmin from './dashboard_system_admin/LoginSytemAdmin'
+import ConfirmPassword from './dashboard_system_admin/ConfirmPassword'
 // const router = createBrowserRouter(
 
 //   createRoutesFromElements(
@@ -262,6 +268,7 @@ const NetworkStatus = () => {
     isOnline: navigator.onLine,
     showMessage: true
   });
+  
 
   useEffect(() => {
     const handleOnline = () => {
@@ -305,6 +312,7 @@ return (
 
 const App = () => {
   const [showOnlineMessage, setShowOnlineMessage] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 
 
@@ -377,7 +385,9 @@ const defaultOptions = {
 
 
 
-
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
 
 
@@ -477,7 +487,7 @@ useEffect(() => {
        <Routes>
 
 
-
+{/* 
        <Route  path='/signup'  element={
          <Suspense fallback={<div> 
 
@@ -490,7 +500,7 @@ useEffect(() => {
          </div>}>
         <Signup/>
         </Suspense>
-        }/>
+        }/> */}
 
 
 
@@ -1264,6 +1274,9 @@ useEffect(() => {
         }/>
 
 
+<Route path='/login-system-admin'  element={<LoginSytemAdmin />}/>
+<Route  path='/admin_verification_login_passwword' element={<ConfirmPassword/>}/>
+
 
 
 <Route  path='/role_service_provider'  element={<ChooseRoleServiceProvider  />}/>
@@ -1312,6 +1325,27 @@ useEffect(() => {
         }/>
 
 
+        <Route  element={<ProtectAuthSystemAdmin />}>
+        
+        
+<Route path='/system-admin'  element={
+    <ThemeProvider theme={theme}>
+  
+      <DashboardSytemAdmin />
+    
+  </ThemeProvider>
+}/> 
+        </Route> 
+
+
+
+
+
+ <Route path='/login-system-admin'  element={<LoginSytemAdmin />}/> 
+
+
+{/* <Route path        ="/dashboard" element={isAuthenticated ? <DashboardSytemAdmin /> : <Navigate to="/login-system-admin" />} />
+        <Route path="/" element={<Navigate to="/login-system-admin" />} /> */}
       <Route   path="*" element={<NotFound/>}/>
      
       </Routes>

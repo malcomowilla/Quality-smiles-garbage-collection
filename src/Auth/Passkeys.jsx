@@ -170,7 +170,8 @@ const handleChange = (e) => {
         rp: {
           name: "aitechs",
         },
-        origin: 'https://aitechs-sas-garbage-solution.onrender.com',
+        // origin: 'http://localhost:5173',
+        // origin: 'https://aitechs-sas-garbage-solution.onrender.com',
         rawId: arrayBufferToBase64Url(credential.rawId),
         type: credential.type,
         response: {
@@ -209,7 +210,7 @@ const handleChange = (e) => {
           setTimeout(() => {
             navigate('/kasspass-key-signin');
           }, 2000);
-        }, 5000);
+        }, 3000);
 
 
         

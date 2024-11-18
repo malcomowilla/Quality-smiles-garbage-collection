@@ -295,6 +295,8 @@ const [isWindowFocused, setIsWindowFocused] = useState(true);
 const { addNotification } = useNotifications();
 
 const [playNotification] = useSound(notificationSound, { volume: 0.5 });
+const [currentSystemAdmin, setCurrntSystemAdmin] = useState('')
+
 
 const companyInfo  = {
   company_name: '',
@@ -1071,12 +1073,45 @@ const darkTheme = createTheme({
 
 
 
+const fectCurrentSystemAdmin = useCallback(
+  async() => {
+    try {
+      const response = await fetch('/api/current_system_admin', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Fetched user data:', data.user.email);
+        setCurrntSystemAdmin(data.user)
+     
+        // setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
+  },
+  [],
+)
+
+
+useEffect(() => {
+  
+  return () => {
+    
+  };
+}, []);
 
 
 
+useEffect(() => {
+  if (!currentSystemAdmin  ) {
+    fectCurrentSystemAdmin();
+  }
+}, [fectCurrentSystemAdmin, currentSystemAdmin ]);
 
-
-console.log('admin_id', id)
 
 const fetchCurrentUser = 
 useCallback(
@@ -1133,8 +1168,10 @@ console.log('my ',data)
 
 
 useEffect(() => {
-  fetchCurrentUser()
-}, [fetchCurrentUser]);
+  if (!currentUser  ) {
+    fetchCurrentUser();
+  }
+}, [fetchCurrentUser, currentUser]);
 
 
 const handlegetstoreManagerSettings = useCallback(
@@ -1824,7 +1861,6 @@ useEffect(() => {
     async(abortController) => {
       try {
         const response = await fetch('/api/get_company_settings', {
-          signal: abortController.signal // Add the abort signal to the fetch
         })
         const newData = await response.json()
         if (response.ok) {
@@ -1853,14 +1889,10 @@ useEffect(() => {
   )
   
   useEffect(() => {
-    const abortController = new AbortController()
     
-    handleGetCompanySettings(abortController)
+    handleGetCompanySettings()
     
-    return () => {
-      // This cleanup function runs when component unmounts
-      abortController.abort()
-    }
+   
   }, [handleGetCompanySettings])
   
 
@@ -2010,6 +2042,7 @@ const cable = createConsumer("ws://localhost:4000/cable");
    playNotification, addNotification, isCurrentUser]);
 
 
+   console.log('currentUser:', currentUser)
 
 
 
@@ -2060,7 +2093,9 @@ const cable = createConsumer("ws://localhost:4000/cable");
     companySettings, setcompanySettings, providerData,
     setProviderData,handleLogout,handleCustomerLogout,customerProfileData,
     setCustomerProfileData, isOpenProvider, setIsOpenProvider,customerId,setCustomerId,
-    messages, setMessages, isCurrentUser,notificationsEnabled, setNotificationsEnabled,isWindowFocused, setIsWindowFocused
+    messages, setMessages, isCurrentUser,notificationsEnabled,
+     setNotificationsEnabled,isWindowFocused, setIsWindowFocused,
+     currentSystemAdmin, setCurrntSystemAdmin,fectCurrentSystemAdmin
 
      
 
