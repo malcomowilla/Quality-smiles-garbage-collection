@@ -7,7 +7,8 @@ const HOUR = MINUTE * 60;
 
 const CountDown = () => {
   return (
-    <div className="mx-auto flex w-full max-w-2xl items-center">
+    <div className="mx-auto flex w-full max-w-2xl items-center
+    ">
       <CountdownItem unit="Hour" text="hours" />
       <CountdownItem unit="Minute" text="minutes" />
       <CountdownItem unit="Second" text="seconds" />
@@ -19,7 +20,8 @@ const CountdownItem = ({ unit, text }) => {
   const { ref, time } = useTimer(unit);
 
   return (
-    <div className="flex h-10 w-1/3 flex-col max-sm:mt-9 sm:mt-[-90px] items-center justify-center 
+    <div className="flex h-10 w-1/3 flex-col max-sm:mt-9 sm:mt-[-90px] 
+    items-center justify-center 
     gap-1 border-r-[1px] border-slate-200 font-mono md:h-36 md:gap-2">
       <div className="relative w-full overflow-hidden text-center">
         <span

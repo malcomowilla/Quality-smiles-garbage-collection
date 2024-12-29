@@ -1,6 +1,6 @@
 
 import MaterialTable, {MTablePagination} from "material-table";
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import { createTheme, ThemeProvider, CssBaseline, duration } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
 import {useEffect, useState, useCallback} from 'react'
@@ -20,6 +20,7 @@ import Lottie from 'react-lottie';
 import { useDebounce } from 'use-debounce';
 import { SlLocationPin } from "react-icons/sl";
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
@@ -28,7 +29,8 @@ const Location = () => {
   const {
     materialuitheme,setMaterialuiTheme ,locationForm, setLocationForm, locations, setlocations,
     openAccessDenied, setopenopenAccessDenied,  setseelocation,openLocationAlertError,
-     setopenLocationAlertError, adminFormSettings, setopenLogoutSession} = useApplicationSettings()
+     setopenLocationAlertError, adminFormSettings, setopenLogoutSession,
+    setSnackbar} = useApplicationSettings()
 
 const [isOpen, setIsOpen] = useState(false)
 
@@ -71,28 +73,41 @@ useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
           setopenLogoutSession(true)
        
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
            setopenLogoutSession(true)
            
@@ -100,13 +115,26 @@ useCallback(
         }
       }
 
+
+
+
       if (response.status === 403) {
-        setopenLocationAlertError(true)
-        // setopenopenAccessDenied(true)
-        setseelocation(false)
+        toast.error('You are not authorized to view location',{
+          position: "top-center",
+          autoClose: 7000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        })
 
 
-      }
+              }
+
+
+    
       if (response.ok) {
         // setlocations(newData)
         
@@ -118,11 +146,15 @@ useCallback(
       } else {
         console.log('error')
         setseelocation(true)
+        toaster.error('Something went wrong!', {duration: 5000})
+
         
       }
     } catch (error) {
       console.log(error)
       setopenLocationAlertError(true)
+      toaster.error('Something went wrong!', {duration: 5000})
+
       setseelocation(true)
 
     }
@@ -295,6 +327,14 @@ const id = setTimeout(() => controller.abort(), 9000);
 
       const newData = await response.json()
 
+      if (response.status === 403) {
+toaster.error('You are not authorized to set location',{
+  position: "top-center",
+duration: 6000,
+  
+})
+      }
+
       if (response.ok) {
         setIsOpen(false)
         setloading(false)
@@ -336,6 +376,10 @@ const id = setTimeout(() => controller.abort(), 9000);
 
     <>
     {/* {openAccessDenied && <AccessDenied />} */}
+    <Toaster
+  position="top-center"
+  reverseOrder={false}
+/>
 
 {openAccessDenied ? (
   <AccessDenied />

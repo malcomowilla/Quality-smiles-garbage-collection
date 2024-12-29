@@ -8,6 +8,7 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { useNotifications } from '../context/NotificationContext';
 import useSound from 'use-sound';
 import notificationSound from '/751326__robinhood76__13129-mystery-cash-bonus.wav'; // Add your sound file
+import { createCustomTheme, defaultThemeColors } from './ThemeConfig';
 
 
 
@@ -192,14 +193,14 @@ const customerData = {
     const [theme, setTheme] = useState('light')
     const [icon, setIcon] = useState(false)
 const [imgIcon, setImgIcon] = useState(false)
-const [isSeenPassWord,  setIsSeenPassword] = useState(false)
+const [isSeenPassWord,  setIsSeenPassword] = useState('password')
 const [signupFormData, setSignupFormData] = useState(signupFormDataInitialValue)
 const [signinFormData, setSigninFormData] = useState(signinFormDataInitialValue)
 const [isloading, setloading] = useState(false)
 const [open, setOpen] = useState(false);
 const [registrationError, setRegistrationError] = useState('')
 const [seeError, setSeeError] = useState(false)
-const [materialuitheme, setMaterialuiTheme] = useState('dark')
+// const [materialuitheme, setMaterialuiTheme] = useState('dark')
 const [seeSettings1, setSeeSettings1] = useState(false)
 const [seeSettings2, setSeeSettings2] = useState(false)
 const [seeSettings3, setSeeSettings3] = useState(false)
@@ -273,6 +274,19 @@ const [openLogoutSuccess, setopenLogoutSuccess] = useState(false)
  const [canReadTickets, setCanReadTickets] = useState('')
  const [canManageCalendar, setCanManageCalendar] = useState('')
 const [canReadCalendar, setCanReadCalendar] = useState('') 
+const [canManageChats, setCanManageChats] = useState('')
+const [canReadChats, setCanReadChats] = useState('')
+const [canManageMonitorServiceProvider, setCanManageMonitorServiceProvider] = useState('')
+const [canReadMonitorServiceProvider, setCanReadMonitorServiceProvider] = useState('')
+const [canManagageIndividualEmail, setCanManagageIndividualEmail] = useState('')
+const [canReadIndividualEmail, setCanReadIndividualEmail] = useState('')
+const [canReadCustomerStats, setCanReadCustomerStats] = useState('')
+const [canReadServiceProviderStats, setCanReadServiceProviderStats] = useState('')
+const [canManageDashboard, setCanManageDashboard] = useState('')
+const [canReadDashboard, setCanReadDashboard] = useState('')
+const [canManageUsers, setCanManageUsers] = useState('')
+const [canReadUsers, setCanReadUsers] = useState('')
+
 const [openLocationAlertError, setopenLocationAlertError] = useState(false)
 const [openLogoutCustomerSucessfully, setopenLogoutCustomerSucessfully] = useState(false)
 const [openLoginCustomerSuccessfully, setopenLoginCustomerSuccessfully] = useState(false)
@@ -296,14 +310,30 @@ const { addNotification } = useNotifications();
 
 const [playNotification] = useSound(notificationSound, { volume: 0.5 });
 const [currentSystemAdmin, setCurrntSystemAdmin] = useState('')
+const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+const [isOpenEditProfile, setisOpenEditProfile] = useState(false)
+const [bottomNavigation, setBottomNavigation] = useState(true)
 
+
+
+const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: '',
+  severity: 'success'
+});
+const toggleSidebar = () => {
+  setIsSidebarVisible(!isSidebarVisible);
+};
 
 const companyInfo  = {
   company_name: '',
   contact_info: '',
   email_info: '',
   logo: null, 
-  logo_preview: null 
+  logo_preview: null ,
+  agent_email: '',
+  customer_support_email: '',
+  customer_support_phone_number: '',
 }
 
 const [companySettings, setcompanySettings] = useState(companyInfo)
@@ -837,15 +867,21 @@ const darkTheme = createTheme({
     }
    }, [])
 
+const [themeColors, setThemeColors] = useState(defaultThemeColors);
+const [materialuitheme, setMaterialuiTheme] = 
+useState(createCustomTheme(defaultThemeColors));
 
 
+
+
+// useEffect(() => {
+//   setMaterialuiTheme(createCustomTheme(themeColors));
+// }, [themeColors]);
 
 
 
 
   const controller = new AbortController();
-
-
   const getLocation = 
   useCallback(
     async() => {
@@ -862,28 +898,42 @@ const darkTheme = createTheme({
         if (response.status === 401) {
           if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
             adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-            toast.error(
-              <div>
-                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                  <div> <span className='font-thin flex gap-3'>
+            // toast.error(
+            //   <div>
+            //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+            //       <div> <span className='font-thin flex gap-3'>
                
-                    </span></div></p>
-              </div>,
+            //         </span></div></p>
+            //   </div>,
              
-            );
+            // );
+
+
+            setSnackbar({
+              open: true,
+              message: <p className='text-lg'>Session expired please Login Again</p>,
+              severity: 'error'
+            })
             navigate('/signup2fa_passkey')
             setopenLogoutSession(true)
          
           }else{
-            toast.error(
-              <div>
-                <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                  <div> <span className='font-thin flex gap-3'>
+            // toast.error(
+            //   <div>
+            //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+            //       <div> <span className='font-thin flex gap-3'>
                
-                    </span></div></p>
-              </div>,
+            //         </span></div></p>
+            //   </div>,
              
-            );
+            // );
+
+
+            setSnackbar({
+              open: true,
+              message: <p className='text-lg'>Session expired please Login Again</p>,
+              severity: 'error'
+            })
              navigate('/signin')
              setopenLogoutSession(true)
              
@@ -1124,11 +1174,13 @@ useCallback(
           });
           const data = await response.json();
           if (response.ok) {
-            console.log('Fetched user data:', data.user.user_name);
             setCheckEmail(data.user.email)
             setUser(data.user.role);
             setAdminId(data.user.id)
+            setCanManageUsers(data.user.can_manage_user)
+            setCanReadUsers(data.user.can_read_user)
             setCanReadSetting(data.user.can_read_settings)
+            setCanReadDashboard(data.user.can_read_dashboard)
             setCanManageSetting(data.user.can_manage_settings)
             setCanManageCalendar(data.user.can_manage_calendar)
             setCanReadCalendar(data.user.can_read_calendar)
@@ -1143,11 +1195,17 @@ useCallback(
             setCurrentUser(data.user)
             setCanManageStore(data.user.can_manage_store)
             setCanReadStore(data.user.can_read_store)
+            setCanManageChats(data.user.can_manage_chats)
+            setCanReadChats(data.user.can_read_chats)
             setCanManageLocation(data.user.can_manage_location)
             setCanReadLocation(data.user.can_read_location)
             setCanManageSubLocation(data.user.can_manage_sub_location)
             setCanReadSubLocation(data.user.can_read_sub_location)
             setUserName(data.user.user_name)
+            setCanManagageIndividualEmail(data.user.can_manage_individual_email)
+            setCanReadIndividualEmail(data.user.can_read_individual_email)
+            setCanReadCustomerStats(data.user.can_read_customer_stats)
+            setCanReadServiceProviderStats(data.user.can_read_service_provider_stats)
             setCanManageSmsTemplates(data.user.can_manage_sms_templates)
             setCanReadSmsTemplates(data.user.can_read_sms_templates)
             setCanReadSms(data.user.can_read_sms)
@@ -1192,27 +1250,38 @@ const handlegetstoreManagerSettings = useCallback(
 
        if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
           setopenLogoutSession(true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
            setopenLogoutSession(true)
        
@@ -1391,28 +1460,40 @@ const handlegetAdminSettings = useCallback(
        if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
           setopenLogoutSession(true)
        
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
            setopenLogoutSession(true)
            
@@ -1609,30 +1690,42 @@ try {
   if (response.status === 401) {
     if (adminFormSettings.enable_2fa_for_admin_passkeys) {
      
-      toast.error(
-        <div>
-          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-            <div> <span className='font-thin flex gap-3'>
+      // toast.error(
+      //   <div>
+      //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+      //       <div> <span className='font-thin flex gap-3'>
          
-              </span></div></p>
-        </div>,
+      //         </span></div></p>
+      //   </div>,
        
-      );
+      // );
+
+      setSnackbar({
+        open: true,
+        message: <p className='text-lg'>Session expired please Login Again</p>,
+        severity: 'error'
+      })
    
       navigate('/signup2fa_passkey')
       // setlogoutmessage(true)
       // localStorage.setItem('logoutMessage', true)
       setopenLogoutSession(true)
     }else{
-      toast.error(
-        <div>
-          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-            <div> <span className='font-thin flex gap-3'>
+      // toast.error(
+      //   <div>
+      //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+      //       <div> <span className='font-thin flex gap-3'>
          
-              </span></div></p>
-        </div>,
+      //         </span></div></p>
+      //   </div>,
        
-      );
+      // );
+
+      setSnackbar({
+        open: true,
+        message: <p className='text-lg'>Session expired please Login Again</p>,
+        severity: 'error'
+      })
        navigate('/signin')
     // setlogoutmessage(true)
     // localStorage.setItem('logoutMessage', true)
@@ -1792,24 +1885,20 @@ useEffect(() => {
 
 
 
-    const storedData = JSON.parse(localStorage.getItem("ojijo"));
     
     const fetchUpdatedProfile = useCallback(
       
        
       async() => {
-        const requestParams = {
-                id:storedData.id,
-              
-              }
+      
         
 
-        const url = "/api/updated_admin?" + new URLSearchParams(requestParams)
+        const url = "/api/updated_admin"
         const response = await fetch(url)
         const newData = await response.json()
         console.log('updated admin', newData)
     try {
-      const {email, user_name, phone_number, profile_image } = newData
+      const {email, user_name, phone_number, profile_image } = newData.user
       
       if (response.ok) {
         setUpdateFormData({...updateFormData, email, phone_number, user_name, profile_image})
@@ -1829,10 +1918,6 @@ useEffect(() => {
       [],
     )
     
-    useEffect(() => {
-      fetchUpdatedProfile()
-      
-    }, [fetchUpdatedProfile]);
   
 
 
@@ -1993,6 +2078,36 @@ useEffect(() => {
 
 
 
+const loadThemeSettings = useCallback(async () => {
+  try {
+    const response = await fetch('/api/get_theme_settings');
+    const data = await response.json();
+    if (response.ok) {
+      setThemeColors(prevColors => ({
+        ...defaultThemeColors,
+        ...data[0]
+      })); 
+    }else{
+      setThemeColors(defaultThemeColors);
+      toaster.error(error.response?.data?.message ||
+        'Failed to load theme settings',{
+         icon: <FaRegAngry className='text-red-500'/>,
+         duration: 4000
+        });
+    }
+  } catch (error) {
+    toaster.error(error.response?.data?.message ||
+      'Failed to load theme settings',{
+       icon: <FaRegAngry className='text-red-500'/>,
+       duration: 4000
+      });
+    console.error('Error loading theme settings:', error);
+  }
+}, [currentUser]);
+
+useEffect(() => {
+  loadThemeSettings();
+}, [loadThemeSettings]);
 
 const isCurrentUser = useCallback((message) => {
   if (message.customer_id && id) {
@@ -2003,46 +2118,140 @@ const isCurrentUser = useCallback((message) => {
 
 
 
-const cable = createConsumer("ws://localhost:4000/cable");
-  useEffect(() => {
-   const subscription = cable.subscriptions.create("MessageChannel", {
-    connected() {
-        console.log("Connected to private WebSocket!");
-      },
-      received(data) {
-        console.log("Message received:", data);
-        setMessages((prevMessages) => [...prevMessages, data]);
+// const cable = createConsumer("ws://localhost:4000/cable");
+//   useEffect(() => {
+//    const subscription = cable.subscriptions.create("MessageChannel", {
+//     connected() {
+//         console.log("Connected to private WebSocket!");
+//       },
+//       received(data) {
+//         console.log("message admin is receiving2", data);
+
+//         // setMessages((prevMessages) => [...prevMessages, data]);
         
-        // Add notification
-        if (!isCurrentUser(data)) {
-          addNotification({
-            sender: data.sender_info?.name || 'Unknown',
-            message: data.content,
-            time: new Date().toLocaleTimeString(),
-          });
+//         // Add notification
+//         if (isCurrentUser(data)) {
+//           addNotification({
+//             sender: data.sender_info?.name || 'Unknown',
+//             message: data.content,
+//             time: new Date().toLocaleTimeString(),
+//           });
           
-          // Play sound if window not focused
-          if (!isWindowFocused && notificationsEnabled) {
-            playNotification();
-          }
-        }
-      },
-      disconnected() {
-        console.log("Disconnected from private WebSocket!");
-      },
+//           // Play sound if window not focused
+//           if (!isWindowFocused && notificationsEnabled) {
+//             playNotification();
+//           }
+//         }
+//       },
+//       disconnected() {
+//         console.log("Disconnected from private WebSocket!");
+//       },
      
-   });
+//    });
 
-   return () => {
-     subscription.unsubscribe();
-     // Reset title when component unmounts
-     document.title = "Chat";
-   };
- }, [cable.subscriptions, isWindowFocused, notificationsEnabled,
-   playNotification, addNotification, isCurrentUser]);
+//    return () => {
+//      subscription.unsubscribe();
+//      // Reset title when component unmounts
+//      document.title = companySettings.company_name;
+//    };
+//  }, []);
+
+const conversationIdAdmin = parseInt(localStorage.getItem('conversation_id_admin'));
+
+const cable = createConsumer("ws://localhost:4000/cable");
+
+// useEffect(() => {
+
+//   const subscription = cable.subscriptions.create(
+//     { channel: "MessageChannel", conversation_id: conversationIdAdmin }, 
+//     {
+//       connected() {
+//         console.log("Connected to private WebSocket!");
+//       },
+//       received(data) {
+//         console.log("message admin is receiving2", data);
+
+//         // Handle the received data
+//           addNotification({
+//             sender: data.sender_info?.name || 'Unknown',
+//             message: data.content,
+//             time: new Date().toLocaleTimeString(),
+//           });
+          
+//           // Play sound if window not focused
+//           if (!isWindowFocused && notificationsEnabled) {
+//             playNotification();
+//           }
+        
+//       },
+//       disconnected() {
+//         console.log("Disconnected from private WebSocket!");
+//       },
+//     }
+//   );
+
+//   // Clean up the subscription when the component unmounts
+//   return () => {
+//     subscription.unsubscribe();
+//   };
+// }, [cable, isWindowFocused, notificationsEnabled]);
 
 
-   console.log('currentUser:', currentUser)
+const [conversationId, setConversationId] = useState(null)
+
+useEffect(() => {
+ const subscription = cable.subscriptions.create("AdminNotificationsChannel", {
+  connected() {
+
+    // if (currentUser) {
+      console.log("Connected to admins chanel!");
+    // }
+      // console.log("Connected to admins chanel!");
+    },
+    received(data) {
+       data.sender_info?.type === "Customer"  ? (
+        addNotification({
+          sender: data.sender_info?.name || 'Unknown',
+          message: data.content,
+           time: new Date().toLocaleTimeString(),
+      })
+      ) : null;
+    // Use admin username for admin messages
+  
+      console.log("Message received admins:", data);
+     
+      // if (currentUser ){
+      //   const {conversation_id, message, customer_name, admin_name} = data
+      //   setConversationId(conversation_id)
+      // }
+
+      const {conversation_id, message, customer_name, admin_name} = data
+        setConversationId(conversation_id)
+
+     
+      // setMessages((prevMessages) => [...prevMessages, data]);
+      
+      // Add notification
+    
+    },
+    disconnected() {
+      console.log("Disconnected from  admins chanel!");
+    },
+   
+ });
+
+ return () => {
+   subscription.unsubscribe();
+   // Reset title when component unmounts
+ };
+}, [cable.subscriptions]);
+
+
+
+const currentUserName = user_name
+
+
+
 
 
 
@@ -2095,7 +2304,18 @@ const cable = createConsumer("ws://localhost:4000/cable");
     setCustomerProfileData, isOpenProvider, setIsOpenProvider,customerId,setCustomerId,
     messages, setMessages, isCurrentUser,notificationsEnabled,
      setNotificationsEnabled,isWindowFocused, setIsWindowFocused,
-     currentSystemAdmin, setCurrntSystemAdmin,fectCurrentSystemAdmin
+     currentSystemAdmin, setCurrntSystemAdmin,fectCurrentSystemAdmin,
+     currentUserName,fetchUpdatedProfile,themeColors, setThemeColors,
+     toggleSidebar, isSidebarVisible,setIsSidebarVisible,
+     handleGetCustomer,handleGetServiceProvider,snackbar, setSnackbar,
+     canManagageIndividualEmail, setCanManagageIndividualEmail,
+     canReadIndividualEmail, setCanReadIndividualEmail,
+     canReadCustomerStats, setCanReadCustomerStats,
+     canReadServiceProviderStats, setCanReadServiceProviderStats,
+     canReadDashboard, setCanReadDashboard,canReadChats, canManageChats,conversationId,
+     isOpenEditProfile, setisOpenEditProfile,
+     bottomNavigation, setBottomNavigation,
+      canManageUsers,canReadUsers
 
      
 

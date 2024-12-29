@@ -37,6 +37,7 @@ const navigate = useNavigate()
   const {customers, setGetCustomers, customerformData, setcustomerformData,
      setSeeCustomerCode, updatedMessage, setUpdatedMessage,  settingsformData,
      materialuitheme,adminFormSettings,setopenLogoutSession,
+     setSnackbar
   } = useApplicationSettings()
 
   const {send_sms_and_email, send_email} = settingsformData
@@ -293,30 +294,44 @@ useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
        
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
           setopenLogoutSession(true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)
@@ -520,99 +535,78 @@ setIsOpenDelete={setIsOpenDelete} />
     <MaterialTable
    
       columns={[
-
-
         { title: "Location", field: "location",
           render: (rowData) => 
-            
             <>
-{rowData.location === null ||  rowData.location === 'null' || rowData.location === '' 
-? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> : rowData.location }
-
+              {rowData.location === null ||  rowData.location === 'null' || rowData.location === '' 
+                ? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> 
+                : rowData.location }
             </>
-        
-         },
-        { title: "Customer Name", field: "name" ,
-          
         },
-     
+        { title: "Customer Name", field: "name" },
+        { title: "Phone Number", field: "phone_number" },
+        { title: "Date Registered", field: "date_registered" },
+        { title: "Customer Code", field: "customer_code" },
         {
-            title: "Phone Number",
-            field: "phone_number",
-          },
-          // {
-          //   title: "Amount Paid",
-          //   field: "amount_paid",
-          // },
-          
-          // {
-          //   title: "Total",
-          //   field: "amount_paid",
-          // },
-
-          // {
-          //   title: "Remaining Amount",
-          //   field: "Remaining Amount",
-          // },
-      
-        {
-            title: "Date Registered",
-            field: "date_registered",
-          },
-
-        {
-          title: "Customer Code",
-          field: "customer_code",
+          title: "Total Requests",
+          field: "total_requests",
+          render: rowData => rowData.total_requests || 0
         },
-
-
-
+        {
+          title: "Last Request Time",
+          field: "last_request_time",
+          render: rowData => rowData.last_request_time || 'No requests yet'
+        },
+        {
+          title: "Total Confirmations",
+          field: "total_confirmations", 
+          render: rowData => rowData.total_confirmations || 0
+        },
+        {
+          title: "Last Confirmation Time",
+          field: "last_confirmation_time",
+          render: rowData => rowData.last_confirmation_time || 'No confirmations yet'
+        },
         {
           title: "Collection Request Date",
           field: "formatted_request_date",
           render: (rowData) => 
-            
             <>
-{rowData.formatted_request_date === null ||  rowData.formatted_request_date === 'null' || rowData.formatted_request_date === '' 
-? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> : rowData.formatted_request_date }
-
+              {rowData.formatted_request_date === null ||  rowData.formatted_request_date === 'null' || rowData.formatted_request_date === '' 
+                ? <Lottie className='relative z-50' options={defaultOptions2} height={70} width={70} /> 
+                : rowData.formatted_request_date }
             </>
         },
-
-
         {
           title: "Collection Request",
           field: "confirm_request",
-          lookup: {true:  <CheckCircleIcon style={{ color: 'green' }} />, false: <CancelIcon style={{ color: 'red' }} />
-},
+          lookup: {
+            true: <CheckCircleIcon style={{ color: 'green' }} />, 
+            false: <CancelIcon style={{ color: 'red' }} />
+          },
         },
-
         {
           title: "Received Date",
           field: "formatted_confirmation_date",
         },
-
-
-
         {
-title: 'Bag  Received',
-field: 'bag_confirmed',
-lookup: {true:  <CheckCircleIcon style={{ color: 'green' }} />, false: <CancelIcon style={{ color: 'red' }} />
-},
-
+          title: 'Bag Received',
+          field: 'bag_confirmed',
+          lookup: {
+            true: <CheckCircleIcon style={{ color: 'green' }} />, 
+            false: <CancelIcon style={{ color: 'red' }} />
+          },
         },
-          {
-        
-            title: "Action",
-            field: "Action",
-            render: (rowData) => 
-
-              <>
+        {
+          title: "Action",
+          field: "Action",
+          render: (rowData) => 
+            <>
               <Box sx={{
                 display: 'flex',
                 gap: 2
               }}>
-                              <EditButton   />
+                <EditButton   />
 
               <DeleteButton   id={rowData.id}/>
               </Box>
@@ -687,7 +681,3 @@ fontFamily: 'customers'
 }
 
 export default Customers
-
-
-
-

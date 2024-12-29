@@ -150,8 +150,8 @@ handleCloseConfirmationAlertError={handleCloseConfirmationAlertError}
               onClick={handleGoBack}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
             >
-              <IoMdArrowRoundBack className="text-xl" />
-              <span className="playwrite-de-grund">Back</span>
+              <IoMdArrowRoundBack className="text-2xl" />
+              <span className="playwrite-de-grund text-2xl">Back</span>
             </motion.button>
 
             <div className="flex items-center gap-4">

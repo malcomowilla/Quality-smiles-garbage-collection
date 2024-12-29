@@ -646,7 +646,7 @@ setopenProviderLoginAlert(true)
         transition={{ delay: 0.2 }}
         className="mt-4 text-center"
       >
-        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+        <h1 className="itim-regular text-4xl  bg-gradient-to-r 
           from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
           font-bold tracking-wide">
           {company_name}
@@ -665,9 +665,9 @@ setopenProviderLoginAlert(true)
           <form onSubmit={handleProviderSignIn} className="flex flex-col gap-6">
             <div className="text-center">
               <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
-              <h2 className="text-xl font-bold text-gray-900
-              itim-regular mb-2">Welcome Back</h2>
-              <p className="text-gray-600">Login with your service provider code</p>
+              <h2 className=" font-bold text-gray-900
+              itim-regular mb-2 text-4xl">Welcome Back</h2>
+              <p className="text-gray-600 text-xl">Login with your service provider code</p>
             </div>
 
             <div>
@@ -682,7 +682,8 @@ setopenProviderLoginAlert(true)
                     type={seeProviderCode ? 'password' : 'text'}
                     required
                     shadow
-                    className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-500"
+                    className="w-full px-4 py-3 rounded-lg text-xl
+                    border focus:ring-2 focus:ring-green-500"
                     style={{backgroundColor: 'white', width: '100%', paddingRight: '40px'}}
                   />
 
@@ -695,11 +696,13 @@ setopenProviderLoginAlert(true)
                     type={seeProviderCode ? 'password' : 'text'}
                     required
                     shadow
-                    className="w-full px-4 py-3 rounded-lg border
+                    className="w-full px-4 py-3  text-xl rounded-lg border
                     focus:ring-2
                      focus:ring-green-500"
                     style={{backgroundColor: 'white', color: 'black',  
-                      width: '100%', paddingRight: '40px'}}
+                      width: '100%', paddingRight: '40px',
+                    fontSize: '1.5rem'
+                    }}
                   />
                 )}
 
@@ -721,13 +724,13 @@ setopenProviderLoginAlert(true)
                     Logging in...
                   </div>
                 ) : (
-                  'Login'
+                  <p className='text-xl'>Login</p>
                 )}
               </Button>
 
               <div onClick={handleGoBack} className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                 <ArrowBackIcon />
-                <span>Back to Selection</span>
+                <span className='text-xl'>Back to Selection</span>
               </div>
             </form>
           </div>

@@ -36,11 +36,9 @@ export const inviteClient = async ({ email, user_name, phone_number, company_dom
     // Check if the response is successful
     if (response.ok) {
       const data = await response.json(); // Parse the JSON response
-      toast.success('Client successfully created');
       return data; // Return the data if successful
     } else if (response.status === 422) {
       const errorData = await response.json(); // Parse the error response
-      console.error('Error response from server:', errorData);
       // Display specific error messages if available
       
       toast.error('Username: ' + (errorData.errors.user_name ? errorData.errors.user_name[0] : 'Please check your input.'));

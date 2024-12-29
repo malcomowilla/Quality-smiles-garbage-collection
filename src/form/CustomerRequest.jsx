@@ -13,7 +13,6 @@ import { FaUserCircle } from 'react-icons/fa';
 
 
 
-
 const CustomerRequest = () => {
     const {customerLongitude, setCustomerLongitude,plusCode, setPlusCode,
         customerLatitude, customer, setCustomer, setCustomerLatitude,
@@ -101,11 +100,14 @@ const confirmRequest = async(e)=> {
   }
   
   
+
   return (
    <>
    <CustomerRequestAlert  openRequest={openRequest} handleCloseRequest={handleCloseRequest} />
    <CustomerRequestError  handleCloseRequestError={handleCloseRequestError} 
    openRequestError={openRequestError} />
+
+
 
 
 <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white
@@ -157,15 +159,21 @@ flex justify-center items-center">
       >
         <img 
           src={logo_preview} 
-          className="w-24 h-24 rounded-full shadow-lg mb-4" 
+          className="w-32 h-32 rounded-full shadow-lg mb-4" 
           alt={company_name} 
         />
       </motion.div>
-      <h2 className="text-2xl font-bold text-gray-900 text-center">
+      <h2 className="text-4xl font-bold text-gray-900 text-center">
         {company_name}
       </h2>
     </div>
 
+
+    <div className="p-6 bg-white shadow-md rounded-lg mb-7">
+  <h2 className="text-xl font-bold text-black">Wallet Balance</h2>
+  <p className="text-2xl text-gray-500">00.00 ksh</p>
+  {/* <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Top Up</button> */}
+</div>
     {/* Quick Actions */}
     <div className="mb-8">
       <Link to='/customer-payment'>
@@ -174,13 +182,13 @@ flex justify-center items-center">
           className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3"
         >
           <div className="bg-green-50 p-2 rounded-full">
-            <SiMoneygram className="text-green-600 text-xl" />
+            <SiMoneygram className="text-green-600 text-2xl" />
           </div>
           <div>
-            <h3 className="font-medium text-gray-900">Top Up Balance</h3>
-            <p className="text-sm text-gray-600">Add funds to your account</p>
+            <h3 className="font-medium text-gray-900 text-3xl">Top Up Balance</h3>
+            <p className="text-xl text-gray-600 ">Add funds to your account</p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-black ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </motion.div>
@@ -211,13 +219,14 @@ flex justify-center items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span>Confirm Request</span>
+              <span className='text-2xl'>Confirm Request</span>
             </>
           )}
         </motion.button>
       </form>
 
-      <p className="text-sm text-gray-600 text-center mt-4">
+      <p className="text-xl text-gray-600 text-center
+       mt-4">
         Your request will be processed shortly
       </p>
     </div>

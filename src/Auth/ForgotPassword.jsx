@@ -64,26 +64,22 @@ const [openEmailSentError, setopenEmailSentError] = useState(false)
       try {
         setloading(true)
         setOpenLoad(true)
-    setDone(false)
+        setDone(false)
         const response = await fetch('/api/password_forgotten', {
           method: 'POST',
           headers: {
             'Content-Type' : 'application/json'
           },
-
           body: JSON.stringify(resetPasswordForm)
         })
 
         const newData = await response.json()
         if (response.ok) {
-          setopenEmailSent(true)
+          // setopenEmailSent(true)
           setTimeout(() => {
             setDone(false);
-            
             setloading(false);
-            setTimeout(() => {
-             
-            }, 2000);
+            navigate('/password-reset-email-sent');
           }, 2500);
         } else {
           setloading(false)
@@ -352,42 +348,3 @@ useEffect(() => {
 };
 
 export default ForgotPassword
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

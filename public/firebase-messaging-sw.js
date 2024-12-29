@@ -6,14 +6,15 @@ importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js")
 
 
 
+
 // Firebase configuration object
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_apiKey,
-  authDomain: import.meta.env.VITE_authDomain,
-  projectId: import.meta.env.VITE_projectId,
-  storageBucket: import.meta.env.VITE_storageBucket,
-  messagingSenderId: import.meta.env.VITE_messagingSenderId,
-  appId: import.meta.env.VITE_appId
+  apiKey: "AIzaSyCK9SjRH9BvsIbeyaQKpVqPMj7xrmKGL5g",
+  authDomain: "quality-smiles.firebaseapp.com",
+  projectId: "quality-smiles",
+  storageBucket: "quality-smiles.appspot.com",
+  messagingSenderId: "273733149863",
+  appId: "1:273733149863:web:180d5789bdafec3a86e782"
 };
 
  

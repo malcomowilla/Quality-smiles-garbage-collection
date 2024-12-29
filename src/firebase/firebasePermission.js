@@ -22,10 +22,14 @@ export const requestPermission = async () => {
 
       
 
+      const fcm_token1 = await getToken(messaging, {
+        vapidKey: 'BMwmnsHPoV7uo2r0qzq2wcfpYqUpgOj7SLPCLaqQRs7nGUCaxKygcTuqoHX5vbL6w-d413bfQmZ0sT2Xl_35dks',
+      }).catch((err) => {
+        console.error('Error while fetching token: ', err);
+      });
 
 
-
-
+console.log('fcm_token1=>', fcm_token1)
 
       if (fcm_token) {
         console.log('Device token:', fcm_token);

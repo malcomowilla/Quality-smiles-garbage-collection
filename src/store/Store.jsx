@@ -1,4 +1,3 @@
-
 import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
@@ -20,12 +19,13 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { useDebounce } from 'use-debounce';
 import { MdOutlineLocationSearching } from "react-icons/md";
 import { HiBuildingStorefront } from "react-icons/hi2";
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
 const Store = () => {
     const {materialuitheme, storeForm, setStoreForm,openAccessDenied3, 
-      setopenopenAccessDenied3, adminFormSettings} = useApplicationSettings()
+      setopenopenAccessDenied3, adminFormSettings, setSnackbar} = useApplicationSettings()
 const [isOpen, setIsOpen] = useState(false)
 const [seeStoreNumber, setSeeStoreNumber] = useState(false)
 const [loading, setloading] = useState(false)
@@ -99,32 +99,51 @@ useCallback(
 
       const newData = await response.json()
 
+
+if(response.status === 403){
+  toaster.error('you are not authorized to view stores', {
+
+  })
+}
+
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
        
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)
@@ -134,10 +153,7 @@ useCallback(
      
 
 
-      if (response.status === 403) {
-        // setopenopenAccessDenied3(true)
-        
-      }
+     
       if (response.ok) {
         // setStore(newData)
              
@@ -179,6 +195,15 @@ const response = await fetch(`/api/delete_store/${id}`, {
   method: 'DELETE'
   })
   
+
+
+if(response.status === 403){
+  toaster.error('you are not authorized to delete a store', {
+
+  })
+}
+
+
   if (response.ok) {
     setStore(store.filter((place)=> place.id !==  id))
     setopenDeleteAlert(false)
@@ -232,6 +257,15 @@ setloading(true)
 
     if (storeForm.id) {
       setloading(false)
+
+
+if(response.status === 403){
+  toaster.error('you are not authorized to update a store', {
+duration: 6000,
+position: "top-center",
+
+  })
+}
       setIsOpen(false)
       setStore(store.map(item => (item.id === storeForm.id ? newData : item)));
 
@@ -240,6 +274,14 @@ setloading(true)
 
     } else {
       setIsOpen(false)
+
+if(response.status === 403){
+  toaster.error('you are not authorized to add a store', {
+duration: 6000,
+position: "top-center",
+
+  })
+}
       // Add newly created package to tableData
 
       setStore((prevData)=> (
@@ -492,7 +534,3 @@ fontFamily: 'mono'
 }
 
 export default Store
-
-
-
-

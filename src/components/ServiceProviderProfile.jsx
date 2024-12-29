@@ -3,6 +3,11 @@ import { useState } from 'react';
 import { useApplicationSettings } from '../settings/ApplicationSettings';
 import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { BiLogOut } from "react-icons/bi";
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
+import { RiDeleteBack2Line } from "react-icons/ri";
+
+
 
 const ServiceProviderProfile = ({ onClose }) => {
   console.log('Profile component mounted');
@@ -18,6 +23,20 @@ const ServiceProviderProfile = ({ onClose }) => {
     { icon: <FaMapMarkerAlt />, label: "Area", value: providerData?.location
     }
   ];
+
+  function generateAvatar(name) {
+    const avatar = createAvatar(lorelei, {
+      seed: name, // Use the customer's name as the seed
+      // Customize options for the lorelei style
+      backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9'], // Example: random background colors
+      radius: 50, // Rounded corners
+      size: 64, // Size of the avatar
+    });
+  
+    // Generate the SVG as a data URL
+    return `data:image/svg+xml;utf8,${encodeURIComponent(avatar.toString())}`;
+  }
+  
 
   return (
     <motion.div
@@ -38,12 +57,11 @@ const ServiceProviderProfile = ({ onClose }) => {
         {/* Profile Header */}
         <div className="relative bg-gradient-to-r from-green-600 to-teal-600
          p-6 pb-24">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white"
-          >
-            ×
-          </button>
+        
+
+          <RiDeleteBack2Line onClick={onClose} className='text-red-700 w-8 h-8 cursor-pointer
+          
+          absolute top-4 right-4'/>
           <div className="text-white">
             <h2 className="text-2xl font-bold playwrite-de-grund">Service Provider Profile</h2>
             <p className="opacity-80">View your account details</p>
@@ -57,8 +75,11 @@ const ServiceProviderProfile = ({ onClose }) => {
             whileHover={{ scale: 1.05 }}
           >
             <img 
-              src={providerData?.profile_image || "/images/default-avatar.png"} 
-              alt="Profile"
+             src={generateAvatar(providerData?.name)}
+             alt={`${providerData?.name}'s avatar`}
+
+
+             
               className="w-full h-full object-cover"
             />
           </motion.div>

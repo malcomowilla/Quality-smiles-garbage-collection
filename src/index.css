@@ -1,16 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 
-
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
+ion-toast.custom-toast {
+  --background: #f4f4fa0b;
+  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+  --color: #4b4a50;
+}
+
+ion-toast.toast-dark {
+  --background: #000000 !important;
+  --color: #ffffff !important;
+}
+
+/* Custom Toast Styles */
+.custom-toast {
+  --background: #000000;
+  --color: #ffffff;
+  --border-color: #333333;
+  --button-color: #ffffff;
+}
 
 body {
- 
   /* background-color: #fbfbfb; */
 }
 
@@ -19,6 +33,14 @@ body {
     width: 60px; /* Smaller width for mobile */
     height: 60px; /* Smaller height for mobile */
   }
+}
+.custom-skip-button {
+  background-color: green !important;
+  color: white !important;
+}
+.custom-next-button {
+  background-color: green !important;
+  color: white !important;
 }
 
 .block-container {
@@ -47,15 +69,15 @@ body {
   }
 
   .btn-back-1 {
-    background: linear-gradient(135deg, #4682eb -20%, #01beff 120%);
+    /* background: linear-gradient(135deg, teal -20%, green 120%); */
   }
 
   .btn-back-2 {
-    background: linear-gradient(135deg, #5c46eb -20%, #013fff 120%);
+    /* background: linear-gradient(135deg, #5c46eb -20%, #013fff 120%); */
   }
 
   .btn-back-3 {
-    background: linear-gradient(135deg, #ebe046 -20%, #ffac01 120%);
+    /* background: linear-gradient(135deg, #ebe046 -20%, #ffac01 120%); */
   }
 
   .btn-front {
@@ -1076,5 +1098,3 @@ input[type="email"]:focus {
   }
   
 }
-
-

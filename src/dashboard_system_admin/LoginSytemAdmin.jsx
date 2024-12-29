@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for toast notifications
@@ -11,6 +11,7 @@ import EmailSentAnimation from '../animation/email_sent_animation.json';
 import {useNavigate} from 'react-router-dom'
 import { Lock } from '@mui/icons-material'; // Import an icon from Material-UI or any other icon library
 import { GoPasskeyFill } from "react-icons/go";
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
@@ -27,6 +28,10 @@ const LoginSytemAdmin = () => {
   const [emailVerified, setEmailVerified] = useState(false); // Track if passkey is created
 const navigate = useNavigate()
   // Check if the user already has a passkey
+
+
+
+  
   useEffect(() => {
     const checkPasskeyStatus = async () => {
       const response = await fetch('api/check_passkey_status', {
@@ -44,7 +49,7 @@ const navigate = useNavigate()
 
       checkPasskeyStatus();
     
-  }, []);
+  }, [navigate]);
 
 
 
@@ -407,6 +412,12 @@ const navigate = useNavigate()
 
   return (
     <>
+
+<Toaster 
+ position="top-center"
+
+/>
+
       {loading && (
         <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
@@ -433,7 +444,7 @@ const navigate = useNavigate()
         <div className="max-w-[720px] mx-auto">
           <div className="block mb-4 mx-auto border-b border-slate-300 pb-2 max-w-[360px]">
             {/* <TypingAnimation text={`Welcome to Aitechs System Admin Portal`} /> */}
-            <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#4CAF50', textAlign: 'center', margin: '20px 0' }}>
+            <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'black', textAlign: 'center', margin: '20px 0' }}>
   Welcome to Aitechs System Admin Portal
 </p>
           </div>

@@ -12,6 +12,7 @@ import { useDebounce } from 'use-debounce';
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 
 
@@ -43,6 +44,9 @@ const StoreManagerForm = ({isOpen, setIsOpen, handleAddStoreManager,  open, setO
 
   const [sublocations, setSubLocation] = useState([]);
   const [locations, setLocation] = useState([]);
+
+  const { settings, borderRadiusClasses } = useLayoutSettings();
+
 
 const handleClose = (e)=> {
     e.preventDefault()
@@ -258,15 +262,15 @@ const defaultOptions = {
         exit={{ opacity: 0 }}
        
 
-        className="bg-slate-900/20 backdrop-blur  p-12 fixed inset-0 z-50 grid place-items-center overflow-y-scroll 
-        cursor-pointer"
+        className={`bg-slate-900/20   backdrop-blur p-12 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer`}
       >
         <motion.div
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-white text-black p-6 rounded-lg w-full
-           max-w-lg shadow-xl cursor-default relative overflow-hidden"
+          className={`bg-white text-black p-6  w-full max-w-lg shadow-xl 
+            cursor-default relative
+             overflow-hidden ${borderRadiusClasses[settings.borderRadius]}`}
         >
 
 <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
@@ -386,15 +390,20 @@ const defaultOptions = {
 
 
 
-<div className="flex gap-8 p-4 py-8">
+<div className="flex gap-8 p-4 py-8">  
 
-<button type='submit'  disabled={loading} className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all
- shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+<button type='submit'  disabled={loading} className={`px-6 py-2 
+${borderRadiusClasses[settings.borderRadius]} 
+ flex-1 flex items-center justify-center gap-2 px-6 py-3.5 font-medium 
+                        bg-secondary text-white rounded-2xl transition-all
+                         hover:bg-hover disabled:opacity-50 disabled:cursor-not-allowed
+  `}>
         Submit
       </button>
 
-      <button onClick={handleClose} className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all 
-      shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+      <button onClick={handleClose} className={`flex-1 px-6 py-3.5 font-medium 
+             ${borderRadiusClasses[settings.borderRadius]}       text-gray-700 rounded-2xl transition-all
+                        hover:bg-red-500 bg-warn_primary`}>
         Cancel
       </button>
 

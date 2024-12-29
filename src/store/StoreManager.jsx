@@ -31,7 +31,8 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { createConsumer } from '@rails/actioncable';
 import { useDebounce } from 'use-debounce';
 import { GrUserManager } from "react-icons/gr";
-
+import { useLayoutSettings } from '../settings/LayoutSettings';
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
@@ -56,6 +57,7 @@ const [openStoreManagerUpdate, setopenStoreManagerUpdate] = useState()
 const [search, setSearch] = useState('')
 const [searchInput] = useDebounce(search, 1000)
 const navigate = useNavigate()
+const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
 
@@ -102,7 +104,7 @@ const cable = createConsumer("ws://localhost:4000/cable");
 
 
 
-
+console.log('border radius',borderRadiusClasses[settings.borderRadius])
 
 
 const defaultOptions = {
@@ -193,39 +195,49 @@ useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          toaster.error('Session expired please Login Again', {
+            position: "top-center",
+            duration: 7000,
+          })
        
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
-           navigate('/signin')
+          // );
+
+
+          toaster.error('Session Expired please login again', {
+            position: "top-center",
+            duration: 7000,
+            
+          })
+          //  navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)
         }
        
       }
 
-      if (response.status === 403) {
-        // setopenopenAccessDenied(true)
-      }
       if (response.ok) {
         console.log('customer data', newData)
         // setStoreManager(newData)
@@ -266,8 +278,15 @@ const deleteStoreManager = async (id)=> {
 const response = await fetch(`/api/delete_store_manager/${id}`, {
   method: 'DELETE'
   })
+
+
+
+
+
+
   
   if (response.ok) {
+    
     setStoreManager(storeManager.filter((place)=> place.id !==  id))
 
     setloading(false)

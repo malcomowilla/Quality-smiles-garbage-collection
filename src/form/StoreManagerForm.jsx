@@ -195,7 +195,7 @@ const itemVariants = {
             >
   <img 
                 src={logo_preview} 
-                className="w-24 h-24 rounded-full shadow-2xl mb-4" 
+                className="w-40 h-40 rounded-full shadow-2xl mb-4" 
                 alt={company_name} 
               />
             </motion.div>
@@ -215,7 +215,8 @@ const itemVariants = {
           >
             <div className="flex items-center gap-4 mb-8">
               <MdDeliveryDining className="text-4xl text-green-600" />
-              <h2 className="text-xl font-bold text-gray-900 playwrite-de-grund">
+              <h2 className="text-2xl font-bold text-gray-900
+               playwrite-de-grund">
                 Confirm Delivered Bags
               </h2>
             </div>
@@ -233,7 +234,7 @@ const itemVariants = {
                   </Label>
                 <div className="relative">
                   <FaBoxes className="absolute left-3 top-1/2 transform -translate-y-1/2
-                   text-gray-400" />
+                   text-black text-xl" />
                   <TextInput
                     id="bags-count"
                     type="number"
@@ -244,7 +245,8 @@ const itemVariants = {
                     placeholder="Enter number of bags"
                     style={{
                       backgroundColor: 'white',
-                      color: 'black'
+                      color: 'black',
+                      fontSize: '1.5rem'
                     }}
                   />
                 </div>
@@ -259,10 +261,10 @@ const itemVariants = {
                     className="flex items-center justify-between p-4 bg-gray-50 
                     rounded-xl hover:bg-gray-100 transition-colors"
                   >
-                    <span className="text-gray-700 playwrite-de-grund">Confirm Received?
+                    <span className="text-gray-700 playwrite-de-grund text-xl">Confirm Received?
 
                     </span>
-                    <FaHandPointRight className="text-green-600 text-xl" />
+                    <FaHandPointRight className="text-green-600 text-2xl" />
                   </motion.div>
                 </Link>
 
@@ -281,20 +283,21 @@ const itemVariants = {
                       className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                     />
                   ) : null}
-                  Confirm Delivery
+                  <p className='text-xl'>Confirm Delivery</p>
                 </motion.button>
 
-                <motion.button
+              
+              </div>
+            </form>
+            <motion.button
                   whileHover={{ scale: 1.02, x: -5 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleLogout}
                   className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 py-3"
                 >
-                  <FaHandPointLeft />
-                  <span className="playwrite-de-grund">Logout</span>
+                  <FaHandPointLeft className='text-2xl' />
+                  <span className="playwrite-de-grund text-2xl">Logout</span>
                 </motion.button>
-              </div>
-            </form>
           </motion.div>
         </motion.section>
       </motion.div>

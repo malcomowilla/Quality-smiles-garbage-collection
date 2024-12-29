@@ -14,7 +14,7 @@ import LoadingAnimation from '../animation/loading_animation.json'
 import Backdrop from '@mui/material/Backdrop';
 import AnimationDone from '../animation/done_tick-animation.json'
 import { IoArrowUndoSharp } from "react-icons/io5";
-
+import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 const Passkeys = () => {
@@ -112,6 +112,7 @@ const handleChange = (e) => {
     return btoa(binary).replace(/\//g, '_').replace(/\+/g, '-').replace(/=+$/, '');
   }
 
+  
   async function registerWebAuthn(e) {
     e.preventDefault();
     setisloading(true);
@@ -127,20 +128,30 @@ const handleChange = (e) => {
     const options = await response.json();
     const challenge = options.challenge;
 
-    if (response.ok) {
+
+try {
+  if (response.ok) {
       
-      setisloading(false);
-      setOpenLoad(false);
-      setDone(false);
-      setSeeError(false);
-    } else {
-      setisloading(false);
-      setOpenLoad(false);
-      setSeeError(true);
-      setDone(false);
-      setRegistrationError(options.email);
-      setUserNameError(options.user_name)
-    }
+    setisloading(false);
+    setOpenLoad(false);
+    setDone(false);
+    setSeeError(false);
+  } else {
+    setisloading(false);
+    setOpenLoad(false);
+    setSeeError(true);
+    
+    setDone(false);
+    setRegistrationError(options.email);
+    setUserNameError(options.user_name)
+  }
+} catch (error) {
+   setisloading(false);
+    setOpenLoad(false);
+    setDone(false);
+}
+
+ 
 
 
 
@@ -195,27 +206,30 @@ const handleChange = (e) => {
   
 
       if (createResponse.ok) {
+        toast.success('passkey created', {
+          duration: 6000})
         setOpen(true);
         setSeeError(false);
         setsignupFormData('')
         setOpenLoad(false);
         setisloading(false);
         
-        setTimeout(() => {
-          setDone(true);
-          setloading(false);
+        // setTimeout(() => {
+        //   setDone(true);
+        //   setloading(false);
 
 
 
-          setTimeout(() => {
-            navigate('/kasspass-key-signin');
-          }, 2000);
-        }, 3000);
+        //   setTimeout(() => {
+        //     navigate('/kasspass-key-signin');
+        //   }, 2000);
+        // }, 3000);
 
 
         
       } else {
         setisloading(false);
+        
         console.log('signup failed');
         setOpen(false);
         // setRegistrationError(options.errors);
@@ -350,6 +364,8 @@ useEffect(() => {
 
 
   return (
+    <>
+    <Toaster position="top-center" />
     <motion.div
       initial="hidden"
       animate="visible"
@@ -510,6 +526,8 @@ useEffect(() => {
         </motion.div>
       </div>
     </motion.div>
+
+    </>
   );
 };
 

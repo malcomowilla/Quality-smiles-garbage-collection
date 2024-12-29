@@ -24,6 +24,10 @@ import Alert from '@mui/material/Alert';
 import CompanySettingsCreateAlert from '../Alert/CompanySettingsCreateAlert'
 import { AnimatePresence } from 'framer-motion';
 import { IoIosArrowDown } from "react-icons/io";
+import { createTheme,  } from '@mui/material';
+import toaster, { Toaster } from 'react-hot-toast';
+
+import ThemeSettings from './ThemeSettings';
 
 // openCreateAlert, handleCloseCreateAlert
 
@@ -55,8 +59,10 @@ const MySettings = () => {
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings,adminFormSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,seeSettings7, setSeeSettings7,
-       handleFormDataChangeForCalendar,calendarSettings, setCalendarSettings,
-       companySettings, setcompanySettings
+       handleFormDataChangeForCalendar,calendarSettings,
+        setCalendarSettings,
+       companySettings, setcompanySettings,
+        setMaterialuiTheme,setSnackbar
      } = useApplicationSettings();
 
      const navigate = useNavigate()
@@ -95,7 +101,42 @@ const [isloading, setisloading] = useState({
 
 })
 
-const {company_name, contact_info, email_info} = companySettings
+
+const [themeColors, setThemeColors] = useState({
+  primary_color: materialuitheme.palette.primary.main || '#1976d2',
+  secondary_color: materialuitheme.palette.secondary.main || '#dc004e',
+  background_color: materialuitheme.palette.background.default || '#ffffff',
+  text_color: materialuitheme.palette.text.primary || '#000000',
+  sidebar_color: '#f5f5f5',
+  header_color: '#2196f3',
+  accent_color: '#ff4081',
+  sidebar_menu_items_background_color_active: '#008000',
+});
+
+
+
+useEffect(() => {
+  // Update Material-UI theme when theme colors change
+  setMaterialuiTheme(createTheme({
+    palette: {
+      primary: {
+        main: themeColors.primary_color,
+      },
+      secondary: {
+        main: themeColors.secondary_color,
+      },
+      background: {
+        default: themeColors.background_color,
+      },
+      text: {
+        primary: themeColors.text_color,
+      },
+    },
+  }));
+}, [themeColors]);
+
+const {company_name, contact_info, email_info, customer_support_email, agent_email,
+   customer_support_phone_number} = companySettings
 
 
 const handleFormDataChangeForCompany = (e) => {
@@ -130,9 +171,12 @@ const handleGetCompanySettings = useCallback(
       const newData = await response.json()
       if (response.ok) {
         // setcompanySettings(newData)
-        const { contact_info, company_name, email_info, logo_url } = newData
+        const { contact_info, company_name, email_info, logo_url,
+          customer_support_phone_number,agent_email ,customer_support_email
+         } = newData
         setcompanySettings((prevData)=> ({...prevData, 
           contact_info, company_name, email_info,
+          customer_support_phone_number,agent_email ,customer_support_email,
         
           logo_preview: logo_url
         }))
@@ -173,6 +217,12 @@ try {
   formData.append('company_name', companySettings.company_name);
   formData.append('contact_info', companySettings.contact_info);
   formData.append('email_info', companySettings.email_info);
+  formData.append('agent_email', companySettings.agent_email);
+  formData.append('customer_support_phone_number', companySettings.customer_support_phone_number);
+  formData.append('customer_support_email', companySettings.customer_support_email);
+
+
+
 
   if (companySettings.logo) {
     formData.append('logo', companySettings.logo);
@@ -187,7 +237,10 @@ try {
   const newData = await response.json()
   if (response.ok) {
     console.log('company settings created', newData)
-    const { contact_info, company_name, email_info, logo_url } =
+    const { contact_info, company_name, email_info, logo_url,
+      agent_email,customer_support_email,customer_support_phone_number  ,
+      
+     } =
      newData;
 
 
@@ -198,6 +251,9 @@ toast.success("company settings updated successfully")
       ...prevData, 
       contact_info, 
       company_name, 
+      customer_support_phone_number,
+      customer_support_email,
+      agent_email,
       email_info,
       logo_preview: logo_url
     }));
@@ -398,27 +454,41 @@ const handleGetCalendarSettings = useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
        
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
            
        
@@ -494,27 +564,38 @@ useEffect(() => {
            if (response.status === 401) {
             if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
               adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-              toast.error(
-                <div>
-                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                    <div> <span className='font-thin flex gap-3'>
+              // toast.error(
+              //   <div>
+              //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+              //       <div> <span className='font-thin flex gap-3'>
                  
-                      </span></div></p>
-                </div>,
+              //         </span></div></p>
+              //   </div>,
                
-              );
+              // );
+              setSnackbar({
+                open: true,
+                message: <p className='text-lg'>Session expired please Login Again</p>,
+                severity: 'error'
+              })
               navigate('/signup2fa_passkey')
            
             }else{
-              toast.error(
-                <div>
-                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                    <div> <span className='font-thin flex gap-3'>
+              // toast.error(
+              //   <div>
+              //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+              //       <div> <span className='font-thin flex gap-3'>
                  
-                      </span></div></p>
-                </div>,
+              //         </span></div></p>
+              //   </div>,
                
-              );
+              // );
+
+              setSnackbar({
+                open: true,
+                message: <p className='text-lg'>Session expired please Login Again</p>,
+                severity: 'error'
+              })
                navigate('/signin')
                
            
@@ -672,8 +753,8 @@ useEffect(() => {
         console.log(error)
         setOpen(false)
         setOpenLoad(false)
-        setisloading({...isloading, loading2: false})
         // setloading(false)
+        setisloading({...isloading, loading2: false})
         // setloading(prev => prev)
       }
      }
@@ -818,7 +899,7 @@ useEffect(() => {
 
 
 
-
+     
      const handleUpdateTicket = async(e)=> {
       // setloading(true)
       setisloading({...isloading, loading6: true})
@@ -867,9 +948,26 @@ useEffect(() => {
 
 
 
+const getTicketSettings = useCallback(async () => {
+  try {
+    const response = await fetch('/api/get_ticket_settings')
+    const data = await response.json()
+    if (response.ok) {
+      const prefix = data[0].prefix
+      const minimum_digits = data[0].minimum_digits
+      setsettingsTicket((prevData)=>  ({...prevData, prefix, minimum_digits, 
+         }))
+    } else {
+      console.log('failed')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}, []);
 
-
-
+useEffect(() => {
+  getTicketSettings()
+}, [getTicketSettings]);
 
 
 
@@ -931,160 +1029,6 @@ useEffect(() => {
      }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-     const handlegetstoreSettings = useCallback(
-      async()=> {
-         
-          
-         try {
-           const response = await fetch(`/api/get_store_settings`, {
-           method: 'GET',
-           signal: controller.signal,  
-  
-           headers: {
-             "Content-Type"  : 'application/json'
-           },
-           })
-  
-
-  
-           const newData = await response.json()
-
-
-           if (response.status === 401) {
-            if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
-              adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-              toast.error(
-                <div>
-                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                    <div> <span className='font-thin flex gap-3'>
-                 
-                      </span></div></p>
-                </div>,
-               
-              );
-              navigate('/signup2fa_passkey')
-           
-            }else{
-              toast.error(
-                <div>
-                  <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                    <div> <span className='font-thin flex gap-3'>
-                 
-                      </span></div></p>
-                </div>,
-               
-              );
-               navigate('/signin')
-               
-           
-            }
-          }
-
-
-
-           if (response.ok) {
-           // const use_auto_generated_number = newData.use_auto_generated_number
-           // const prefix = newData.prefix
-           // const minimum_digits = newData.minimum_digits
-         
-         
-           const {prefix, minimum_digits} = newData[0]
-           setsettingsForStore({...settingsForStore, prefix,  minimum_digits
-           
-           })
-           
-           } else {
-           console.log('failed to fetch')
-           }
-           } catch (error) {
-           console.log(error)
-           setOpenOfflineError(true)
-           
-           }
-         },
-     
-  []
-  )
-  
-  
-      
-    
-    useEffect(() => {
-      handlegetstoreSettings()
-    }, [handlegetstoreSettings]);
-  
-
-
-
-
-
-   
-
-
-
-
-
-    const handlegetTicketSettings = useCallback(
-      async()=> {
-         
-          
-         try {
-           const response = await fetch(`/api/get_ticket_settings`, {
-           method: 'GET',
-           signal: controller.signal,  
-  
-           headers: {
-             "Content-Type"  : 'application/json'
-           },
-           })
-  
-
-  
-           const newData = await response.json()
-           if (response.ok) {
-           // const use_auto_generated_number = newData.use_auto_generated_number
-           // const prefix = newData.prefix
-           // const minimum_digits = newData.minimum_digits
-         
-         
-           const {prefix, minimum_digits} = newData[0]
-           setsettingsTicket({...settingsTicket, prefix,  minimum_digits
-           
-           })
-           
-
-           } else {
-           console.log('failed to fetch')
-           }
-           } catch (error) {
-           console.log(error)
-           setOpenOfflineError(true)
-           
-           }
-         },
-     
-  []
-  )
-  
-  
-      
-    
-    useEffect(() => {
-      handlegetTicketSettings()
-    }, [handlegetTicketSettings]);
-  
 
 
 
@@ -1197,28 +1141,41 @@ const handlegetcustomerSettings = useCallback(
        if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
         
        
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
           
            
@@ -1555,7 +1512,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       />
     </div>
 
-    <div className="p-4  rounded-md">
+    <div className="p-4 rounded-md">
       <FormControlLabel
         className="mb-2"
         control={
@@ -1786,8 +1743,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     <button type="button"  onClick={()=> setSeeSettings3(!seeSettings3)} className="flex items-center justify-between w-full p-5 font-medium 
     rtl:text-right text-white border dark:text-black border-gray-200 focus:ring-4 hover:text-black focus:ring-gray-200
      dark:focus:ring-gray-800 dark:border-gray-700 dark:hover:text-white hover:bg-gray-100 
-     dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-3" aria-expanded="false" 
-     aria-controls="accordion-open-body-3">
+     dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-3" aria-expanded="false" aria-controls="accordion-open-body-3">
       <span className="flex items-center">
       <IoSettingsOutline className='p-1 text-3xl'/>
         Service Provider Account</span>
@@ -1847,7 +1803,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         label={
           <div>
             <p className="font-medium text-white dark:text-black">Send Provider Code Via Email</p>
-            <p className="text-sm text-white dark:text-black mt-1">
+            <p className="text-sm text-white dark:text-black  mt-1">
               When enabled, service providers will receive:
               <ul className="list-disc ml-5 mt-2">
                 <li>Their unique provider code immediately after account creation</li>
@@ -1876,7 +1832,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         label={
           <div>
             <p className="font-medium  text-white dark:text-black">Send Provider Code Via SMS</p>
-            <p className="text-sm text-white dark:text-black mt-1">
+            <p className="text-sm text-white dark:text-black  mt-1">
               When enabled, service providers will receive:
               <ul className="list-disc ml-5 mt-2">
                 <li>Their unique provider code via text message</li>
@@ -1922,8 +1878,8 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         sx={{
           '& label.Mui-focused': { color: 'black' },
           '& .MuiOutlinedInput-root': {
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'black',
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "black",
               borderWidth: '3px'
             }
           }
@@ -1947,14 +1903,13 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         value={settingsformDataForProvider.minimum_digits} 
         onChange={handleCustomerFormDataChangeForProvider} 
         className='myTextField'   
-        type='number'  
-        label='Minimum Digits for Provider Code'
+        type='number'  label='Minimum Digits for Provider Code'
         fullWidth
         sx={{
           '& label.Mui-focused': { color: 'black' },
           '& .MuiOutlinedInput-root': {
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'black',
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "black",
               borderWidth: '3px'
             }
           }
@@ -2022,23 +1977,16 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 
 
   <h2 id="accordion-open-heading-2">
-    <button type="button"   onClick={()=> setSeeSettings4(!seeSettings4)}
-     className="flex items-center justify-between w-full p-5 
+    <button type="button"   onClick={()=> setSeeSettings4(!seeSettings4)} className="flex items-center justify-between w-full p-5 
     
-    font-medium rtl:text-right text-white  border border-b-0 border-gray-200
-     focus:ring-4
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
     hover:dark:text-white hover:text-black
-    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700
-     dark:text-gray-900 
-     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
-      data-accordion-target="#accordion-open-body-2" aria-expanded="false" 
-      aria-controls="accordion-open-body-2">
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
       <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Store Number</span>
-      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 "
-       aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
        fill="none" viewBox="0 0 10 6">
-        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" 
-        strokeWidth="2" d="M9 5 5 1 1 5"/>
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
       </svg>
     </button>
   </h2>
@@ -2230,7 +2178,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
               When enabled:
               <ul className="list-disc ml-5 mt-2">
                 <li>Store managers must verify their identity using two different methods</li>
-                <li>Each login requires both password and a one-time verification code</li>
+                <li>Each login requires both password and a verification code</li>
                 <li>Verification codes can be sent via SMS or email (based on settings above)</li>
                 <li>Provides enhanced protection against unauthorized access</li>
               </ul>
@@ -2404,7 +2352,8 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <TextField   
            className='myTextField'   
              type='number'  label='Ticket Number Minimum Digits(Zeros will be added to the front, eg SUB001 for
-              three digits)'  name='minimum_digits'  onChange={handleFormDataChangeForTickets} value={settingsTicket.minimum_digits}></TextField>
+              three digits)'  name='minimum_digits'  onChange={handleFormDataChangeForTickets} 
+              value={settingsTicket.minimum_digits}></TextField>
 
         </Stack>
         <div className='p-5'>
@@ -2457,26 +2406,26 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 
 <p className='text-black p-3 font-light edu_ustralia_font text-lg tracking-widest'>
   Notify Admin Before An Event Starts (notify 30,10,2, 10,minutes or hrs before an event starts)</p>
-        <Stack direction='column'  className='myTextField'  sx={{
-           
-        '& .MuiTextField-root': { m: 1, width: '90ch',  marginTop: '30px',  '& label.Mui-focused': {
-          color: 'black',
-          fontSize: '16px'
+        <Stack direction='column' className='myTextField' sx={{
+          '& .MuiTextField-root': { 
+            m: 1, 
+            width: '90ch',  
+            marginTop: '30px',  
+            '& label.Mui-focused': {
+              color: 'black',
+              fontSize: '16px'
+            },
+            '& .MuiOutlinedInput-root': {
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "black",
+                borderWidth: '3px'
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'black',
+              }
+            } 
           },
-      '& .MuiOutlinedInput-root': {
-        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-          borderColor: "black",
-          borderWidth: '3px',
-          },
-       '&.Mui-focused fieldset':  {
-          borderColor: 'black', 
-          
-        }
-      } },
-      }}   spacing={{
-          xs: 1,
-          sm: 2
-        }}>
+        }} spacing={{xs: 1, sm: 2}}>
 
           <TextField  
           value={start_in_minutes}
@@ -2571,7 +2520,7 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             '& .MuiOutlinedInput-root': {
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 borderColor: "black",
-                borderWidth: '3px',
+                borderWidth: '3px'
               },
               '&.Mui-focused fieldset': {
                 borderColor: 'black',
@@ -2602,6 +2551,35 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             name='contact_info'
             value={contact_info}
             label='Company Contact Info' 
+            type='text'
+          />
+
+
+<TextField  
+            onChange={handleFormDataChangeForCompany}
+            name='agent_email'
+            value={agent_email}
+            label='Agent Email' 
+            type='text'
+          />
+
+
+<TextField  
+            onChange={handleFormDataChangeForCompany}
+            name='customer_support_phone_number'
+            value={customer_support_phone_number} 
+            label='Customer Support Phone Number'
+            type='text'
+          />
+
+
+
+
+<TextField  
+            onChange={handleFormDataChangeForCompany}
+            name='customer_support_email'
+            value={customer_support_email} 
+            label='Customer Support Email'  
             type='text'
           />
 
@@ -2662,6 +2640,35 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       </ThemeProvider>
     </motion.div>
   </form>
+  <h2 id="accordion-open-heading-2">
+    <button type="button"   onClick={()=> setSeeSettings8(!seeSettings8)} className="flex items-center justify-between
+     w-full p-5 
+    
+    font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
+    hover:dark:text-white hover:text-black
+    focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+      <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/>Theme Customization</span>
+      <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+       fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5"/>
+      </svg>
+    </button>
+  </h2>
+
+  <motion.div variants={variantDiv} 
+      transition={{duration:0.5, ease: "easeInOut"}} 
+      initial='hidden' 
+      animate={seeSettings8 ? "visible" : "hidden"} 
+      id="accordion-open-body-2" 
+      className={''} 
+      aria-labelledby="accordion-open-heading-2">
+
+      <ThemeProvider theme={materialuitheme}>
+      <ThemeSettings />
+
+      </ThemeProvider>
+    </motion.div>
 
 </div>
 
@@ -2670,4 +2677,3 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 }
 
 export default MySettings
-

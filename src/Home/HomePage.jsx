@@ -1,221 +1,402 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FaRecycle, FaChartLine, FaCloud, FaMobileAlt, FaQrcode, FaUsersCog } from 'react-icons/fa'
-import Lottie from 'react-lottie';
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
+import { FaRecycle, FaChartLine, FaCloud, FaMobileAlt, FaQrcode, FaUsersCog, FaTruck, FaLeaf } from 'react-icons/fa'
+import { BiArrowFromBottom } from 'react-icons/bi'
+import Lottie from 'react-lottie'
 import WasteAnimation from '../animation/waste_management.json'
 
-
-
-
 const HomePage = () => {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [activeStory, setActiveStory] = useState(0)
+  const heroRef = useRef(null)
+  const { scrollY } = useScroll()
+  const isHeroInView = useInView(heroRef)
 
+  const scrollToElement = () => {
+    const {current} =  heroRef
+     if (current !== null){
+       current.scrollIntoView({behavior: "smooth"})
+     }
+  }
 
-
-
-
-
-
+  const y = useTransform(scrollY, [0, 300], [0, 100])
+  const opacity = useTransform(scrollY, [0, 300], [1, 0])
 
   const defaultOptions = {
     loop: true,
-    autoplay: true, 
+    autoplay: true,
     animationData: WasteAnimation,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice'
     }
-  };
+  }
 
-
-
-
-
-  const features = [
+  const customerStories = [
     {
-      icon: <FaRecycle className="w-8 h-8 text-emerald-600" />,
-      title: "Smart Collection Management",
-      description: "Optimize routes and schedules with AI-powered collection management"
+      company: "Major City Operations",
+      logo: "🏢",
+      quote: "AITechs platform helped us optimize our entire fleet operations. The AI-driven routes and real-time tracking transformed our efficiency.",
+      person: "Operations Director",
+      impact: "40% reduction in fuel costs"
     },
     {
-      icon: <FaChartLine className="w-8 h-8 text-emerald-600" />,
-      title: "Real-time Analytics",
-      description: "Track performance metrics and generate insights with detailed reporting"
+      company: "Regional Waste Services",
+      logo: "🚛",
+      quote: "The analytics dashboard gives us insights we never had before. We can now make data-driven decisions that improve our service quality.",
+      person: "Technology Manager",
+      impact: "85% improvement in route efficiency"
     },
     {
-      icon: <FaCloud className="w-8 h-8 text-emerald-600" />,
-      title: "Cloud-Based Solution",
-      description: "Access your dashboard anywhere, anytime with secure cloud hosting"
-    },
-    {
-      icon: <FaMobileAlt className="w-8 h-8 text-emerald-600" />,
-      title: "Mobile Integration",
-      description: "Native mobile apps for drivers and real-time tracking"
-    },
-    {
-      icon: <FaQrcode className="w-8 h-8 text-emerald-600" />,
-      title: "QR Code Integration",
-      description: "Seamless customer identification and tracking system"
-    },
-    {
-      icon: <FaUsersCog className="w-8 h-8 text-emerald-600" />,
-      title: "Multi-tenant Architecture",
-      description: "Secure isolation for multiple waste management companies"
+      company: "Urban Solutions Inc",
+      logo: "🌆",
+      quote: "Implementing AITechs was seamless. The platform's intelligent routing has revolutionized how we manage our daily operations.",
+      person: "Chief Operations Officer",
+      impact: "60% fewer customer complaints"
     }
   ]
 
+  const problemSolutions = [
+    {
+      problem: "Inefficient garbage collection scheduling",
+      solution: "QR-coded bags with instant collection requests",
+      icon: <FaQrcode className="w-12 h-12 text-emerald-500" />,
+      animation: "slideRight"
+    },
+    {
+      problem: "Difficulty tracking collection status",
+      solution: "Real-time tracking and collection confirmation",
+      icon: <FaMobileAlt className="w-12 h-12 text-emerald-500" />,
+      animation: "slideLeft"
+    },
+    {
+      problem: "Complex navigation to customer locations",
+      solution: "Integrated Google Maps navigation",
+      icon: <FaTruck className="w-12 h-12 text-emerald-500" />,
+      animation: "slideRight"
+    }
+  ]
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStory((prev) => (prev + 1) % customerStories.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Company Name Banner */}
-      <div className="bg-emerald-700 text-white py-2 px-4 text-center">
-        <p className="text-sm font-medium">Powered by AITechs Solutions</p>
-      </div>
+    <div className="min-h-screen w-full bg-white">
+      {/* Hero Section with Parallax */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center">
+        <motion.div 
+          style={{ y, opacity }}
+          className="absolute inset-0 z-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 to-emerald-600/90" />
+          <div className="absolute inset-0 bg-[url('/path/to/pattern.svg')] opacity-10" />
+        </motion.div>
 
-      <section className="relative bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="sm:text-center lg:text-left">
-                {/* Company Name */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-lg font-semibold text-emerald-600 mb-4"
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, type: "spring" }}
+            className="text-center text-white"
+          >
+            <motion.div
+              animate={{ scale: isHeroInView ? 1 : 0.8 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8"
+            >
+              <h1 className="text-6xl md:text-8xl font-bold mb-4">
+                Aitechs
+                <span className="block text-emerald-300">Smart Garbage Collection Platform</span>
+              </h1>
+              <p className="text-xl md:text-3xl text-gray-200 max-w-3xl mx-auto">
+                Revolutionizing waste management with QR-coded bags and real-time collection requests.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 justify-center"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/contact-sales"
+                  className="group relative px-8 py-4 bg-emerald-500 text-white rounded-lg font-semibold overflow-hidden"
                 >
-                  AITechs Solutions presents
-                </motion.p>
-                
-                <motion.h1 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl"
-                >
-                  <span className="block xl:inline">Modern Waste Management</span>{' '}
-                  <span className="block text-emerald-600 xl:inline">Made Simple</span>
-                </motion.h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  Enterprise-grade waste management solution for companies. 
-                  Streamline operations, enhance customer satisfaction, and grow your business with our secure multi-tenant platform.
-                </p>
-                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  <div className="rounded-md shadow">
-                    <Link
-                      to="/contact-sales"
-                      className="w-full flex items-center justify-center px-8 py-3 
-                        border border-transparent text-base font-medium rounded-md 
-                        text-white bg-emerald-600 hover:bg-emerald-700 
-                        md:py-4 md:text-lg md:px-10"
-                    >
-                      Request Access
-                    </Link>
-                  </div>
-                  <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <Link
-                      to="/signin"
-                      className="w-full flex items-center justify-center px-8 py-3 
-                        border border-transparent text-base font-medium rounded-md 
-                        text-emerald-700 bg-emerald-100 hover:bg-emerald-200 
-                        md:py-4 md:text-lg md:px-10"
-                    >
-                      Sign In
-                    </Link>
-                  </div>
+                  <span className="relative z-10">Schedule Demo</span>
+                  
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Problem-Solution Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="space-y-16"
+          >
+            {problemSolutions.map((item, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="flex flex-col md:flex-row items-center gap-8"
+              >
+                <div className="flex-1 text-center md:text-left">
+                  <div className="mb-4">{item.icon}</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">The Problem:</h3>
+                  <p className="text-xl text-red-500 mb-4">{item.problem}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Solution:</h3>
+                  <p className="text-xl text-emerald-500">{item.solution}</p>
                 </div>
-                
-                {/* Added Enterprise Notice */}
-                <p className="mt-4 text-sm text-gray-500 italic">
-                  * This is an enterprise solution. New accounts are created through our invitation system.
-                </p>
-              </div>
-            </main>
-          </div>
-        </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <Lottie className='relative z-50' options={defaultOptions} height={100} width={100} />
-
+                <div className="flex-1">
+                  <Lottie options={defaultOptions} height={300} />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* Features Section - Updated Heading */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center">
-            <h2 className="text-base text-emerald-600 font-semibold tracking-wide uppercase">
-              AITechs Solutions Features
-            </h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to manage waste collection
+      {/* Customer Stories Carousel */}
+      <section className="py-20 bg-emerald-900 text-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">Success Stories</h2>
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeStory}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ type: "spring", stiffness: 100 }}
+                className="bg-emerald-800 rounded-xl p-8"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-4xl">{customerStories[activeStory].logo}</span>
+                  <h3 className="text-2xl font-bold">{customerStories[activeStory].company}</h3>
+                </div>
+                <blockquote className="text-xl italic mb-4">
+                  "{customerStories[activeStory].quote}"
+                </blockquote>
+                <p className="text-emerald-300">{customerStories[activeStory].person}</p>
+                <div className="mt-4 bg-emerald-700 rounded p-4">
+                  <p className="font-bold">Impact:</p>
+                  <p>{customerStories[activeStory].impact}</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-gradient-to-b from-emerald-50 to-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-bold mb-6 text-black">Powerful Features</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to transform your waste management operations
             </p>
-          </div>
-
-          <div className="mt-10">
-            <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div>
-                    <div className="absolute h-12 w-12 flex items-center justify-center rounded-md bg-emerald-100">
-                      {feature.icon}
-                    </div>
-                    <p className="ml-16 text-lg leading-6 font-medium text-gray-900">
-                      {feature.title}</p>
-                  </div>
-                  <div className="mt-2 ml-16 text-base text-gray-500">
-                    {feature.description}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Modified CTA Section */}
-      <section className="bg-emerald-700">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            <span className="block">Transform your waste management</span>
-            <span className="block text-emerald-200">with AITechs Solutions today.</span>
-          </h2>
-          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-            <div className="inline-flex rounded-md shadow">
-              <Link
-                to="/contact-sales"
-                className="inline-flex items-center justify-center px-5 py-3 
-                  border border-transparent text-base font-medium rounded-md 
-                  text-emerald-600 bg-white hover:bg-emerald-50"
-              >
-                Contact Sales
-              </Link>
-            </div>
-            <div className="ml-3 inline-flex rounded-md shadow">
-              <Link
-                to="/about"
-                className="inline-flex items-center justify-center px-5 py-3 
-                  border border-transparent text-base font-medium rounded-md 
-                  text-white bg-emerald-600 hover:bg-emerald-700"
-              >
-                Learn More
-              </Link>
-            </div>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div variants={itemVariants} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <div className="text-4xl mb-4">🔍</div>
+              <h3 className="text-xl font-bold mb-2 text-black">QR Code System</h3>
+              <p className="text-gray-600">
+                Smart QR-coded recycling bags for easy registration and collection requests.
+              </p>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <div className="text-4xl mb-4">📱</div>
+              <h3 className="text-xl font-bold mb-2 text-black">Customer Portal</h3>
+              <p className="text-gray-600">
+                User-friendly portal for bag registration and scheduling pickups.
+              </p>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <div className="text-4xl mb-4">🗺️</div>
+              <h3 className="text-xl font-bold mb-2 text-black">Location Services</h3>
+              <p className="text-gray-600">
+                Integrated Google Maps navigation for efficient pickup routes.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Footer with Company Info */}
-      <footer className="bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} AITechs Solutions. All rights reserved.
-          </p>
+      {/* Our Impact Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-bold mb-6 text-black">Our Impact</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              At EcoCollect, we're not just collecting waste - we're building a cleaner, more sustainable future 
+              for cities worldwide. Here's how we're making a difference:
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div variants={itemVariants} className="bg-gray-50 p-6 rounded-xl">
+              <div className="text-4xl mb-4">🌍</div>
+              <h3 className="text-xl font-bold mb-2 text-black">Environmental Impact</h3>
+              <p className="text-gray-600">
+                Our smart routes and efficient collection systems have helped cities reduce their carbon emissions 
+                by up to 40%, contributing to a cleaner environment.
+              </p>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="bg-gray-50 p-6 rounded-xl">
+              <div className="text-4xl mb-4">💰</div>
+              <h3 className="text-xl font-bold mb-2 text-black">Cost Efficiency</h3>
+              <p className="text-gray-600">
+                Cities using our platform save an average of 45% on operational costs through optimized routes 
+                and better resource utilization.
+              </p>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="bg-gray-50 p-6 rounded-xl">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-2 text-black">Service Excellence</h3>
+              <p className="text-gray-600">
+                Our QR code system and real-time tracking have helped achieve a 95% on-time collection rate, 
+                leading to happier residents and cleaner communities.
+              </p>
+            </motion.div>
+          </div>
         </div>
+      </section>
+
+      {/* Environmental Impact Section */}
+      <section className="py-20 bg-gradient-to-b from-emerald-50 to-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="text-center"
+          >
+            <motion.div variants={itemVariants}>
+              <FaLeaf className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
+              <h2 className="text-4xl font-bold mb-8 text-black">Environmental Impact</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white p-6 rounded-xl shadow-lg">
+                  <h3 className="text-3xl font-bold text-emerald-600 mb-2">40%</h3>
+                  <p className='text-gray-700'>Reduction in CO2 Emissions</p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-lg">
+                  <h3 className="text-3xl font-bold text-emerald-600 mb-2">60%</h3>
+                  <p className='text-gray-700'>Less Fuel Consumption</p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-lg">
+                  <h3 className="text-3xl font-bold text-emerald-600 mb-2">95%</h3>
+                  <p className='text-gray-700'>Route Optimization</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Floating Action Button */}
+      <motion.div
+        className="fixed bottom-8 right-8 z-50"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+      >
+
+        <div onClick={() => scrollToElement()}
+          to="/contact-sales"
+          className="flex items-center justify-center w-16 h-16 bg-emerald-600 rounded-full
+           shadow-lg hover:bg-emerald-700 transition-colors cursor-pointer"
+        >
+          <BiArrowFromBottom   className="w-8 h-8 text-white" />
+        </div>
+      </motion.div>
+
+      {/* Footer with Animation */}
+      <footer className="bg-gray-900 text-gray-300 py-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+          className="max-w-7xl mx-auto px-4"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div variants={itemVariants}>
+              <h3 className="text-white font-semibold mb-4">EcoCollect Solutions</h3>
+              <p className="text-sm">
+                Transforming waste management with smart QR-coded bags and real-time collection services.
+              </p>
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <h3 className="text-white font-semibold mb-4">Contact</h3>
+              <p className="text-sm">Email: sales@ecocollect.com</p>
+              <p className="text-sm">Phone: +1 (555) 123-4567</p>
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <h3 className="text-white font-semibold mb-4">Resources</h3>
+              <ul className="text-sm space-y-2">
+                <li><Link to="/case-studies" className="hover:text-white">Case Studies</Link></li>
+                <li><Link to="/sustainability" className="hover:text-white">Sustainability Report</Link></li>
+              </ul>
+            </motion.div>
+          </div>
+        </motion.div>
       </footer>
     </div>
   )

@@ -205,8 +205,8 @@ const handleChangeDate = (date)=> {
 
 
  <div className="mb-5">
-  {seeProviderCode && (<>  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund text-black">Customer Code</label>
-  <input type="text" name="customer_code"  value={provider_code} onChange={handleChange}  className="input  
+  {seeProviderCode && (<>  <label htmlFor="password" className="block mb-2 text-sm playwrite-de-grund text-black">Provider Code</label>
+  <input type="text" name="provider_code"  value={provider_code} onChange={handleChange}  className="input  
   
     focus:border-black border-black
   input-lg w-full  bg-transparent"    /> </>)}

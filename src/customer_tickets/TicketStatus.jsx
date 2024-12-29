@@ -78,9 +78,9 @@ useEffect(() => {
         >
           <FaHandPointLeft className=" max-sm:text-4xl sm:text-3xl 
            max-md:text-5xl" />
-          <span>Back</span>
+          <span className='text-2xl'>Back</span>
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 flex-1 text-center">
+        <h1 className="text-2xl font-semibold text-gray-900 flex-1 text-center">
           Ticket Status
         </h1>
         <div className="w-10"></div> {/* Spacer for alignment */}
@@ -104,31 +104,31 @@ useEffect(() => {
           <div className="space-y-4">
             {/* Status */}
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Status</span>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium
-                ${ticketStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                  ticketStatus === 'Resolved' ? 'bg-green-100 text-green-800' :
-                  'bg-blue-100 text-blue-800'}`}>
+              <span className="text-gray-600 text-2xl">Status</span>
+              <span className={`px-3 py-1 rounded-full text-2xl font-medium
+                ${ticketStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800 text-2xl' :
+                  ticketStatus === 'Resolved' ? 'bg-green-100 text-green-800 text-2xl' :
+                  'bg-blue-100 text-blue-800 text-2xl'}`}>
                 {ticketStatus}
               </span>
             </div>
 
             {/* Ticket Number */}
             <div className="flex items-center justify-between border-t pt-4">
-              <span className="text-gray-600">Ticket Number</span>
-              <span className="font-medium text-gray-900">{ticketNumber}</span>
+              <span className="text-gray-600 text-2xl">Ticket Number</span>
+              <span className="font-medium text-gray-900 text-2xl">{ticketNumber}</span>
             </div>
 
             {/* Creation Date */}
-            <div className="flex items-center justify-between border-t pt-4">
-              <span className="text-gray-600">Created</span>
-              <span className="font-medium text-gray-900">{dateOfCreation}</span>
+            <div className="flex items-center justify-between border-t pt-4 space-x-8">
+              <span className="text-gray-600 text-2xl">Created</span>{' '} 
+              <span className="font-medium text-gray-900 text-2xl">{dateOfCreation}</span>
             </div>
 
             {/* Priority Level */}
-            <div className="flex items-center justify-between border-t pt-4">
-              <span className="text-gray-600">Priority</span>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium
+            <div className="flex items-center justify-between border-t pt-4 ">
+              <span className="text-gray-600 text-2xl">Priority</span>
+              <span className={`px-3 py-1 rounded-full text-2xl font-medium
                 ${priorityLevel === 'High' ? 'bg-red-100 text-red-800' :
                   priorityLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-green-100 text-green-800'}`}>
@@ -139,8 +139,8 @@ useEffect(() => {
             {/* Issue Description */}
             <div className="border-t pt-4">
               <span className="text-gray-600 block mb-2
-              font-bold">Issue Description</span>
-              <p className="text-gray-900 bg-gray-50 p-3 rounded-lg text-sm">
+              font-bold text-2xl">Issue Description</span>
+              <p className="text-gray-900 bg-gray-50 p-3 rounded-lg text-2xl">
                 {issueDescription}
               </p>
             </div>

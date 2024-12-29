@@ -6,6 +6,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 
 
@@ -18,6 +19,7 @@ const CustomerRegistrationForm = ({isOpen, setIsOpen, addCustomer, handleCloseRe
   } = customerformData
 
 
+  const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
      const convertToKenyanFormat = (number) => {
@@ -139,8 +141,9 @@ const handleChangeDate = (date)=> {
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-white text-black p-6 rounded-lg w-full
-           max-w-lg shadow-xl cursor-default relative overflow-hidden"
+          className={`bg-white text-black p-6 
+            ${borderRadiusClasses[settings.borderRadius]}  w-full
+           max-w-lg shadow-xl cursor-default relative overflow-hidden`}
         >
                       <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
 
@@ -238,15 +241,20 @@ const handleChangeDate = (date)=> {
 <div className="flex gap-8">
 
 
-<button type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all shadow-[3px_3px_0px_black] 
-hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+<button type='submit' className={`px-6 py-2 
+${borderRadiusClasses[settings.borderRadius]} 
+ flex-1 flex items-center justify-center gap-2 px-6 py-3.5 font-medium 
+                        bg-secondary text-white rounded-2xl transition-all
+                         hover:bg-hover disabled:opacity-50 disabled:cursor-not-allowed
+  `}>
   {loading && <ImSpinner9 className={`${loading && 'animate-spin block'} hidden`}/>}
         Submit
       </button>
 
 
-      <button  onClick={handleCloseRegistrationForm} className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
-       hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+      <button  onClick={handleCloseRegistrationForm}  className={`flex-1 px-6 py-3.5 font-medium 
+             ${borderRadiusClasses[settings.borderRadius]}       text-gray-700 rounded-2xl transition-all
+                        hover:bg-red-500 bg-warn_primary`}>
         Cancel
       </button>
             {/* <button type="submit"  disabled={loading}   className="btn btn-active">

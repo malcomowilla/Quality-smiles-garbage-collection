@@ -1,296 +1,160 @@
-
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { FaTruck, FaBuilding, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
+import { useApplicationSettings } from '../settings/ApplicationSettings'
 
 const ContactSales = () => {
-  const [formData, setFormData] = useState({
-    company_name: '',
-    business_type: '',
-    contact_person: '',
-    business_email: '',
-    phone_number: '',
-    expected_users: '',
-    country: '',
-    city: '',
-    message: '',
-    company_website: ''
-  });
+  const { companySettings } = useApplicationSettings()
+  const { company_name, contact_info, email_info } = companySettings
 
-  const [loading, setLoading] = useState(false);
+  const [inquiryType, setInquiryType] = useState('business')
+  const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/contact_requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contact_request: formData }),
-      });
-
-      if (response.ok) {
-        toast.success('Request submitted successfully! Our team will contact you soon.');
-        setFormData({
-          company_name: '',
-          business_type: '',
-          contact_person: '',
-          business_email: '',
-          phone_number: '',
-          expected_users: '',
-          country: '',
-          city: '',
-          message: '',
-          company_website: ''
-        });
-      } else {
-        toast.error('Failed to submit request. Please try again.');
-      }
-    } catch (error) {
-      toast.error('Network error. Please check your connection.');
-    } finally {
-      setLoading(false);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
     }
-  };
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto"
-      >
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Request Enterprise Access
-          </h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Please provide your business details and we'll get back to you within 24 hours.
-          </p>
-        </div>
-
-        <motion.form 
-          onSubmit={handleSubmit}
-          className="bg-white shadow-xl rounded-lg px-8 pt-6 pb-8 mb-4 space-y-6"
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="text-center mb-12"
         >
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {/* Company Information */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Company Name *
-              </label>
-              <input
-                type="text"
-                name="company_name"
-                value={formData.company_name}
-                onChange={handleChange}
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+            Contact {company_name} Sales Team
+          </h1>
+          <p className="text-xl text-gray-600">
+            Choose your business type to get started
+          </p>
+        </motion.div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Business Type *
-              </label>
-              <select
-                name="business_type"
-                value={formData.business_type}
-                onChange={handleChange}
-                required
-                className="shadow border rounded w-full py-2 px-3 text-gray-700 
-                  leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">Select Type</option>
-                <option value="waste_management">Waste Management</option>
-                <option value="recycling">Recycling</option>
-                <option value="environmental_services">Environmental Services</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            {/* Contact Person Details */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Contact Person *
-              </label>
-              <input
-                type="text"
-                name="contact_person"
-                value={formData.contact_person}
-                onChange={handleChange}
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Business Email *
-              </label>
-              <input
-                type="email"
-                name="business_email"
-                value={formData.business_email}
-                onChange={handleChange}
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Additional Fields */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Phone Number *
-              </label>
-              <input
-                type="tel"
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleChange}
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Expected Number of Users *
-              </label>
-              <select
-                name="expected_users"
-                value={formData.expected_users}
-                onChange={handleChange}
-                required
-                className="shadow border rounded w-full py-2 px-3 text-gray-700 
-                  leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">Select Range</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201+">201+</option>
-              </select>
-            </div>
-
-            {/* Location */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Country
-              </label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 
-                  text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                  focus:ring-emerald-500"
-              />
-            </div>
-          </div>
-
-          {/* Message */}
-          <div className="col-span-2">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Additional Information
-            </label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              rows="4"
-              className="shadow appearance-none border rounded w-full py-2 px-3 
-                text-gray-700 leading-tight focus:outline-none focus:ring-2 
-                focus:ring-emerald-500"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex items-center justify-end">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={loading}
-              className={`bg-emerald-600 hover:bg-emerald-700 text-white font-bold 
-                py-3 px-6 rounded focus:outline-none focus:shadow-outline
-                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        {/* Business Type Selection */}
+        <motion.div variants={containerVariants} className="mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div
+              variants={itemVariants}
+              className={`p-6 rounded-lg shadow-lg cursor-pointer transition-all ${
+                inquiryType === 'business' ? 'bg-emerald-50 border-2 border-emerald-500' : 'bg-white'
+              }`}
+              onClick={() => setInquiryType('business')}
             >
-              {loading ? 'Submitting...' : 'Submit Request'}
-            </motion.button>
+              <FaBuilding className="w-12 h-12 text-emerald-600 mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Business Customer</h3>
+              <p className="text-gray-600">
+                I want to use {company_name}'s platform for my waste management needs
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={itemVariants}
+              className={`p-6 rounded-lg shadow-lg cursor-pointer transition-all ${
+                inquiryType === 'provider' ? 'bg-emerald-50 border-2 border-emerald-500' : 'bg-white'
+              }`}
+              onClick={() => setInquiryType('provider')}
+            >
+              <FaTruck className="w-12 h-12 text-emerald-600 mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Service Provider</h3>
+              <p className="text-gray-600">
+                I want to become a waste collection service provider
+              </p>
+            </motion.div>
           </div>
-        </motion.form>
+        </motion.div>
 
-        <div className="text-center mt-8 text-gray-600">
-          <p>Already have an account? <a href="/signin" className="text-emerald-600 hover:text-emerald-700">Sign in here</a></p>
-        </div>
-      </motion.div>
+        {/* Contact Information */}
+        <motion.div variants={containerVariants} className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {inquiryType === 'business' 
+              ? 'Get Started with Smart Waste Management' 
+              : 'Become a Service Provider'}
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Requirements for {inquiryType === 'business' ? 'Businesses' : 'Service Providers'}:
+              </h3>
+              <ul className="space-y-3 text-gray-600">
+                {inquiryType === 'business' ? (
+                  <>
+                    <li>• Valid business registration</li>
+                    <li>• Physical business address</li>
+                    <li>• Minimum 6-month contract</li>
+                    <li>• Designated waste management coordinator</li>
+                  </>
+                ) : (
+                  <>
+                    <li>• Valid waste collection license</li>
+                    <li>• Minimum 2 collection vehicles</li>
+                    <li>• Proof of insurance</li>
+                    <li>• Background check clearance</li>
+                    <li>• Service area commitment</li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Us:</h3>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <FaPhone className="w-5 h-5 text-emerald-600 mr-3" />
+                  
+                  <a href="tell:0791568852"><span className='text-black'>0791568852</span></a>
+
+                </div>
+                <div className="flex items-center">
+                  <FaEnvelope className="w-5 h-5 text-emerald-600 mr-3" />
+                  {/* <span>{email_info}</span> */}
+                  <a href="mailto:owillamalcom@gmail.com ">  <span className='text-black'>Email </span></a>
+                </div>
+                <div className="flex items-center">
+                  <FaMapMarkerAlt className="w-5 h-5 text-emerald-600 mr-3" />
+                  <span>Visit our office for a demo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t pt-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Next Steps:</h3>
+            <ol className="list-decimal list-inside space-y-2 text-gray-600">
+              <li>Contact our sales team via phone or email</li>
+              <li>Schedule an initial consultation</li>
+              <li>Get a personalized demo of our platform</li>
+              <li>Review and sign service agreement</li>
+              <li>Begin onboarding process</li>
+            </ol>
+          </div>
+        </motion.div>
+
+        {/* Additional Information */}
+        <motion.div variants={containerVariants} className="mt-8 text-center text-gray-600">
+          {/* <p>
+            For immediate assistance, call us at {contact_info}
+          </p> */}
+          <p className="mt-2">
+            Business hours: Monday - Friday, 9:00 AM - 5:00 PM
+          </p>
+        </motion.div>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default ContactSales;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default ContactSales

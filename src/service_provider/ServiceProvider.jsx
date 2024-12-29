@@ -27,6 +27,7 @@ import { useDebounce } from 'use-debounce';
 import { BsPersonGear } from "react-icons/bs";
 
 
+// total_delivered_confirmation,total_collection_confirmation
 
 
 const ServiceProvider = () => {
@@ -509,6 +510,24 @@ rowData.formatted_delivered_date === 'null' ? (
           field: "provider_code",
         },
         
+        // total_delivered_confirmation,total_collection_confirmation
+        {
+
+          title: "Total Delivery",
+          field: "total_delivered_confirmation",
+        },
+
+
+
+        {
+            title:"Status",
+            field:"status",
+        },
+
+        {
+          title: "Total Collection",
+          field: "total_collection_confirmation",
+        },
 
         {
           title: "Date Registered",

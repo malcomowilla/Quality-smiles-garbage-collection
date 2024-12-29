@@ -41,7 +41,9 @@ const [openLoad, setopenLoad] = useState(false)
 const [loading, setloading] = useState(false)
     const {
       
-        materialuitheme, smsBalance, setSmsBalance, adminFormSettings  } = useApplicationSettings()
+        materialuitheme, smsBalance, setSmsBalance, adminFormSettings,
+        setSnackbar
+        } = useApplicationSettings()
 
 
 const handleAddButton = () => {
@@ -111,29 +113,42 @@ useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
        
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)

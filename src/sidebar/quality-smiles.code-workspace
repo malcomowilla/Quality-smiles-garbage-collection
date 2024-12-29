@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../quality_smiles_backend"
+		},
+		{
+			"path": "../../../captive-portal"
+		}
+	],
+	"settings": {}
+}

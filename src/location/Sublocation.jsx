@@ -18,6 +18,7 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { SlLocationPin } from "react-icons/sl";
 import { useDebounce } from 'use-debounce';
 import { MdOutlineLocationSearching } from "react-icons/md";
+import toaster, { Toaster } from 'react-hot-toast';
 
 
  
@@ -26,7 +27,7 @@ const Sublocation = () => {
     const {
       
         materialuitheme , sublocationForm, setSubLocationForm,sublocations, setSubLocations,openAccessDenied2,
-         setopenopenAccessDenied2, adminFormSettings } = useApplicationSettings()
+         setopenopenAccessDenied2, adminFormSettings, setSnackbar } = useApplicationSettings()
 
 const [isOpen, setIsOpen] = useState(false)
 const [loading, setloading] = useState(false)
@@ -94,6 +95,16 @@ const deleteSubLocation = async (id)=> {
 const response = await fetch(`/api/delete_sub_location/${id}`, {
   method: 'DELETE'
   })
+
+
+
+  if (response.status === 403) {
+    // setopenopenAccessDenied2(true)
+    toaster.error('you are not authorized to delete sublocation', {
+      position: "top-center",
+      duration: 6000,
+    })
+  }
   
   if (response.ok) {
     setSubLocations(sublocations.filter((place)=> place.id !==  id))
@@ -143,29 +154,41 @@ useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
        
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)
@@ -177,6 +200,10 @@ useCallback(
 
       if (response.status === 403) {
         // setopenopenAccessDenied2(true)
+        toaster.error('you are not authorized to view sublocations', {
+          position: "top-center",
+          duration: 6000,
+        })
       }
       if (response.ok) {
         setSubLocations(newData)
@@ -221,6 +248,20 @@ useEffect(() => {
       })
 
       const newData = await response.json()
+
+
+
+      if (response.status === 403) {
+        // setopenopenAccessDenied2(true)
+        toaster.error('you are not authorized to set  sublocations', {
+          position: "top-center",
+          duration: 6000,
+        })
+      }
+
+
+
+
 
       if (response.ok) {
         setIsOpen(false)

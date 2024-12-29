@@ -50,7 +50,7 @@ const [eventId, setEventId] = useState('')
 const [openUpdateAlert, setopenUpdateAlert] = useState(false)
 const [openDeleteAlert, setopenDeleteAlert] = useState(false)
 
-const {adminFormSettings,  setCalendarSettings, setOpenOfflineError} = useApplicationSettings()
+const {adminFormSettings,  setCalendarSettings, setOpenOfflineError, setSnackbar} = useApplicationSettings()
 
 
 
@@ -188,27 +188,40 @@ const handleGetCalendarEvents = useCallback(
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys === true || 
           adminFormSettings.enable_2fa_for_admin_passkeys === 'true' ) {
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
           navigate('/signup2fa_passkey')
        
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
            
        
@@ -563,7 +576,7 @@ useEffect(() => {
 
 
 
-     <div className='grid grid-cols-10'>
+     <div className=''>
       <div className='col-span-8'>
         <CalendarEventDeleteAlert    handleCloseDeleteAlert={handleCloseDeleteAlert} openDeleteAlert={openDeleteAlert}/>
         <CalendarEventUpdate openUpdateAlert={openUpdateAlert} handleCloseUpdateAlert={handleCloseUpdateAlert} />
@@ -592,6 +605,12 @@ headerToolbar={{
   center: 'title',
   right: 'resourceTimelineWook, dayGridMonth,timeGridWeek'
 }}
+
+
+height="100%" // Set the calendar height to 100% of the container
+width="100%"
+aspectRatio={1.5} // Controls the width/height ratio for larger screens
+contentHeight="auto" // Makes the height dynamic based on the container
         plugins={[  dayGridPlugin,
           interactionPlugin,
           timeGridPlugin ]}

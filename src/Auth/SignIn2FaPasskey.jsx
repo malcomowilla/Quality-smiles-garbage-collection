@@ -22,10 +22,13 @@ import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import * as React from 'react';
 import { GoPasskeyFill } from "react-icons/go";
 import { FaPhone } from "react-icons/fa";
-
+import toaster, { Toaster } from 'react-hot-toast';
+import { BiHappy } from "react-icons/bi";
+import { FaRegAngry } from "react-icons/fa";
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-
+import { TextField, Button,  Typography, Paper, 
+  Snackbar, Alert } from '@mui/material';
 
 
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
@@ -51,7 +54,12 @@ const SignIn2FaPasskey = () => {
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,user_name,
-       openLogoutSession, handleCloseLogoutSession,companySettings
+       openLogoutSession, handleCloseLogoutSession,companySettings,
+       snackbar, setSnackbar,
+        checkEmail, imagePreview,
+       setUpdateFormData,updateFormData,setImagePreview,
+             
+         setcompanySettings
  } = useApplicationSettings()
 
 
@@ -80,6 +88,8 @@ const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
 const [openOtpSentAlert, setopenOtpSentAlert] = useState(false)
 const [openOtpSentEmailAlert, setopenOtpSentEmailAlert] = useState(false)
+const [passkeyError, setpasskeyError] = useState(null)
+const [errorMessage, setErrorMessage] = useState(null)
 
 
 const {login_with_otp,  enable_2fa_for_admin_passkeys, login_with_web_auth, login_with_otp_email, send_password_via_sms,
@@ -87,7 +97,158 @@ const {login_with_otp,  enable_2fa_for_admin_passkeys, login_with_web_auth, logi
 } = adminFormSettings
 
 
+function base64UrlToUint8Array(base64Url) {
+  const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
+
+const app_theme = localStorage.getItem('theme_normal')
+
+
+function arrayBufferToBase64Url(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\//g, '_').replace(/\+/g, '-').replace(/=+$/, '');
+}
+const { search } = useLocation()
+
+const my_user_name = new URLSearchParams(search).get('my_user_name');
+
+
+async function authenticateWebAuthn(email_passkey) {
+  // e.preventDefault();
+  setloading(true);
+  setOpenLoad(true);
+  setDone(false);
+  setSeeError(false);
+
+  try {
+    const response = await fetch('/api/webauthn/authenticate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email_passkey, user_name, my_user_name })
+    });
+
+    const options = await response.json();
+    const challenge = options.challenge;
+
+
+
+    if (response.ok) {
+      setloading(false)
+
+      setOpenLoad(false)
+      setSeeError(false)
+setDone(false)
+
+
+
+  
+  setSeeError(false)
+  } else {
+    setloading(false)
+        setRegistrationError(options.error)
+        setSeeError(true)
+        setOpenLoad(false)
+        setDone(false);
+  }
+
+
+
+
+  const publicKey = {
+    ...options,
+    challenge: base64UrlToUint8Array(options.challenge),
+    allowCredentials: options.allowCredentials.map(cred => ({
+      ...cred,
+      id: base64UrlToUint8Array(cred.id)
+    }))
+  };
+
+
+  try {
+    // const credentialSignin = await navigator.credentials.get({ publicKey: options });
+    const credential = await navigator.credentials.get({ publicKey: publicKey });
+
+
+    // Prepare the credential response
+    const credentialJson = {
+      id: credential.id,
+      rawId: arrayBufferToBase64Url(credential.rawId),
+      challenge: challenge,
+      type: credential.type,
+      response: {
+        clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
+        authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
+        signature: arrayBufferToBase64Url(credential.response.signature),
+        userHandle: arrayBufferToBase64Url(credential.response.userHandle)
+      }
+
+
+    };
+
+
+
+
+    const createResponse = await fetch('/api/webauthn/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential:credentialJson, email, 
+        user_name, my_user_name,email_passkey
+          })
+    });
+
+const newData = await createResponse.json()
+
+    if (createResponse.ok) {
+      setSeeError(false);
+      setOpenLoad(false);
+      setloading(false);
+      fetchCurrentUser()
+    setTheme(app_theme)
+    setopenLoginSuccess(true)
+    navigate('/admin/dashboard')
+      // setTimeout(() => {
+      //   // setDone(true);
+      //   // setloading(false);
+      //   setTimeout(() => {
+      //     navigate('/admin/location')
+      //   }, 1000);
+      // }, 2500);
+    } else {
+      setloading(false);
+      // setRegistrationError(options.errors);
+      setSeeError(true);
+      setOpenLoad(false);
+toast.error(newData.error, {
+  duration: 6000})
+      setpasskeyError(newData.error)
+      console.log(`passkey error =>${newData.error}`)
+    }
+  } catch (err) {
+    setloading(false);
+    setSeeError(true);
+    setOpenLoad(false);
+    console.error('Error during WebAuthn credential creation:', err);
+  }
+}catch (err) {
+    setloading(false);
+    setSeeError(true);
+    setOpenLoad(false);
+    setErrorMessage(err.message)
+    console.error('Error during WebAuthn credential creation:', err);
+  }
+}
 
 
 
@@ -270,7 +431,8 @@ console.log('enable_2fa_for_admin_passkeys', enable_2fa_for_admin_passkeys)
       credentials: 'include', // Include cookies in the request
   
       
-      body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp, enable_2fa_for_admin, login_with_otp_email}),
+      body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp,
+         enable_2fa_for_admin, login_with_otp_email}),
   
     },
   
@@ -296,7 +458,8 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
  
   // navigate(`/kasspass-key-signin?my_user_name=${user_name}`)
 
-  navigate(`/kasspass-key-signin`)
+  // navigate(`/kasspass-key-signin`)
+  authenticateWebAuthn(signinFormData.email)
 
 //  if (signedWithPasskey === 'true' || signedWithPasskey === true ) {
   
@@ -317,7 +480,10 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
         setloading(false)
         console.log('signin  failed')
         setRegistrationError(actualUserDataInJson.error)
-        toast.error(actualUserDataInJson.error);
+        toaster.error(actualUserDataInJson.error, {
+          duration: 7000,
+          icon: <FaRegAngry className='text-red-500 w-6 h-6'/>
+        });
         setSeeError(true)
         // setSigninFormData({})
     }   
@@ -399,8 +565,35 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
   return <span className="text-2xl font-bold text-emerald-600">{displayedText}</span>;
 };
 
+
+
+
+
+  
+const handleCloseSnackbar = () => {
+  setSnackbar(prev => ({
+      ...prev,
+      open: false
+  }));
+};
   return (
     <>
+
+<Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={6000} 
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert 
+                    onClose={handleCloseSnackbar} 
+                    severity={snackbar.severity}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+          <Toaster position='top-center'   />
+
       <ToastContainer position='top-center' transition={Slide} autoClose={8000} />
       <LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
       <OtpSentEmailAlert openOtpSentEmailAlert={openOtpSentEmailAlert} handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert} />
@@ -456,7 +649,7 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
 </div>
                   
   <div className="text-center mb-4">
-          <TypingAnimation text={`Weelcome to ${company_name}`} />
+          <p className='font-bold text-white text-xl'>{company_name}</p>
         </div>
               {/* <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
                 {company_name}
@@ -466,16 +659,33 @@ if (enable_2fa_for_admin_passkeys === true || enable_2fa_for_admin_passkeys === 
             </motion.div>
 
             {/* New Stunning Message Section */}
-            <motion.div 
-              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+           
+<motion.div 
+              className="text-center mb-4 p-4 bg-emerald-100 
+              rounded-lg shadow-lg"
               variants={itemVariants}
             >
-              <h2 className="text-2xl font-bold text-emerald-600">
-                Enter and start the journey to manage your business!
+              <h2 className="text-3xl font-bold text-emerald-600
+              ">
+                Welcome to Smart Waste Management!
               </h2>
-              <p className="text-gray-700 mt-2">
-                Join us in transforming your business experience with our powerful tools and features.
+              <p className="text-gray-700 mt-2 text-lg">
+                Join the revolution in sustainable waste management. Track collections, optimize routes, and make our cities cleaner.
               </p>
+              <div className="flex justify-center space-x-4 mt-4">
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/route-optimization.svg" alt="Route Optimization" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Smart Routes</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/recycling.svg" alt="Recycling" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Eco-Friendly</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/analytics.svg" alt="Analytics" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Real-time Analytics</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Form Section */}

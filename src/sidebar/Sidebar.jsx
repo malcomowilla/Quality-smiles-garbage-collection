@@ -12,8 +12,13 @@ import ChatAnimation from '../animation/chats2.json'
 import { BsChatSquareText } from "react-icons/bs";
 import Avatar from '@mui/material/Avatar';
 import { FcManager } from "react-icons/fc";
-
-
+import { Sidebar as SidebarPro, Menu, MenuItem as MenuItemPro, SubMenu } from 'react-pro-sidebar';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import { useTheme } from '@mui/material/styles';
+import PaymentIcon from '@mui/icons-material/Payment';
+import { useLayoutSettings } from '../settings/LayoutSettings';
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
 
 const MenuItem = ({ icon, label, to, isActive }) => (
    <Link to={to}>
@@ -55,11 +60,25 @@ const MenuItem = ({ icon, label, to, isActive }) => (
 
 
 
+
+function generateAvatar(name) {
+  const avatar = createAvatar(lorelei, {
+    seed: name, // Use the customer's name as the seed
+    // Customize options for the lorelei style
+    backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9'], // Example: random background colors
+    radius: 50, // Rounded corners
+    size: 64, // Size of the avatar
+  });
+
+  // Generate the SVG as a data URL
+  return `data:image/svg+xml;utf8,${encodeURIComponent(avatar.toString())}`;
+}
+
 const Sidebar = () => {
 
    const [activeItem, setActiveItem] = useState('dashboard');
-
-
+   const [collapsed, setCollapsed] = useState(false);
+   const { settings } = useLayoutSettings();
 
  const menuItemVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -123,15 +142,38 @@ const Sidebar = () => {
 
        
     }
+
+
+    const variantCompactMode = {
+      hidden: {
+        width: '0px'
+          
+        },
+      
+        visible: {
+         
+          width: '280px'
+        }
     
 
-    
+      }
    const {isSeen, setIsSeen, seeSidebar, setSeeSideBar,seelocation, user, setUser,
       canreadSetting, setCanReadSetting,canManageSetting, setCanManageSetting,canReadSms, canManageSms,
       canReadCalendar,canManageCalendar,canReadTickets,canManageTickets,
-    canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,canManageStoreManager,
+    canReadServiceProviders,canManageServiceProviders,canReadCustomers,canManageCustomers,canReadStoreManager,
+    canManageStoreManager,
     canManageStore,canReadStore,canManageSubLocation,canReadSubLocation,canReadLocation,canManageLocation,
-      imagePreview, user_name, setIsOpenProvider
+      imagePreview, user_name, setIsOpenProvider, canReadDashboard,
+      themeColors,
+      
+      toggleSidebar, isSidebarVisible,
+      canManagageIndividualEmail, setCanManagageIndividualEmail,
+      canReadIndividualEmail, setCanReadIndividualEmail,
+      canReadCustomerStats, setCanReadCustomerStats,
+      canReadServiceProviderStats, setCanReadServiceProviderStats,
+      setIsSidebarVisible,canReadChats, canManageChats,
+      canManageUsers,canReadUsers
+
 
     } = useApplicationSettings()
 
@@ -148,7 +190,7 @@ const Sidebar = () => {
 
 
 
-
+//  /admin/service-provider-stats
 
 
  function stringToColor(string) {
@@ -193,22 +235,41 @@ const Sidebar = () => {
 
 
 
-
+console.log('theme colors', themeColors)
 
 
   return (
 
 <>
 
+<Menu
+    menuItemStyles={{
+      button: {
+        // the active class will be added automatically by react router
+        // so we can use it to style the active menu item
+        [`&.active`]: {
+          backgroundColor: '#13395e',
+          color: '#b6c8d9',
+        },
+      },
+    }}
+  >
 
-<motion.aside  variants={variantAside} transition={{duration:0.4, ease: "easeInOut",
-  }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"}  id="sidebar-multi-level-sidebar" className={`fixed  
-  kalam-light
-     top-0 left-0 z-40
-  h-screen  
- 
- sm:translate-x-0 overflow-x-hidden  cursor-pointer  `}>
-   <div  data-theme="forest" className="h-full px-3 py-4  scrollbar-thumb-green-900
+
+<motion.aside  variants={ variantAside} 
+transition={{duration:0.4, ease: "easeInOut",
+  }} initial='hidden' animate={isSidebarVisible  ? "hidden" : "visible"}  
+  id="sidebar-multi-level-sidebar" className={`fixed  
+  kalam-light sm:translate-x-0 overflow-x-hidden
+     top-0 ${settings.sidebarPosition === 'left' ? 'left-0'
+       : 'right-0'} h-screen 
+    ${settings.compactMode ? 'w-16' : 'w-64'} 
+    ${settings.theme === 'dark' ? 'bg-gray-900 text-white' : 
+      'bg-white text-gray-900'}
+    transition-all duration-300 ease-in-out shadow-lg z-50`}>
+   <div style={{backgroundColor: themeColors.sidebar_color,}}  
+   data-theme="forest" className="h-full px-3 py-4
+     scrollbar-thumb-green-900
     scrollbar-track-slate-500 overflow-x-hidden 
      dark:bg-teal-800 scrollbar-thin overflow-y-auto">
 
@@ -223,11 +284,17 @@ const Sidebar = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Avatar 
+            {/* <Avatar 
               {...stringAvatar(user_name.toString())}   
               style={{width: 50, height: 50}}
               className="ring-2 ring-white/20 shadow-xl"
-            />
+            /> */}
+
+<img
+                  className="w-12 h-12 rounded-full"
+                  src={generateAvatar(user_name.toString())}
+                  alt={`${user_name.toString()}'s avatar`}
+                />
           </motion.div>
           <div>
             <motion.div 
@@ -249,13 +316,13 @@ const Sidebar = () => {
           <motion.div 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="ml-auto"
+            className="ml-auto block xl:hidden"
           >
-            <MenuOpenSharpIcon
+            {/* <MenuOpenSharpIcon
               onClick={() => setSeeSideBar(!seeSidebar)}
               style={{ width: '24px', height: '24px' }}
               className="text-white/70 hover:text-white cursor-pointer"
-            />
+            /> */}
           </motion.div>
         </div>
       </motion.div>
@@ -272,36 +339,54 @@ const Sidebar = () => {
           />
         </div>
 
-      
+       
       <div className='mt-5 text-white '>Admin</div>
       <ul className="space-y-2 font-medium mt-2">
          <li>
-         <Link to="/admin/dashboard">
-            <motion.div
-              whileHover={{ x: 4 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setActiveItem('dashboard')
-              }}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl
-                transition-all duration-200 group
-                ${activeItem === 'dashboard' 
-                  ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
-                  : 'hover:bg-white/10'}`}
-            >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center
-                ${activeItem === 'dashboard' ? 'bg-white/20' : 'bg-white/5'}`}>
-                <img 
-                  src="/images/logo/icons8-dashboard-64.png"
-                  className="w-6 h-6"
-                  alt="dashboard"
-                />
-              </div>
-              <span className={`font-medium ${activeItem === 'dashboard' ? 'text-white' : 'text-white'}`}>
-                 <p className=''>Dashboard</p>
-              </span>
-            </motion.div>
-          </Link>
+
+
+{user === 'super_administrator' || canReadDashboard ? (
+     <Link to="/admin/dashboard">
+     <motion.div
+       whileHover={{ x: 4 }}
+       whileTap={{ scale: 0.98 }}
+       onClick={() => {
+         setActiveItem('dashboard')
+         if (window.innerWidth < 1150) {
+           setSeeSideBar('hidden');
+           setIsSidebarVisible('hidden'); // Hide the sidebar
+         }
+       }}
+
+       style={{
+         backgroundImage: activeItem === 'dashboard' 
+           ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+           : 'none'
+       }}
+       className={`flex items-center gap-4 px-4 py-3 rounded-xl
+         transition-all duration-200 group
+         ${activeItem === 'dashboard' 
+           ? 'shadow-lg' 
+           : 'hover:bg-white/10'}`}
+     >
+       <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+         ${activeItem === 'dashboard' ? 'bg-white/20' : 'bg-white/5'}`}>
+         <img 
+           src="/images/logo/icons8-dashboard-64.png"
+           className="w-6 h-6"
+           alt="dashboard"
+         />
+       </div>
+       <span className={`font-medium ${activeItem === 'dashboard' ? 'text-white' : 'text-white'}`}>
+          <p className=''>Dashboard</p>
+       </span>
+     </motion.div>
+   </Link>
+) : '' }
+
+      
+
+
          </li>
          <li>
              <motion.div variants={menuItemVariants}>
@@ -341,7 +426,7 @@ const Sidebar = () => {
 
                
   {/* Calendar Item */}
-  {(canManageCalendar || canReadCalendar || user === 'super_administrator') && (
+  {(canManageCalendar || canReadCalendar || user === 'super_administrator'  ) && (
     // images/logo/icons8-calendar-64.png
                     <motion.div
                       variants={menuItemVariants}
@@ -354,11 +439,21 @@ const Sidebar = () => {
               whileTap={{ scale: 0.98 }}
               onClick={() => {
                 setActiveItem('calendar')
+                if (window.innerWidth < 1150) {
+                  setSeeSideBar('hidden');
+                  setIsSidebarVisible('hidden'); // Hide the sidebar
+                }
+              }}
+
+              style={{
+                backgroundImage: activeItem === 'calendar' 
+                  ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                  : 'none'
               }}
               className={`flex items-center gap-4 px-4 py-3 rounded-xl
                 transition-all duration-200 group
                 ${activeItem === 'calendar' 
-                  ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                  ? 'shadow-lg' 
                   : 'hover:bg-white/10'}`}
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -380,6 +475,8 @@ const Sidebar = () => {
                   
  {/* Chat Item */}
  {/* BsChatSquareText */}
+ {user === 'super_administrator' || user === 'customer_support'    ||  canReadChats || canManageChats  ? (
+
 <motion.div
                     variants={menuItemVariants}
                     whileHover={{ x: 4 }}
@@ -391,11 +488,22 @@ const Sidebar = () => {
               whileTap={{ scale: 0.98 }}
               onClick={() => {
                 setActiveItem('chats')
+                if (window.innerWidth < 1150) {
+                  setSeeSideBar('hidden');
+                  setIsSidebarVisible('hidden'); // Hide the sidebar
+                }
+              }}
+
+
+              style={{
+                backgroundImage: activeItem === 'chats' 
+                  ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                  : 'none'
               }}
               className={`flex items-center gap-4 px-4 py-3 rounded-xl
                 transition-all duration-200 group
                 ${activeItem === 'chats' 
-                  ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                  ? 'shadow-lg' 
                   : 'hover:bg-white/10'}`}
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -412,6 +520,10 @@ const Sidebar = () => {
             </motion.div>
           </Link>
                   </motion.div>
+ ): ''}
+ 
+
+
                  
             </motion.ul>
          </li>
@@ -428,11 +540,21 @@ const Sidebar = () => {
       onClick={(e) => {
         e.preventDefault()
         setActiveItem('driver')
+        if (window.innerWidth < 1150) {
+          setSeeSideBar('hidden');
+          setIsSidebarVisible('hidden'); // Hide the sidebar
+        }
+      }}
+
+      style={{
+        backgroundImage: activeItem === 'driver' 
+          ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+          : 'none'
       }}
       className={`flex items-center gap-4 px-4 py-3 rounded-xl
         transition-all duration-200 group
         ${activeItem === 'driver' 
-          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-teal-500/30' 
+          ? 'shadow-lg' 
           : 'hover:bg-white/10'}`}
     >
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -452,8 +574,13 @@ const Sidebar = () => {
 </MenuSection>
 
   {/* Location Section */}
-
+{user === 'super_administrator' || canManageLocation || canReadLocation || user === 'administrator'  ?(
    <div className='mt-5 text-white '>Location   Management</div>
+
+): ''}
+
+
+
 {(user === 'super_administrator' || canManageLocation || canReadLocation || user === 'administrator') && (
   <MenuSection>
     <Link to='/admin/location'>
@@ -462,11 +589,21 @@ const Sidebar = () => {
         whileTap={{ scale: 0.98 }}
         onClick={() => {
           setActiveItem('location')
+          if (window.innerWidth < 1150) {
+            setSeeSideBar('hidden');
+            setIsSidebarVisible('hidden'); // Hide the sidebar
+          }
+        }}
+
+        style={{
+          backgroundImage: activeItem === 'location' 
+            ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+            : 'none'
         }}
         className={`flex items-center gap-4 px-4 py-3 rounded-xl
           transition-all duration-200 group
           ${activeItem === 'location' 
-            ? 'bg-gradient-to-r from-green-500 to-cyan-500 shadow-lg shadow-blue-500/30' 
+            ? 'shadow-lg' 
             : 'hover:bg-white/10'}`}
       >
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -477,7 +614,8 @@ const Sidebar = () => {
             alt="location" 
           />
         </div>
-        <span className={`font-medium  ${activeItem === 'location' ? 'text-white' : 'text-white'}`}>
+        <span className={`font-medium  ${activeItem === 'location' 
+          ? 'text-white' : 'text-white'}`}>
           Location
         </span>
       </motion.div>
@@ -493,11 +631,21 @@ const Sidebar = () => {
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             setActiveItem('sublocation')
+            if (window.innerWidth < 1150) {
+              setSeeSideBar('hidden');
+              setIsSidebarVisible('hidden'); // Hide the sidebar
+            }
+          }}
+
+          style={{
+            backgroundImage: activeItem === 'sublocation' 
+              ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+              : 'none'
           }}
           className={`flex items-center gap-4 px-4 py-3 rounded-xl
             transition-all duration-200 group mt-1
             ${activeItem === 'sublocation' 
-              ? 'bg-gradient-to-r from-green-400 to-cyan-400 shadow-lg shadow-blue-400/30' 
+              ? 'shadow-lg' 
               : 'hover:bg-white/10'}`}
         >
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -519,7 +667,13 @@ const Sidebar = () => {
         
 
 {/* Store Section */}
+
+{user === 'super_administrator' || user === 'administrator' || 
+    canManageStore || canReadStore ? (
 <div className='mt-5 text-white '>Store Management</div>
+
+    ): ''}
+
 <MenuSection >
   {(user === 'super_administrator' || user === 'administrator' || 
     canManageStore || canReadStore) && (
@@ -530,11 +684,21 @@ const Sidebar = () => {
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             setActiveItem('store')
+            if (window.innerWidth < 1150) {
+              setSeeSideBar('hidden');
+              setIsSidebarVisible('hidden'); // Hide the sidebar
+            }
+          }}
+
+          style={{
+            backgroundImage: activeItem === 'store' 
+              ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+              : 'none'
           }}
           className={`flex items-center gap-4 px-4 py-3 rounded-xl
             transition-all duration-200 group mt-1
             ${activeItem === 'store' 
-               ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+               ? 'shadow-lg ' 
                   : 'hover:bg-white/10'}`}
         >
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -558,11 +722,21 @@ const Sidebar = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('store-manager')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'store-manager' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'store-manager' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? 'shadow-lg' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -596,11 +770,21 @@ const Sidebar = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('payments')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'payments' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'payments' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? 'shadow-lg ' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -615,17 +799,27 @@ const Sidebar = () => {
           </motion.div>
         </Link>
 
-        <Link to='/admin/invoices'>
+        <Link to='/admin/company_invoice'>
           <motion.div
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('invoices')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'invoices' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'invoices' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? '' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -648,6 +842,10 @@ const Sidebar = () => {
     onClick={(e) => {
       e.preventDefault()
       setActiveItem('payment-reports')
+      if (window.innerWidth < 1150) {
+        setSeeSideBar('hidden');
+        setIsSidebarVisible('hidden'); // Hide the sidebar
+      }
     }}
   />
 
@@ -657,11 +855,19 @@ const Sidebar = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('expenses')
+              setSeeSideBar('hidden')
+              setIsSidebarVisible('hidden')
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'expenses' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'expenses' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? '' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -737,7 +943,13 @@ const Sidebar = () => {
 
 
 {/* Customers Section */}
-<div className='mt-5 text-white '>Customer Management</div>
+
+{ user === 'super_administrator' || user === 'administrator' ? (
+  <div className='mt-5 text-white '>Customer Management</div>
+
+): ''}
+
+
 {(user === 'super_administrator' || user === 'administrator' || 
   canManageCustomers || canReadCustomers) && (
   <MenuSection >
@@ -747,11 +959,15 @@ const Sidebar = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('customers')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
-              transition-all duration-200 group mt-1
+              transition-all duration-200 group
               ${activeItem === 'customers' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? ' shadow-lg' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -769,12 +985,62 @@ const Sidebar = () => {
 )}
 
 
+{user === 'super_administrator'   || canReadCustomerStats ? (
+  <MenuSection >
+     <Link to='/admin/customer-stats'>
+          <motion.div
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              setActiveItem('customer-stats')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+
+            style={{
+              backgroundImage: activeItem === 'customer-stats' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
+            }}
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl
+              transition-all duration-200 group mt-1
+              ${activeItem === 'customer-stats' 
+                 ? 'shadow-lg' 
+                    : 'hover:bg-white/10'}`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+              ${activeItem === 'customer-stats' ? 'bg-white/20' : 'bg-white/5'}`}>
+              <QueryStatsIcon  className={` w-6 h-6
+                ${activeItem === 'customer-stats' ? 'text-white' : 'text-white/70'}
+              `}/>
+            </div>
+            <span className={`font-medium  
+              ${activeItem === 'customer-stats' ? 'text-white' : 'text-white'}`}>
+              Customer Stats
+            </span>
+          </motion.div>
+        </Link>
+  </MenuSection>
+): '' }
+
+
+
             </>
 
         
 
 {/* Service Providers Section */}
+
+{user === 'super_administrator' || user === 'administrator' || 
+    canManageServiceProviders || canReadServiceProviders  ? (
 <div className='mt-5 text-white '>Service Management</div>
+
+    ) : ''}
+
+
 <MenuSection >
   {(user === 'super_administrator' || user === 'administrator' || 
     canManageServiceProviders || canReadServiceProviders) && (
@@ -789,11 +1055,20 @@ const Sidebar = () => {
           whileTap={{ scale: 0.98 }}
           onClick={() => {
             setActiveItem('service-provider')
+            if (window.innerWidth < 1150) {
+              setSeeSideBar('hidden');
+              setIsSidebarVisible('hidden'); // Hide the sidebar
+            }
+          }}
+          style={{
+            backgroundImage: activeItem === 'service-provider' 
+              ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+              : 'none'
           }}
           className={`flex items-center gap-4 px-4 py-3 rounded-xl
             transition-all duration-200 group
             ${activeItem === 'service-provider' 
-              ? 'bg-gradient-to-r from-green-500 to-indigo-500 shadow-lg shadow-indigo-500/30' 
+              ? 'shadow-lg shadow-indigo-500/30' 
               : 'hover:bg-white/10'}`}
         >
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -873,48 +1148,85 @@ const Sidebar = () => {
       )}
 
       {/* Provider Stats */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-3 mx-4 p-3 rounded-xl bg-white/5 backdrop-blur-lg"
-      >
-        <div className="flex items-center justify-between text-xs text-white/70">
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-semibold text-white">24</span>
-            <span>Active</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-semibold text-white">8</span>
-            <span>Pending</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg font-semibold text-white">95%</span>
-            <span>Rating</span>
-          </div>
-        </div>
-      </motion.div>
+    
     </motion.div>
   )}
 </MenuSection>
 
 
 
+{user === 'super_administrator'  || 
+    canReadServiceProviderStats ? (
+<MenuSection >
+     <Link to='/admin/service-provider-stats'>
+          <motion.div
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              setActiveItem('service-provider-stats')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+
+            style={{
+              backgroundImage: activeItem === 'service-provider-stats' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
+            }}
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl
+              transition-all duration-200 group mt-1
+              ${activeItem === 'service-provider-stats' 
+                 ? 'shadow-lg' 
+                    : 'hover:bg-white/10'}`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+              ${activeItem === 'service-provider-stats' ? 'bg-white/20' : 'bg-white/5'}`}>
+              <QueryStatsIcon  className={` w-6 h-6
+                ${activeItem === 'service-provider-stats' ? 'text-white' : 'text-white/70'}
+              `}/>
+            </div>
+            <span className={`font-medium  
+              ${activeItem === 'service-provider-stats' ? 'text-white' : 'text-white'}`}>
+              Service Provider Stats
+            </span>
+          </motion.div>
+        </Link>
+  </MenuSection>
+    ) : '' }
+
+{user === 'super_administrator' || canManageUsers || canReadUsers  ? (
+  <div className='mt-5 text-white '>User Management</div>
+
+): ''}
+
 
 {/* User Management Section */}
-<div className='mt-5 text-white '>User Management</div>
-<MenuSection >
+{user === 'super_administrator'  ? (
+  <MenuSection >
 <Link to='/admin/user-management'>
           <motion.div
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('user-management')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'user-management' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'user-management' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? 'shadow-lg ' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -930,12 +1242,19 @@ const Sidebar = () => {
         </Link>
 </MenuSection> 
 
+) : '' }
+
       
 
 
 {/* SMS Section */}
 {/* FcSms */}
-<div className='mt-5 text-white '>Communication</div>
+
+{user === 'super_administrator' || canReadSms || canManageSms ? (
+  <div className='mt-5 text-white '>Communication</div>
+
+) : ''}
+
 {(user === 'super_administrator' || canReadSms || canManageSms) && (
   <MenuSection >
      <Link to='/admin/sms'>
@@ -944,11 +1263,20 @@ const Sidebar = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('sms')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+            style={{
+              backgroundImage: activeItem === 'sms' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'sms' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? ' shadow-lg ' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
@@ -958,65 +1286,169 @@ const Sidebar = () => {
               `}/>
             </div>
             <span className={`font-medium  ${activeItem === 'sms' ? 'text-white' : 'text-white'}`}>
-              Manage SMS
+              Send SMS
             </span>
           </motion.div>
         </Link>
   </MenuSection>
 )}
 
-{/* Support Tickets */}
-<div className='mt-5 text-white '>Support Tickets</div>
-{/* /images/logo/support.png */}
-{(user === 'super_administrator' || user === 'administrator' || 
-  canManageTickets || canReadTickets || user === 'agent') && (
+
+
+
+{user === 'super_administrator' || canManagageIndividualEmail ? (
+  <div className='mt-5 text-white '>Email</div>
+
+): ''}
+
+
+{(user === 'super_administrator' || canManagageIndividualEmail) && (
   <MenuSection >
-    <Link to='/admin/support-tickets'>
+     <Link to='/admin/send-email'>
           <motion.div
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              setActiveItem('tickets')
+              setActiveItem('email')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+
+            style={{
+              backgroundImage: activeItem === 'email' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
-              ${activeItem === 'tickets' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+              ${activeItem === 'email' 
+                 ? 'shadow-lg ' 
                     : 'hover:bg-white/10'}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center
-              ${activeItem === 'tickets' ? 'bg-white/20' : 'bg-white/5'}`}>
-              <img src="/images/logo/support.png" className={` w-6 h-6
-                ${activeItem === 'tickets' ? 'text-white' : 'text-white/70'}
+              ${activeItem === 'email' ? 'bg-white/20' : 'bg-white/5'}`}>
+              <img src='/images/logo/gmail2.png'   className={` w-5 h-5
+                ${activeItem === 'email' ? 'text-white' : 'text-white/70'}
               `}/>
             </div>
-            <span className={`font-medium  ${activeItem === 'tickets' ? 'text-white' : 'text-white'}`}>
-              Support Tickets
+            <span className={`font-medium  ${activeItem === 'email' ? 'text-white' : 'text-white'}`}>
+              Send Email
             </span>
           </motion.div>
         </Link>
   </MenuSection>
 )}
 
+<MenuSection title="Account">
+  <MenuItem
+    style={{
+      backgroundImage: activeItem === 'billing' 
+        ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+        : 'none'
+    }}
+    icon={<PaymentIcon className="text-white/90" />}
+    label="Billing"
+    to="/admin/billing"
+    isActive={activeItem === 'billing'}
+    onClick={(e) => {
+      e.preventDefault()
+      setActiveItem('billing')
+      if (window.innerWidth < 1150) {
+        setSeeSideBar('hidden');
+        setIsSidebarVisible('hidden'); // Hide the sidebar
+      }
+    }}
+  />
+</MenuSection>
+
+{/* Support Tickets */}
+
+{}
+
+{user === 'super_administrator' || user === 'administrator'  || user === 'agent'
+|| user === 'customer_support' ? (
+<div className='mt-5 text-white '>Support Tickets</div>
+
+): ''}
+
+
+{user === 'super_administrator' || user === 'administrator'  || user === 'agent'
+|| user === 'customer_support' || canManageTickets || canReadTickets ? (
+  <MenuSection >
+  <Link to='/admin/support-tickets'>
+        <motion.div
+          whileHover={{ x: 4 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            setActiveItem('tickets')
+            if (window.innerWidth < 1150) {
+              setSeeSideBar('hidden');
+              setIsSidebarVisible('hidden'); // Hide the sidebar
+            }
+          }}
+
+          style={{
+            backgroundImage: activeItem === 'tickets' 
+              ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+              : 'none'
+          }}
+          className={`flex items-center gap-4 px-4 py-3 rounded-xl
+            transition-all duration-200 group mt-1
+            ${activeItem === 'tickets' 
+               ? ' shadow-lg ' 
+                  : 'hover:bg-white/10'}`}
+        >
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+            ${activeItem === 'tickets' ? 'bg-white/20' : 'bg-white/5'}`}>
+            <img src="/images/logo/support.png" className={` w-6 h-6
+              ${activeItem === 'tickets' ? 'text-white' : 'text-white/70'}
+            `}/>
+          </div>
+          <span className={`font-medium  ${activeItem === 'tickets' ? 'text-white' : 'text-white'}`}>
+            Support Tickets
+          </span>
+        </motion.div>
+      </Link>
+</MenuSection>
+): ''}
+
+
 {/* Settings Section */}
-<div className='mt-5 text-white '>Settings</div>
+{user === 'super_administrator' || canreadSetting || canManageSetting ? (
+  <div className='mt-5 text-white '>Settings</div>
+
+): ''}
 {/* /images/logo/icons8-settings-48.png */}
 {(user === 'super_administrator' || canreadSetting || canManageSetting) && (
   <MenuSection >
      <Link to='/admin/general-settings'>
           <motion.div
+          
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               setActiveItem('settings')
+              if (window.innerWidth < 1150) {
+                setSeeSideBar('hidden');
+                setIsSidebarVisible('hidden'); // Hide the sidebar
+              }
+            }}
+            style={{
+              backgroundImage: activeItem === 'settings' 
+                ? `linear-gradient(to right, ${themeColors.sidebar_menu_items_background_color_active}, transparent)`
+                : 'none'
             }}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl
               transition-all duration-200 group mt-1
               ${activeItem === 'settings' 
-                 ? 'bg-gradient-to-r from-green-500 to-blue-500 shadow-lg shadow-blue-500/30' 
+                 ? '  shadow-2xl ' 
                     : 'hover:bg-white/10'}`}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+            <div
+            
+            className={`w-10 h-10 rounded-xl flex items-center justify-center
               ${activeItem === 'settings' ? 'bg-white/20' : 'bg-white/5'}`}>
               <img src="/images/logo/icons8-settings-48.png" className={` w-6 h-6
                 ${activeItem === 'settings' ? 'text-white' : 'text-white/70'}
@@ -1033,6 +1465,7 @@ const Sidebar = () => {
       </ul>
    </div>
 </motion.aside>
+</Menu>
 
 </>
   )

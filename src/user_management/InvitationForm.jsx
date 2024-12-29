@@ -26,24 +26,33 @@ import Backdrop from '@mui/material/Backdrop';
 import { MdOutlineTextsms } from "react-icons/md";
 import { CgTemplate } from "react-icons/cg";
 import { PiTicketLight } from "react-icons/pi";
+import { useLayoutSettings } from '../settings/LayoutSettings';
+import { MdOutlineMail } from "react-icons/md";
+import { TfiStatsUp } from "react-icons/tfi";
+import { MdOutlineChat } from "react-icons/md";
+import { FaUserFriends } from "react-icons/fa";
+import {useApplicationSettings} from '../settings/ApplicationSettings'
 
 
 
 
 
-
-const InvitationForm = ({ isOpen, setIsOpen,permissionAndRoles, setPermissionAndRoles, userDetails,
+const InvitationForm = ({ isOpen, setIsOpen,permissionAndRoles, 
+  setPermissionAndRoles, userDetails,
   setuserDetails,
-  loading,openLoad,handleAddUser,userPermisions,setUserPermisions, emailError, seeEmailError,
+  loading,openLoad,handleAddUser,userPermisions,
+  setUserPermisions, emailError, seeEmailError,
   emailError2, seeEmailError2,seeUsernameError2,usernameError2,
   
-  seeUsernameError,  usernameError, seeStrictEmailError,strictEmailError
+  seeUsernameError,  usernameError, 
+  seeStrictEmailError,strictEmailError,
  }) => {
 
 
 
+  const { settings, borderRadiusClasses } = useLayoutSettings();
 
-
+const {bottomNavigation, setBottomNavigation} = useApplicationSettings()
 
 const [seeItem, setSeeItem] = useState({
   generalSetting: false,
@@ -59,7 +68,12 @@ const [seeItem, setSeeItem] = useState({
   calendar: false,
   sms: false,
   smsTemplates: false,
-  tickets: false
+  tickets: false,
+  individualEmail: false,
+  customerStats: false,
+  serviceProviderStats: false,
+  chat: false,
+  user: false
   
 })
 
@@ -159,7 +173,15 @@ const handleUserRoleFormDataChange = (role,  event)=> {
     can_read_tickets: permissionAndRoles.tickets.read,
     can_manage_tickets: permissionAndRoles.tickets.readWrite,
     can_manage_calendar: permissionAndRoles.calendar.readWrite,
-    can_read_calendar: permissionAndRoles.calendar.read
+    can_read_calendar: permissionAndRoles.calendar.read,
+can_manage_individual_email: permissionAndRoles.individualEmail.readWrite,  
+can_read_customer_stats: permissionAndRoles.customerStats.read,
+can_read_service_provider_stats: permissionAndRoles.serviceProviderStats.read,
+can_manage_chats: permissionAndRoles.chat.readWrite,
+can_read_chats: permissionAndRoles.chat.read,
+can_manage_user: permissionAndRoles.user.readWrite,
+can_read_user: permissionAndRoles.user.read
+
 
   }));
 }
@@ -230,8 +252,9 @@ const variantDiv = {
             initial={{ scale: 0, rotate: "12.5deg" }}
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
-            className="bg-white text-black    p-6 rounded-lg w-full max-w-[600px]
-             shadow-xl cursor-default relative "
+            className={`bg-white text-black    p-6 w-full 
+            max-w-[600px]
+             shadow-xl cursor-default relative ${borderRadiusClasses[settings.borderRadius]}`}
           >
             <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
             <div className="relative z-10">
@@ -394,8 +417,10 @@ getOptionLabel={(option) => option.label}
 
 <button type="button"    className="flex items-center justify-between 
 w-full p-5 font-medium rtl:text-right
-  border border-b-0 border-gray-200 rounded-t-xl  text-white  focus:ring-4 focus:ring-gray-200
-  dark:focus:ring-gray-800
+  border border-b-0 border-gray-200 rounded-t-xl 
+  text-black 
+  focus:ring-4 focus:ring-gray-200
+  dark:focus:ring-gray-800 
   dark:border-gray-700 dark:text-gray-900 hover:dark:text-white hover:text-black hover:bg-gray-100
    dark:hover:bg-gray-800 gap-3"
    data-accordion-target={`#accordion-open-body-${index}`}
@@ -416,6 +441,11 @@ w-full p-5 font-medium rtl:text-right
                           {role === 'sms' && <MdOutlineTextsms className='w-5 h-5'/>}
                           {role === 'smsTemplates' && < CgTemplate className='w-5 h-5'/>}
                           {role === 'tickets' && <PiTicketLight className='w-5 h-5' />}
+                          {role === 'individualEmail' && <MdOutlineMail className='w-5 h-5'/>}
+                          {role === 'customerStats' && <TfiStatsUp className='w-5 h-5'/>}
+                          {role === 'serviceProviderStats' && <TfiStatsUp className='w-5 h-5'/>}
+                          {role === 'chat' && <MdOutlineChat className='w-5 h-5'/>}
+                          {role === 'user' && <FaUserFriends className='w-5 h-5'/>}
 
   
   
@@ -439,7 +469,7 @@ w-full p-5 font-medium rtl:text-right
 
 <motion.div variants={variantDiv} transition={{duration:0.1, ease: "easeInOut",
   }} initial='hidden' animate={seeItem[role] ? "visible" : "hidden"} className='flex justify-between'>
-            <p className="dark:text-white text-black ">
+            <p className="dark:text-black text-black ">
             {role}
           </p>
 
@@ -460,17 +490,23 @@ w-full p-5 font-medium rtl:text-right
     <div className="flex gap-2 p-3">
 
 <div className='flex justify-center gap-7'>
-<button  type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
- hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
-        Invite
+<button  type='submit'  className={`px-6 py-2 
+${borderRadiusClasses[settings.borderRadius]} 
+ flex-1 flex items-center justify-center gap-2 px-6 py-3.5 font-medium 
+                        bg-secondary text-white rounded-2xl transition-all
+                         hover:bg-hover disabled:opacity-50 disabled:cursor-not-allowed
+  `}>
+        {userPermisions.id ? 'Invite' : 'Update'}
       </button>
 
       <button   onClick={(e) =>{
             e.preventDefault()
             setIsOpen(false)
+            setBottomNavigation(true)
 
-          } } className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all shadow-[3px_3px_0px_black]
-       hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+          } } className={`flex-1 px-6 py-3.5 font-medium 
+            ${borderRadiusClasses[settings.borderRadius]}       text-gray-700 rounded-2xl transition-all
+                       hover:bg-red-500 bg-warn_primary`}>
         Cancel
       </button>
 

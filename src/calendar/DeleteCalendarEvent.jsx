@@ -13,6 +13,7 @@ import { MdOutlineEdit } from "react-icons/md";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import { FaRegHandPointLeft } from "react-icons/fa6";
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 
@@ -26,6 +27,7 @@ const DeleteCalendarEvent = ({ isOpenDelete,handleChange, calendarEventForm, set
 const {user_name, calendarSettings} = useApplicationSettings()
 const [editEvent, setEditEvent] = useState(false)
 const [showEvent, setShowEvent] = useState(true)
+const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
 
@@ -54,8 +56,10 @@ const {
        initial={{ scale: 0, rotate: "12.5deg" }}
        animate={{ scale: 1, rotate: "0deg" }}
        exit={{ scale: 0, rotate: "0deg" }}
-       className="bg-gradient-to-br from-white to-blue-100 text-white p-6 rounded-lg w-full
-        max-w-lg shadow-xl cursor-default relative overflow-hidden"
+       className={`bg-gradient-to-br from-white to-blue-100 text-white
+        p-6  w-full
+        max-w-lg shadow-xl cursor-default relative
+         overflow-hidden ${borderRadiusClasses[settings.borderRadius]}`}
      >
 
                   {showEvent ? <>
@@ -103,7 +107,7 @@ setShowEvent(false)
            <button
            onClick={handleDeleteEvent}
            disabled={loading}
-             className="btn btn-error"
+             className={`btn btn-error  ${borderRadiusClasses[settings.borderRadius]}`}
            >
                              {loading && <ImSpinner9 className={`${loading && 'animate-spin'}`}/> }
 
@@ -113,7 +117,7 @@ setShowEvent(false)
 
            <button
              onClick={()=> setisOpenDelete(false)}
-             className="btn btn-active "
+             className={`btn btn-active  ${borderRadiusClasses[settings.borderRadius]}`}
            >
                Cancel
            </button>
@@ -208,8 +212,9 @@ width: '100%',
     </div>
               <div className="flex gap-2 p-3 mt-3">
                 <button
+
                  type='submit'
-                  className="btn"
+                  className={`btn ${borderRadiusClasses[settings.borderRadius]}`}
                 >
                   update
                 </button>
@@ -218,7 +223,7 @@ width: '100%',
                     e.preventDefault()
                     setisOpenDelete(false)
                   } }
-                  className="btn btn-error"
+                  className={`btn btn-error ${borderRadiusClasses[settings.borderRadius]}`}
                 >
                   cancel
                 </button>

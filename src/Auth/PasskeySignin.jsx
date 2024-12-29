@@ -6,6 +6,11 @@ import 'react-phone-number-input/style.css'
 import { motion ,  useMotionValue, useTransform } from "framer-motion"
 
 import {useApplicationSettings} from '../settings/ApplicationSettings'
+import {useAuth} from '../settings/AuthSettings'
+import { IoArrowUndoSharp } from "react-icons/io5";
+import PasskeyError from '../Alert/PasskeyError'
+import { FaRegUser } from "react-icons/fa";
+import toast, { Toaster } from 'react-hot-toast';
 
 import Lottie from 'react-lottie';
 import LoadingAnimation from '../animation/loading_animation.json'
@@ -13,12 +18,8 @@ import Backdrop from '@mui/material/Backdrop';
 import AnimationDone from '../animation/done_tick-animation.json'
 import { RiArrowGoBackFill } from "react-icons/ri";
 import SinupInvalidOtpAlert from '../Alert/SinupInvalidOtpAlert'
-import {useAuth} from '../settings/AuthSettings'
-import { IoArrowUndoSharp } from "react-icons/io5";
-import PasskeyError from '../Alert/PasskeyError'
-import { FaRegUser } from "react-icons/fa";
-
-
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { MdFingerprint } from "react-icons/md";
 
 
 
@@ -75,6 +76,8 @@ const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
 const [passkeyError, setpasskeyError] = useState(null)
 const [openPasskeyError, setopenPasskeyError] = useState(false)
+const [errorMessage, setErrorMessage] = useState(null)
+const [seeErrorMessage, setSeeErrorMessage] = useState(false)
 const {phone_number,  }= signupFormData
 const email = checkEmail
 const emailValue = useMotionValue(email)
@@ -138,29 +141,56 @@ function arrayBufferToBase64Url(buffer) {
 }
 
 
+const controller = new AbortController();
+const timeoutDuration = 12000; // 12 seconds
+const timeoutId = setTimeout(() => {
+  controller.abort();
+  setloading(false);
+  setOpenLoad(false);
+ 
+}, timeoutDuration);
+
+function base64UrlToUint8Array(base64Url) {
+  const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+
+
+
 
 async function authenticateWebAuthn(e) {
   e.preventDefault();
   setloading(true);
   setOpenLoad(true);
   setDone(false);
+  setSeeError(false);
 
-  const response = await fetch('/api/webauthn/authenticate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, user_name, my_user_name  })
-  })
+  try {
+    const response = await fetch('/api/webauthn/authenticate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,  
+      body: JSON.stringify({ email, user_name, my_user_name })
+    });
 
-  const options = await response.json();
-  const challenge = options.challenge;
+    clearTimeout(timeoutId);
+    const options = await response.json();
+    const challenge = options.challenge;
 
 
 
-  if (response.ok) {
-    setloading(false)
+    if (response.ok) {
+      setloading(false)
 
-    setOpenLoad(false)
-    setSeeError(false)
+      setOpenLoad(false)
+      setSeeError(false)
 setDone(false)
 
 
@@ -183,16 +213,7 @@ setDone(false)
   //   return base64Url.replace(/_/g, '/').replace(/-/g, '+');
   // }
 
-  function base64UrlToUint8Array(base64Url) {
-    const padding = '='.repeat((4 - base64Url.length % 4) % 4);
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
-    const rawData = atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  }
+ 
 
 
   // function base64UrlToBase64(base64Url) {
@@ -280,7 +301,8 @@ const newData = await createResponse.json()
       // setRegistrationError(options.errors);
       setSeeError(true);
       setOpenLoad(false);
-      setopenPasskeyError(true)
+toast.error(newData.error, {
+  duration: 6000})
       setpasskeyError(newData.error)
       console.log(`passkey error =>${newData.error}`)
     }
@@ -288,6 +310,13 @@ const newData = await createResponse.json()
     setloading(false);
     setSeeError(true);
     setOpenLoad(false);
+    console.error('Error during WebAuthn credential creation:', err);
+  }
+}catch (err) {
+    setloading(false);
+    setSeeError(true);
+    setOpenLoad(false);
+    setErrorMessage(err.message)
     console.error('Error during WebAuthn credential creation:', err);
   }
 }
@@ -417,6 +446,9 @@ useEffect(() => {
 
   return (
     <>
+
+<Toaster position="top-center" />
+
       <PasskeyError 
         passkeyError={passkeyError} 
         openPasskeyError={openPasskeyError} 
@@ -441,6 +473,16 @@ useEffect(() => {
         </Backdrop>
       )}
 
+      {seeErrorMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3 rounded-lg bg-red-50 text-red-600 text-sm"
+        >
+          {errorMessage}
+        </motion.div>
+      )}
+
       <motion.section
         initial="hidden"
         animate="visible"
@@ -460,12 +502,12 @@ useEffect(() => {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <img 
-                className="w-24 h-24 rounded-2xl shadow-lg ring-4 ring-emerald-100 
+                className="w-40 h-40 rounded-2xl shadow-lg ring-4 ring-emerald-100 
                   dark:ring-emerald-900/20" 
                 src={logo_preview} 
                 alt={company_name}
               />
-              <h1 className="mt-4 text-3xl font-bold bg-clip-text text-transparent 
+              <h1 className="mt-4 text-4xl font-bold bg-clip-text text-transparent 
                 bg-gradient-to-r from-emerald-600 to-emerald-800">
                 {company_name}
               </h1>
@@ -477,7 +519,7 @@ useEffect(() => {
               className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl 
                 shadow-xl p-8 border border-gray-100 dark:border-gray-700"
             >
-              <h2 className="text-2xl font-semibold text-center mb-6 
+              <h2 className="text-4xl font-semibold text-center mb-6 
                 bg-gradient-to-r from-emerald-600 to-emerald-800 
                 bg-clip-text text-transparent">
                 Sign in with Passkey
@@ -496,7 +538,7 @@ useEffect(() => {
 
                 {/* Username Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 
+                  <label className="text-2xl font-medium text-white 
                     dark:text-gray-300">
                     Username
                   </label>
@@ -505,13 +547,19 @@ useEffect(() => {
                     whileFocus={{ scale: 1.02 }}
                   >
                     <input
+                    style={{
+                      fontSize: '1.5rem'
+                    }}
                       type="text"
                       name="user_name"
+                      required
                       value={user_name}
                       onChange={handleChange}
                       className="w-full px-4 py-3 pl-12 bg-white dark:bg-gray-700 
                         border-2 border-gray-200 dark:border-gray-600 rounded-xl
-                        focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                        focus:ring-2 text-white
+                        text-xl
+                        focus:ring-emerald-500 focus:border-transparent
                         transition-all duration-200"
                       placeholder="Enter username"
                     />
@@ -521,6 +569,11 @@ useEffect(() => {
                 </div>
 
                 {/* Action Buttons */}
+
+                <div className='flex justify-center items-center'>
+                <MdFingerprint className="text-4xl text-gray-600" />
+
+                </div>
                 <div className="space-y-4 pt-4">
                   <motion.button
                     whileTap={{ scale: 0.98 }}
@@ -541,11 +594,18 @@ useEffect(() => {
                           className="w-5 h-5 animate-spin" 
                           alt="loading" 
                         />
-                        <span>Authenticating...</span>
+                        <span>Authenticating...
+                        <DotLottieReact
+      src="https://lottie.host/8eb517c8-777a-4dc8-a5e8-f4fe52fa6708/6LMNWDVsrv.json"
+
+      loop
+      autoplay
+    />
+                        </span>
                       </>
                     ) : (
                       <>
-                        <span>Continue with Passkey</span>
+                        <span className='text-2xl text-white'>Continue with Passkey</span>
                       </>
                     )}
                   </motion.button>
@@ -560,8 +620,8 @@ useEffect(() => {
                       hover:bg-gray-200 dark:hover:bg-gray-600 
                       transition-all duration-200"
                   >
-                    <IoArrowUndoSharp className="w-5 h-5" />
-                    <span>Go Back</span>
+                    <IoArrowUndoSharp className="w-20 h-20 dark:text-white" />
+                    <span className='text-xl dark:text-white'>Go Back</span>
                   </motion.button>
                 </div>
 
@@ -570,13 +630,13 @@ useEffect(() => {
                   variants={itemVariants}
                   className="text-center pt-4"
                 >
-                  <Link 
+                  {/* <Link 
                     to={`/kasspas-key?my_user_name=${user_name}`}
                     className="text-emerald-600 hover:text-emerald-700 
                       font-medium transition-colors"
                   >
                     Don't have a passkey? Set up now
-                  </Link>
+                  </Link> */}
                 </motion.div>
               </form>
             </motion.div>

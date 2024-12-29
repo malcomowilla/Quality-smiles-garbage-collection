@@ -82,7 +82,7 @@ const Driver = () => {
   };
 
   return (
-    <APIProvider apiKey={'AIzaSyD-lq4baVca4h7kHZsdGRanTyLMVlibXhs'}>
+    <APIProvider apiKey={import.meta.env.GOOGLE_MAPS_API_KEY}>
       <Map
         style={{ width: '100vw', height: '100vh' }}
         center={driverPosition}

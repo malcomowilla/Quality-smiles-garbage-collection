@@ -104,7 +104,7 @@ const StoreManagerReceived = () => {
             >
               <img 
                 src={logo_preview}
-                className="w-24 h-24 rounded-full shadow-2xl" 
+                className="w-40 h-40 rounded-full shadow-2xl" 
                 alt={company_name}
               />
             </motion.div>
@@ -124,7 +124,8 @@ const StoreManagerReceived = () => {
           >
             <div className="flex items-center gap-4 mb-8">
               <MdInventory className="text-4xl text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900 playwrite-de-grund">
+              <h2 className="text-2xl font-bold text-gray-900
+               playwrite-de-grund">
                 Confirm Received Bags
               </h2>
             </div>
@@ -141,7 +142,7 @@ const StoreManagerReceived = () => {
                   Number Of Bags Received
                 </Label>
                 <div className="relative">
-                  <FaBoxOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FaBoxOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black text-xl" />
                   <TextInput
                     id="bags-received"
                     type="number"
@@ -152,7 +153,8 @@ const StoreManagerReceived = () => {
                     placeholder="Enter number of bags"
                     style={{
                       backgroundColor: 'white',
-                      color: 'black'
+                      color: 'black',
+                      fontSize: '1.5rem'
                     }}
                   />
                 </div>
@@ -175,7 +177,7 @@ const StoreManagerReceived = () => {
                       className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                     />
                   ) : null}
-                  Confirm Reception
+                  <p className='text-xl'>Confirm Reception</p>
                 </motion.button>
 
                 <motion.button
@@ -185,8 +187,8 @@ const StoreManagerReceived = () => {
                   type="button"
                   className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 py-3"
                 >
-                  <FaHandPointLeft />
-                  <span className="playwrite-de-grund">Go Back</span>
+                  <FaHandPointLeft  className='text-2xl' />
+                  <span className="playwrite-de-grund text-xl">Go Back</span>
                 </motion.button>
               </div>
             </form>

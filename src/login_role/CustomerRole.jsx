@@ -427,7 +427,7 @@ setCustomer(true)
         transition={{ delay: 0.2 }}
         className="mt-4 text-center"
       >
-        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+        <h1 className="itim-regular text-4xl max-sm:text-2xl bg-gradient-to-r 
           from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
           font-bold tracking-wide">
           {company_name}
@@ -681,7 +681,7 @@ setCustomer(true)
         transition={{ delay: 0.2 }}
         className="mt-4 text-center"
       >
-        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+        <h1 className="itim-regular text-3xl  bg-gradient-to-r 
           from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
           font-bold tracking-wide">
           {company_name}
@@ -700,9 +700,9 @@ setCustomer(true)
           <form onSubmit={handleCustomerSignIn} className="flex flex-col gap-6">
             <div className="text-center">
               <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
-              <h2 className="text-xl font-bold text-gray-900
-              itim-regular mb-2">Welcome Back</h2>
-              <p className="text-gray-600">Login with your customer code</p>
+              <h2 className="text-4xl font-bold text-gray-900
+              itim-regular mb-2 ">Welcome Back</h2>
+              <p className="text-gray-600 text-2xl">Login with your customer code</p>
             </div>
 
             <div>
@@ -750,17 +750,19 @@ setCustomer(true)
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg">
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Logging in...
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent
+                    
+                    rounded-full animate-spin" />
+                    <span className='text-2xl'>Logging in...</span>
                   </div>
                 ) : (
-                  'Login'
+                  <span className='text-2xl'>Login</span>
                 )}
               </Button>
 
               <div onClick={handleGoBack} className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                 <ArrowBackIcon />
-                <span>Back to Selection</span>
+                <span className='text-2xl'>Back to Selection</span>
               </div>
             </form>
           </div>

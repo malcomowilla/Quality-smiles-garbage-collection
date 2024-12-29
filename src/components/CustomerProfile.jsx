@@ -4,18 +4,41 @@ import { useApplicationSettings } from '../settings/ApplicationSettings';
 import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaMapMarkerAlt, FaHistory } from 'react-icons/fa';
 import { BiLogOut } from "react-icons/bi";
 import { MdLocationOn } from "react-icons/md";
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
+import { LuDelete } from "react-icons/lu";
+
+
+
 
 const CustomerProfile = ({ onClose }) => {
   const { customerProfileData, handleCustomerLogout } = useApplicationSettings();
   const [activeTab, setActiveTab] = useState('profile');
 
   const profileFields = [
-    { icon: <FaIdCard />, label: "Customer ID", value: customerProfileData?.customer_code },
-    { icon: <FaUser />, label: "Name", value: customerProfileData?.name },
-    { icon: <FaPhone />, label: "Phone", value: customerProfileData?.phone },
-    { icon: <FaEnvelope />, label: "Email", value: customerProfileData?.email },
-    { icon: <MdLocationOn />, label: "Location", value: customerProfileData?.location }
+    { icon: <FaIdCard className='text-green-600' />, label: "Customer ID", value: customerProfileData?.customer_code },
+    { icon: <FaUser className='text-green-600'/>, label: "Name", value: customerProfileData?.name },
+    { icon: <FaPhone className='text-green-600' />, label: "Phone", value: customerProfileData?.phone },
+    { icon: <FaEnvelope  className='text-green-600'/>, label: "Email", value: customerProfileData?.email },
+    { icon: <MdLocationOn className='text-green-600' />, label: "Location", value: customerProfileData?.location }
   ];
+
+
+
+
+
+function generateAvatar(name) {
+  const avatar = createAvatar(lorelei, {
+    seed: name, // Use the customer's name as the seed
+    // Customize options for the lorelei style
+    backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9'], // Example: random background colors
+    radius: 50, // Rounded corners
+    size: 64, // Size of the avatar
+  });
+
+  // Generate the SVG as a data URL
+  return `data:image/svg+xml;utf8,${encodeURIComponent(avatar.toString())}`;
+}
 
   return (
     <motion.div
@@ -31,12 +54,12 @@ const CustomerProfile = ({ onClose }) => {
         exit={{ scale: 0.9, y: 20 }}
       >
         {/* Profile Header */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 p-6 pb-24">
+        <div className="relative bg-gradient-to-r from-green-600 to-green-800 p-6 pb-24">
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white text-2xl"
+            className="absolute   top-4 right-4 text-white/80 hover:text-white text-2xl"
           >
-            ×
+            <LuDelete  className='w-10 h-10'/>
           </button>
           <div className="text-white">
             <h2 className="text-2xl font-bold playwrite-de-grund">Customer Profile</h2>
@@ -47,14 +70,21 @@ const CustomerProfile = ({ onClose }) => {
         {/* Profile Picture */}
         <div className="relative -mt-20 px-6">
           <motion.div 
-            className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white mx-auto overflow-hidden"
+            className="w-32 h-32 rounded-full border-4 flex justify-center items-center border-white shadow-lg bg-white mx-auto 
+            overflow-hidden"
             whileHover={{ scale: 1.05 }}
           >
-            <img 
+            {/* <img 
               src={customerProfileData?.profile_image || "/images/default-avatar.png"} 
               alt="Profile"
               className="w-full h-full object-cover"
-            />
+            /> */}
+
+<img
+                  className="w-12 h-12 rounded-full"
+                  src={generateAvatar(customerProfileData?.name)}
+                  alt={`${customerProfileData?.name}'s avatar`}
+                />
           </motion.div>
           <h3 className="text-center mt-4 text-xl font-semibold text-gray-800">
             {customerProfileData?.name || 'Customer Name'}

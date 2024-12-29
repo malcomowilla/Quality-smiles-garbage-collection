@@ -18,12 +18,23 @@ import LogoutSuccess from '../Alert/LogoutSuccess'
 import OtpSentSmsAlert from '../Alert/OtpSentSmsAlert'
 import OtpSentEmailAlert from '../Alert/OtpSentEmailAlert'
 import LogoutSession from '../Alert/LogoutSession'
-import { FaPhone } from "react-icons/fa";
 import { GoPasskeyFill } from "react-icons/go";
 import Tooltip from '@mui/material/Tooltip';
-import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import TypingAnimation from './TypingAnimation'
 import 'react-toastify/dist/ReactToastify.css';
+import { TextField, Button, Box, Typography, Paper, 
+  Snackbar, Alert } from '@mui/material';
+  import { MdFingerprint } from "react-icons/md";
+  import { BsFillEyeFill } from "react-icons/bs";
+  import { BsFillEyeSlashFill } from "react-icons/bs";
+  import FingerprintJS from '@fingerprintjs/fingerprintjs';
+
+
+
+
 // openLogoutSession, handleCloseLogoutSession,LogoutSession
 // OtpSentEmailAlert openOtpSentEmailAlert, handleCloseOtpSentEmailAlert
 
@@ -48,7 +59,7 @@ const SignIn = () => {
        seeSettings4, setSeeSettings4,seeSettings5, setSeeSettings5,handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,
-       companySettings,setcompanySettings
+       companySettings,setcompanySettings,snackbar, setSnackbar
  } = useApplicationSettings()
  const {company_name, contact_info, email_info, logo_preview} = companySettings
 
@@ -95,6 +106,90 @@ const [otp, setOtp] = useState('')
 const [openOtpInvalid, setopenOtpInvalid] = useState(false)
 const [openOtpSentAlert, setopenOtpSentAlert] = useState(false)
 const [openOtpSentEmailAlert, setopenOtpSentEmailAlert] = useState(false)
+
+const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1146);
+const [deviceFingerprint, setDeviceFingerprint] = useState('');
+const SECRET_PASSPHRASE = "my-secure-passphrase"; // Replace this with a secure passphrase
+
+console.log('device finger printing', deviceFingerprint)
+useEffect(() => {
+  const handleResize = () => {
+    setIsSmallScreen(window.innerWidth < 1146);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  // Cleanup the event listener on component unmount
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+
+
+useEffect(() => {
+
+  async function generateFingerprint() {
+    let fingerprint = localStorage.getItem('deviceFingerprintStorage1');
+
+
+    if (!fingerprint) {
+      const canvasFingerprint = getCanvasFingerprint();
+      const audioFingerprint = await getAudioContextFingerprint();
+      const webGLFingerprint = getWebGLFingerprint();
+      
+      // Combine all fingerprints into one unique fingerprint
+      const combinedFingerprint = canvasFingerprint + audioFingerprint + webGLFingerprint;
+      
+      // Generate a hash of the combined fingerprint (optional, for security reasons)
+      const hashedFingerprint = await hashString(combinedFingerprint);
+      
+      setDeviceFingerprint(hashedFingerprint);
+      localStorage.setItem('deviceFingerprintStorage1', deviceFingerprint);
+    }
+  
+    
+    // Send the fingerprint to the backend
+  }
+
+  generateFingerprint();
+}, []);
+
+console.log('fingerprinting', deviceFingerprint)
+function getCanvasFingerprint() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = '14px "Arial"';
+  ctx.fillText('Hello, World!', 2, 2);
+  return canvas.toDataURL();
+}
+
+function getAudioContextFingerprint() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const analyser = audioContext.createAnalyser();
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  analyser.getByteFrequencyData(dataArray);
+  return dataArray.toString();
+}
+
+function getWebGLFingerprint() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+  const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+  return vendor + " " + renderer;
+}
+
+async function hashString(input) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 
 const  handleCloseOtpSentEmailAlert = ()=>{
   setopenOtpSentEmailAlert(false)
@@ -158,7 +253,7 @@ const handlegetAdminSettings = useCallback(
        const check_inactive_days = newData[0].check_inactive_days
      
       //  const {login_with_otp} = newData[0]
-      console.log('enable_2fa_for_admin_passkeys2', enable_2fa_for_admin_passkeys)
+       console.log('enable_2fa_for_admin_passkeys2', enable_2fa_for_admin_passkeys)
        setAdminFormSettings((prevData)=> ({...prevData, login_with_otp,login_with_web_auth,
         login_with_otp_email,send_password_via_email, send_password_via_sms, check_is_inactive,
         check_inactive_hrs,enable_2fa_for_admin,check_inactive_minutes,enable_2fa_for_admin_passkeys,
@@ -260,7 +355,21 @@ const app_theme = localStorage.getItem('theme_normal')
 // if (dark_theme  === 'dark') {
   
 //   setTheme('dark')
+// // }
+
+// async function generateDeviceFingerprint() {
+//   const fp = await FingerprintJS.load();
+//   const result = await fp.get();
+//   return result;  // This is the unique fingerprint for the device
 // }
+
+//  localStorage.setItem('deviceFingerprint', fingerprint);
+
+// console.log('device fingerprint', generateDeviceFingerprint())
+// localStorage.setItem('deviceFingerprint',  deviceFingerprint)
+const  deviceFingerPrintStorage = localStorage.getItem('deviceFingerprintStorage1')
+const controller = new AbortController();
+const timeoutDuration = 12000; // 12 seconds
 
   const handleSignIn = async (e) => {
  
@@ -271,16 +380,26 @@ const app_theme = localStorage.getItem('theme_normal')
     setloading(true)
     setOpenLoad(true)
     setDone(false)
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      setloading(false);
+      setOpenLoad(false);
+    
+    }, timeoutDuration);
+    // const deviceFingerprint = await generateDeviceFingerprint();
     const users = await fetch('api/login-admin', {
       method: "POST",
       headers: {
   
         "Content-Type": "application/json",
       }, 
+      signal: controller.signal,
       credentials: 'include', // Include cookies in the request
   
       
       body: JSON.stringify({...signinFormData, login_with_web_auth, login_with_otp, enable_2fa_for_admin,
+        device_fingerprint:   deviceFingerPrintStorage,
+        user_agent: navigator.userAgent,
          login_with_otp_email}),
   
     },
@@ -289,12 +408,11 @@ const app_theme = localStorage.getItem('theme_normal')
   
     )
     
-  
+    clearTimeout(timeoutId);
   
     let  actualUserDataInJson = await users.json()
   
     if (users.ok) {
-      
       
       // const actualUserDataInJson = await users.json
       setloading(false)
@@ -311,15 +429,16 @@ if (enable_2fa_for_admin === true || enable_2fa_for_admin === 'true') {
   if (login_with_otp_email === true || login_with_otp_email === 'true')  {
     // setopenOtpSentEmailAlert(true)
     toast.success("A One Time Password was just sent,please check your email account ")
+    navigate('/email-sent')
   }
 
   if (login_with_otp === true || login_with_otp === 'true') {
-    
+    navigate('/sms-sent')
     setopenOtpSentAlert(true)
   } 
     
   
-  setotpSent(true)
+  // setotpSent(true)
   localStorage.setItem('acha umbwakni', false);
 
   
@@ -352,16 +471,26 @@ fetchCurrentUser()
         setloading(false)
         console.log('signin  failed')
         setRegistrationError(actualUserDataInJson.error)
-        toast.error(actualUserDataInJson.error);
+          // toast.error(actualUserDataInJson.error);
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>{actualUserDataInJson.error}</p>,
+            severity: 'error'
+          })
         setSeeError(true)
         // setSigninFormData({})
     }   
 
   } catch (error) {
-    console.log(error.name === 'AbortError');
     setloading(false)
+    setOpenLoad(false)
+    console.error('Error type:', error.name)
+    console.error('Error message:', error.message)
+    
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.name === 'TypeError') {
+      toast.error("Server is down. Please make sure Rails server is running.");
+    }
     setSeeError(false)
-    // setSigninFormData('')
   }
   }
 
@@ -428,13 +557,15 @@ fetchCurrentUser()
         setloading(false)
         console.log('sigup  failed')
         // setopenOtpInvalid(true)
-        toast.error('invalid one time password,try again')
+        if (navigator.onLine) {
+          toast.error('invalid one time password,try again')
+        }
         setRegistrationError(actualUserDataInJson.error)
         setSeeError(true)
     }   
 
   } catch (error) {
-    console.log(error.name === 'AbortError');
+    console.error(error);
     setloading(false)
     setSeeError(false)
   }
@@ -564,10 +695,14 @@ fetchCurrentUser()
 
 
 
-
-
-
-
+  
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+        ...prev,
+        open: false
+    }));
+  };
+  
 
 
 
@@ -575,7 +710,30 @@ fetchCurrentUser()
   return (
     <>
 
-<ToastContainer position='top-center' transition={Slide}  autoClose={30000}/>
+<Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={6000} 
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert 
+                    onClose={handleCloseSnackbar} 
+                    severity={snackbar.severity}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+<ToastContainer position='top-right' transition={Slide}  autoClose={2000}
+
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+/>
 
 <LogoutSession openLogoutSession={openLogoutSession} handleCloseLogoutSession={handleCloseLogoutSession} />
 <OtpSentEmailAlert  openOtpSentEmailAlert={openOtpSentEmailAlert}  handleCloseOtpSentEmailAlert={handleCloseOtpSentEmailAlert}/>
@@ -782,18 +940,36 @@ fetchCurrentUser()
               />
 
 <motion.div 
-              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+              className="text-center mb-4 p-4 bg-emerald-100 
+              rounded-lg shadow-lg"
               variants={itemVariants}
             >
-              <h2 className="text-2xl font-bold text-emerald-600">
-                Enter and start the journey to manage your business!
+              <h2 className="text-3xl font-bold text-emerald-600
+              ">
+                Welcome to Smart Waste Management!
               </h2>
-              <p className="text-gray-700 mt-2">
-                Join us in transforming your business experience with our powerful tools and features.
+              <p className="text-gray-700 mt-2 text-lg">
+                Join the revolution in sustainable waste management. Track collections, optimize routes, and make our cities cleaner.
               </p>
+              <div className="flex justify-center space-x-4 mt-4">
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/route-optimization.svg" alt="Route Optimization" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Smart Routes</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/recycling.svg" alt="Recycling" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Eco-Friendly</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/analytics.svg" alt="Analytics" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Real-time Analytics</span>
+                </div>
+              </div>
             </motion.div>
               <div className="text-center mb-4">
-          <TypingAnimation text={`Weelcome to ${company_name}`} />
+                <p className='font-mono text-2xl dark:text-white   font-bold'>Welcome To {company_name} </p>
+
+          {/* <TypingAnimation text={`Weelcome to ${company_name}`} /> */}
         </div>
             </motion.div>
 
@@ -804,7 +980,8 @@ fetchCurrentUser()
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 300 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
+          className="bg-white dark:bg-gray-800 rounded-2xl 
+          shadow-xl p-8 mb-10"
 
             >
                         <h1 className="text-3xl font-bold text-gray-900
@@ -839,9 +1016,11 @@ fetchCurrentUser()
                     />
                     <motion.span 
                       whileHover={{ scale: 1.1 }}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-3 top-[20%]
+                      transform -translate-y-1/2"
                     >
-                      <img src="/images/logo/icons8-gmail-100.png" className="w-6 h-6" alt="email" />
+                      <img src="/images/logo/icons8-gmail-100.png" 
+                      className="w-6 h-6" alt="email" />
                     </motion.span>
                   </motion.div>
                 </motion.div>
@@ -860,20 +1039,21 @@ fetchCurrentUser()
                       type={isSeenPassWord ? 'password' : 'text'}
                       value={password}
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border
-                       border-gray-200 
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 
                         focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50
-                         dark:bg-gray-700 text-black dark:text-white"
+                        transition-all duration-200 bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                       placeholder="Enter your password"
                     />
-                    <motion.button
+                   <motion.button
                       whileTap={{ scale: 0.95 }}
                       type="button"
                       onClick={() => setIsSeenPassword(!isSeenPassWord)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-3 top-[20%] transform 
+                      -translate-y-1/2"
                     >
-                      <ion-icon name={isSeenPassWord ? "eye-outline" : "eye-off-outline"} />
+                         {isSeenPassWord ? 
+                         <BsFillEyeSlashFill className='text-2xl text-white'/>
+                          : <BsFillEyeFill className='text-2xl text-white'/>}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -884,16 +1064,23 @@ fetchCurrentUser()
                   variants={itemVariants}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="w-full py-3 px-4 bg-emerald-500 text-white rounded-lg
-                    font-medium shadow-lg hover:bg-emerald-600 transition-colors
-                    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                  className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 
+                    text-white rounded-lg font-medium shadow-lg hover:from-emerald-600 
+                    hover:to-emerald-700 transition-all duration-300 relative overflow-hidden
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500 
+                    focus:ring-offset-2 group"
                 >
                   {isloading ? (
                     <div className="flex items-center justify-center">
                       <img src="/images/logo/iconsreload2.png" className="w-5 h-5 animate-spin mr-2" alt="loading" />
-                      Signing in...
+                      <span>Preparing your dashboard...</span>
                     </div>
-                  ) : 'Sign In'}
+                  ) : (
+                    <span className="flex items-center justify-center">
+                      <ion-icon name="enter-outline" className="mr-2 text-xl" />
+                      Sign In
+                    </span>
+                  )}
                 </motion.button>
 
                 {/* Additional Options */}
@@ -901,11 +1088,13 @@ fetchCurrentUser()
                   variants={itemVariants}
                   className="flex flex-col space-y-4 items-center mt-6"
                 >
-                  <Link 
+                 <Link 
                     to="/forgot_password"
-                    className="text-sm text-emerald-600 hover:text-emerald-500 transition-colors"
+                    className="text-sm text-emerald-600 hover:text-emerald-500 transition-colors
+                      flex items-center space-x-2"
                   >
-                    Forgot password?
+                    <ion-icon name="key-outline" className="text-lg" />
+                    <span className='text-lg'>Reset Password</span>
                   </Link>
                   <Link 
                     to="/kasspass-key-signin"
@@ -913,7 +1102,7 @@ fetchCurrentUser()
                       hover:text-emerald-500 transition-colors"
                   >
                     <GoPasskeyFill className="w-4 h-4" />
-                    <span>Sign in with passkey</span>
+                    <span className='text-lg'>Sign in with passkey</span>
                   </Link>
                   </motion.div>
               </form>
@@ -946,8 +1135,8 @@ fetchCurrentUser()
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 300 }}
-        className="min-h-screen bg-gradient-to-br from-emerald-50
-   to-white dark:from-emerald-900 dark:to-gray-800"
+        className="min-h-screen bg-gradient-to-br from-emerald-50 to-white 
+          dark:from-gray-900 dark:to-gray-800"
       >
         <div className="flex flex-col items-center justify-center px-6 py-8 
         mx-auto h-screen">
@@ -961,34 +1150,54 @@ fetchCurrentUser()
               className="flex flex-col items-center mb-8"
             >
               <img 
-                className="w-20 h-20 mb-4 rounded-full shadow-lg transform hover:scale-105 transition-transform" 
+                className="w-40 h-40 mb-4 rounded-full shadow-lg transform hover:scale-105 
+                transition-transform " 
                 src={logo_preview}
                 alt={company_name}
                
               />
                <motion.div 
-              className="text-center mb-4 p-4 bg-emerald-100 rounded-lg shadow-lg"
+              className={`text-center mt-5 p-4 bg-emerald-100 
+              rounded-lg shadow-lg   ${isSmallScreen ? 'block' : 'hidden'}`}
               variants={itemVariants}
             >
-              <h2 className="text-2xl font-bold text-emerald-600">
-                Enter and start the journey to manage your business!
+              <h2 className="text-4xl font-bold text-emerald-600">
+                 Smart Waste Management!
               </h2>
-              <p className="text-gray-700 mt-2">
-                Join us in transforming your business experience with our powerful tools and features.
+              <p className="text-gray-700 mt-2 text-2xl">
+                Join the revolution in sustainable waste management. Track collections,
+                 optimize routes, and make our cities cleaner.
               </p>
+              <div className="flex justify-center space-x-4 mt-4">
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/route-optimization.svg" alt="Route Optimization" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Smart Routes</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/recycling.svg" alt="Recycling" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Eco-Friendly</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <img src="/images/icons/analytics.svg" alt="Analytics" className="w-8 h-8" />
+                  <span className="text-sm text-emerald-600">Real-time Analytics</span>
+                </div>
+              </div>
             </motion.div>
               {/* <h1 className="text-3xl font-bold dark:text-white text-black ">
                 {company_name}
               </h1> */}
             </motion.div>
             <div className="text-center mb-4">
-          <TypingAnimation text={`Weelcome to ${company_name}`} />
+          {/* <TypingAnimation text={`Weelcome to ${company_name}`} /> */}
+          <p className='font-mono text-2xl dark:text-white   font-bold'>Welcome To {company_name} </p>
         </div>
                 {/* Login Form */}
                 <motion.div 
               variants={itemVariants}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl 
-                backdrop-blur-lg backdrop-filter p-8"
+              className="bg-white dark:bg-gray-800 rounded-2xl
+               shadow-xl 
+                backdrop-blur-lg backdrop-filter p-8 relative
+                 overflow-hidden"
             >
   <h1 className="text-3xl font-bold text-gray-900
    dark:text-white mb-6">Sign In</h1>
@@ -1000,7 +1209,7 @@ fetchCurrentUser()
                   className="space-y-2 "
                   whileHover={{ scale: 1.05 }}
                 >
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <label className="text-2xl font-medium text-gray-700 dark:text-gray-200">
                     Email
                   </label>
                   <div className="relative">
@@ -1009,8 +1218,10 @@ fetchCurrentUser()
                       name='email'
                       value={email}
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border
-                       border-gray-200  text-black dark:text-white
+                      className="w-full px-4 py-3 rounded-lg 
+                      border text-xl
+                       border-gray-200  text-black
+                        dark:text-white
                         focus:border-emerald-500 focus:ring-2
                          focus:ring-emerald-200 
                         transition-all duration-200 bg-gray-50
@@ -1019,7 +1230,7 @@ fetchCurrentUser()
                     />
                     <motion.span 
                       whileHover={{ scale: 1.1 }}
-                      className="absolute right-3 top-1/2 
+                      className="absolute right-3 top-[40%]
                       transform -translate-y-1/2"
                     >
                       <img src="/images/logo/icons8-gmail-100.png"
@@ -1033,7 +1244,7 @@ fetchCurrentUser()
                   className="space-y-2"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <label className="text-2xl font-medium text-gray-700 dark:text-gray-200">
                     Password
                   </label>
                   <div className="relative">
@@ -1042,7 +1253,8 @@ fetchCurrentUser()
                       value={password}
                       name='password'
                       onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 
+                      className="w-full px-4 py-3 rounded-lg 
+                      border border-gray-200 text-xl
                         focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
                         transition-all duration-200 bg-gray-50 dark:bg-gray-700
                         text-black dark:text-white"
@@ -1054,9 +1266,12 @@ fetchCurrentUser()
                       whileTap={{ scale: 0.95 }}
                       type="button"
                       onClick={() => setIsSeenPassword(!isSeenPassWord)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-3 top-[40%] transform 
+                      -translate-y-1/2"
                     >
-                      <ion-icon name={isSeenPassWord ? "eye-outline" : "eye-off-outline"} />
+                         {isSeenPassWord ? 
+                         <BsFillEyeSlashFill className='text-2xl text-white'/>
+                          : <BsFillEyeFill className='text-2xl text-white'/>}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -1065,16 +1280,25 @@ fetchCurrentUser()
                   variants={itemVariants}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="w-full py-3 px-4 bg-emerald-500 text-white rounded-lg
-                    font-medium shadow-lg hover:bg-emerald-600 transition-colors
-                    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                  className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 
+                    text-white rounded-lg font-medium shadow-lg hover:from-emerald-600 
+                    hover:to-emerald-700 transition-all duration-300 relative overflow-hidden
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500 
+                    focus:ring-offset-2 group"
                 >
                   {isloading ? (
                     <div className="flex items-center justify-center">
                       <img src="/images/logo/iconsreload2.png" className="w-5 h-5 animate-spin mr-2" alt="loading" />
-                      Signing in...
+                      <span>Preparing your dashboard...</span>
                     </div>
-                  ) : 'Sign In'}
+                  ) : (
+                    <span className="flex text-2xl items-center
+                     justify-center">
+                      <ion-icon name="enter-outline" 
+                      className="mr-2 " />
+                      Sign In
+                    </span>
+                  )}
                 </motion.button>
 
                 {/* Additional Options */}
@@ -1084,32 +1308,40 @@ fetchCurrentUser()
                 >
                   <Link 
                     to="/forgot_password"
-                    className="text-sm text-emerald-600 hover:text-emerald-500 transition-colors"
+                    className="text-sm text-emerald-600 hover:text-emerald-500 transition-colors
+                      flex items-center space-x-2"
                   >
-                    Forgot password?
+                    <ion-icon style={{ color: "inherit",
+                      width: "1.9em",
+                      height: "1.9em",
+                     }} name="key-outline"
+                     className="text-lg" />
+                    <span className='text-2xl'>Forgot Password?</span>
                   </Link>
                   <Link 
                     to="/kasspass-key-signin"
-                    className="flex items-center space-x-2 text-sm text-emerald-600 
-                      hover:text-emerald-500 transition-colors"
+                    className="flex items-center space-x-2 text-sm  
+                      hover:text-emerald-500 transition-colors group"
                   >
-                    <GoPasskeyFill className="w-4 h-4" />
-                    <span>Sign in with passkey</span>
+                    <GoPasskeyFill className="w-6 h-6 
+                    group-hover:rotate-12 transition-transform
+                    text-emerald-600" />
+                    <span className='text-2xl text-emerald-600'>Quick Access 
+                      with Passkey</span>
                   </Link>
-                  </motion.div>
+                </motion.div>
               </form>
             </motion.div>
           </motion.div>
         </div>
       </motion.section>
- 
-</> }
+      </> }
 
 
 
 
-  </>
-  )
+</>
+)
 }
 
 export default SignIn

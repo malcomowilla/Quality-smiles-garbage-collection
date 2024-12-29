@@ -660,7 +660,7 @@ if (enable_2fa_for_store_manager == true) {
         <img 
           src={logo_preview} 
           alt="logo" 
-          className="relative w-24 h-24 rounded-full object-contain 
+          className="relative w-40 h-40 rounded-full object-contain 
             shadow-lg ring-4 ring-white"
         />
       </motion.div>
@@ -670,9 +670,9 @@ if (enable_2fa_for_store_manager == true) {
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="mt-4 text-center"
+        className="mt-[1px] text-center"
       >
-        <h1 className="itim-regular text-2xl max-sm:text-2xl bg-gradient-to-r 
+        <h1 className="itim-regular text-3xl  bg-gradient-to-r 
           from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent 
           font-bold tracking-wide">
           {company_name}
@@ -691,9 +691,9 @@ if (enable_2fa_for_store_manager == true) {
           <form onSubmit={handleStoreManagerSignIn} className="flex flex-col gap-6">
             <div className="text-center">
               <GoPerson className="mx-auto text-green-600 text-4xl mb-2" />
-              <h2 className="text-xl font-bold text-gray-900
-              itim-regular mb-2">Welcome Back</h2>
-              <p className="text-gray-600">Login with your manager number</p>
+              <h2 className=" font-bold text-gray-900
+              itim-regular mb-2 text-4xl">Welcome Back</h2>
+              <p className="text-gray-600 text-2xl">Login with your manager number</p>
             </div>
 
             <div>
@@ -708,12 +708,14 @@ type={seeManagerNumber ? 'password' : 'text'}
 required shadow  
 
 
-style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black'}} 
+style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'black',
+  fontSize: '1.5rem'
+}} 
 />
                 
     <div onClick={() => setseeManagerNumber(!seeManagerNumber)} 
                     className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
-                    {seeManagerNumber ? <FaEyeSlash /> : <FaEye />}
+                    {seeManagerNumber ? <FaEyeSlash className='text-2xl text-black' /> : <FaEye className='text-2xl text-black' />}
                   </div>
                 </div>
               </div>
@@ -728,14 +730,14 @@ style={{backgroundColor: 'white', width: '100%', paddingRight: '8px', color: 'bl
                     Logging in...
                   </div>
                 ) : (
-                  'Login'
+                  <p className='text-2xl'>Login</p>
                 )}
               </Button>
 
               <div onClick={handleGoBack} className="flex items-center justify-center 
               gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                 <ArrowBackIcon />
-                <span>Back to Selection</span>
+                <span className='text-2xl'>Back to Selection</span>
               </div>
             </form>
           </div>

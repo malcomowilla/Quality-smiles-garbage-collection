@@ -7,10 +7,14 @@ import dayjs from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import { useLayoutSettings } from '../settings/LayoutSettings';
+
+
 
 const CalendarEvent = ({ isOpen, setIsOpen , calendarEventForm, handleChange, handleChangeDateTime1,
    handleChangeDateTime2, handleCreateEvent}) => {
   const {title, start, end} = calendarEventForm
+  const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
   return (
@@ -21,14 +25,18 @@ const CalendarEvent = ({ isOpen, setIsOpen , calendarEventForm, handleChange, ha
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setIsOpen(false)}
-          className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer"
+          className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0
+           z-50 grid place-items-center overflow-y-scroll cursor-pointer"
         >
           <motion.div
             initial={{ scale: 0, rotate: "12.5deg" }}
             animate={{ scale: 1, rotate: "0deg" }}
             exit={{ scale: 0, rotate: "0deg" }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white text-black p-6 rounded-lg w-full max-w-lg shadow-xl cursor-default relative overflow-hidden"
+            className={`bg-white text-black p-6 w-full
+             max-w-lg shadow-xl cursor-default relative overflow-hidden
+             ${borderRadiusClasses[settings.borderRadius]}
+             `}
           >
             <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
             <div className="relative z-10">
@@ -114,9 +122,12 @@ width: '100%',
               <div className="flex gap-4 p-3 mt-3">
 
 
-              <button type='submit' className="px-6 py-2 font-medium bg-green-600 text-white w-fit transition-all 
-              shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]
-              rounded-md">
+              <button type='submit' className={`px-6 py-2 
+${borderRadiusClasses[settings.borderRadius]} 
+ flex-1 flex items-center justify-center gap-2 px-6 py-3.5 font-medium 
+                        bg-secondary text-white rounded-2xl transition-all
+                         hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed
+  `}>
         Create
       </button>
 
@@ -124,9 +135,11 @@ width: '100%',
       <button     onClick={(e) =>{
                     e.preventDefault()
                     setIsOpen(false)
-                  } } className="px-6 py-2 font-medium bg-red-600 text-white w-fit transition-all
-                   shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]
-                   rounded-md">
+                  } } 
+                  className={`flex-1 px-6 py-3.5 font-medium 
+                    ${borderRadiusClasses[settings.borderRadius]}   
+                        text-gray-700  transition-all
+                               hover:bg-red-500 bg-warn_primary`}>
         Cancel
       </button>
                 {/* <button

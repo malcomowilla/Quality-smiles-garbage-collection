@@ -1,414 +1,657 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { FiAlertCircle } from "react-icons/fi";
-import { useState } from "react";
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import { MdSupportAgent } from "react-icons/md";
-import Lottie from 'react-lottie';
-import LoadingAnimation from '../animation/loading_animation.json'
-import Backdrop from '@mui/material/Backdrop';
-import { FaPhoneAlt } from "react-icons/fa";
-import { FaFileLines } from "react-icons/fa6";
-import { FaHandPointRight } from "react-icons/fa";
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Box,
+  Stack,
+  Avatar,
+  Typography,
+  Paper,
+  Button,
+  IconButton,
+  Divider,
+  CircularProgress,
+  Chip,
+  Slide,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  useTheme,
+  useMediaQuery,
+  AppBar,
+  Toolbar,
+  SwipeableDrawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Fab,
+  Snackbar,
+  Alert
+} from '@mui/material';
+import {
+  Phone as PhoneIcon,
+  Description as DescriptionIcon,
+  Feedback as FeedbackIcon,
+  Note as NoteIcon,
+  Close as CloseIcon,
+  SupervisorAccount as AgentIcon,
+  PriorityHigh as PriorityIcon,
+  Category as CategoryIcon,
+  Update as UpdateIcon,
+  Save as SaveIcon,
+  ArrowBack as ArrowBackIcon
+} from '@mui/icons-material';
+import { motion } from 'framer-motion';
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 
 
 
-const TicketForm = ({isOpen, setIsOpen, agentRole, ticketForm, setTicketForm, handleAddTicket, openLoad,
-   phone, customer_name,ticketNo, loading, handleChange, updatedDate}) => {
+const TicketForm = ({
+  isOpen,
+  setIsOpen,
+  agentRole,
+  ticketForm,
+  setTicketForm,
+  handleAddTicket,
+  loading,
+  phone,
+  customer_name,
+  ticketNo,
+  handleChange,
+  updatedDate
+}) => {
+  const [activeNote, setActiveNote] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
 
-   const {  name, email, phone_number, priority, category, issue_description, agent,
-     ticket_category, agent_review} = ticketForm
-
-
-
-
-
+  const {
+    priority,
+    issue_description,
+    agent,
+    ticket_category,
+    agent_review,
+    status
+  } = ticketForm;
 
   const ticketCategory = [
-   
-   { title: 'Billing',  },
-   { title: "Garbage Collection",  },
-  
-   {
-     title: 'Service Issue',
-     
-   },
-   { title: 'General Enquiry', },
-   {
-     title: 'Other',
-     
-   },
-  
+    { title: 'Billing' },
+    { title: 'Garbage Collection' },
+    { title: 'Service Issue' },
+    { title: 'General Enquiry' },
+    { title: 'Other' }
+  ];
 
-  
- ];
+  const ticketPriority = [
+    { ticket: 'Low', color: 'success' },
+    { ticket: 'Medium', color: 'warning' },
+    { ticket: 'Urgent', color: 'error' }
+  ];
 
+  const ticketStatus = [
+    { ticketStatus: 'Open', color: 'info' },
+    { ticketStatus: 'Resolved', color: 'success' },
+    { ticketStatus: 'In Progress', color: 'warning' },
+    { ticketStatus: 'Pending', color: 'error' }
+  ];
 
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase();
+  };
 
- let splitName =  customer_name.split(' ')
- let abreviation = splitName.map((my_name)=> {
-     return my_name.charAt(0)
- }).join('') 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
 
+      await handleAddTicket(e);
+      // setSnackbar({ open: true, message: 'Ticket updated successfully!', severity: 'success' });
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to update ticket', severity: 'error' });
+    }
+  };
 
-
- const ticketPriority = [
-  
-  
-  
-   { ticket: "Low"},
-   { ticket: 'Medium'},
-   { ticket: 'Urgent' },
-   
-
-  
- ];
-
-
-
- const status = [
-  
-  
-  
-   { ticketStatus: "Open"},
-   { ticketStatus: 'Resolved'},
-   { ticketStatus: 'In Progress' },
-   { ticketStatus: 'Pending' },
-   
-
-  
- ];
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
 
 
- const defaultOptions = {
-  loop: true,
-  autoplay: true, 
-  animationData: LoadingAnimation,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice'
+
+
+  const getBorderRadius = () => {
+    const radiusMap = {
+      'rounded-3xl': '24px',
+      'rounded-2xl': '16px',
+      'rounded-xl': '12px',
+      'rounded-lg': '8px',
+      'rounded-md': '6px',
+      'rounded-sm': '2px',
+      'rounded': '4px',
+      'rounded-full': '9999px'
+    };
+    return radiusMap[borderRadiusClasses[settings.borderRadius]] || '0px';
   }
-};
 
   return (
-
-    <>
-
-{loading &&    <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-  
-  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-    
-     </Backdrop>
-  }
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setIsOpen(false)}
-          className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll cursor-pointer"
-        >
-          <motion.div
-            initial={{ scale: 0, rotate: "12.5deg" }}
-            animate={{ scale: 1, rotate: "0deg" }}
-            exit={{ scale: 0, rotate: "0deg" }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-gradient-to-br from-green-500 to-green-500 text-white p-6 rounded-lg w-full
-              shadow-xl cursor-default relative overflow-hidden h-screen"
-          >
-            <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
-            <div className="relative z-10">
-              <div className="bg-white w-16 h-16 mb-2 rounded-full text-3xl text-green-600 grid place-items-center mx-auto">
-                <FiAlertCircle />
-              </div>
-              <h3 className="text-xl font-bold text-center mb-2 playwrite-de-grund">
-                {ticketNo}
-              </h3>
-  
-
-
-<div className="p-4 ">
-  
-   <div className="p-4   
-         shadow-lg ">
-      <div className="flex gap-4 mb-4  max-sm:flex-col max-md:flex-col">
-        
-        <div className="flex items-center p-3  text-black rounded shadow-lg h-full w-full ">
-
-           <div className='flex flex-col'>
-            
-          <div className='bg-white rounded-full w-10 p-8 h-10 flex justify-center items-center'><p className='font-bold text-4xl'>
-            {abreviation}</p></div>
-           <p className='font-extrabold playwrite-de-grund'>{customer_name}</p>
-           <p className='font-light playwrite-de-grund text-sm flex'>
-            <FaPhoneAlt />
-            {phone}</p>
-           </div>
-         
-        </div>
-       
-        <div className="flex items-center p-3  text-black rounded shadow-lg h-28 w-full ">
-<p>{ticketForm.issue_description}</p>
-        </div>
-
-        <div className="flex items-center p-3 flex-col text-black  shadow-lg w-full
-        border-gray-700 border-2  
-         rounded-md h-full ">
-<p className='font-bold'>Updated By {'=>'}  <span className='font-light'>{agent}</span></p>
-<p>{updatedDate}</p>
-<p>{agent_review}</p>
-        </div>
-
-        
-         <form onSubmit={handleAddTicket} className="flex items-center flex-col gap-10 justify-center
-          h-full w-full max-w-sm  border-gray-700 border-2  
-         shadow-lg p-3 rounded-md relative right-0">
-
-            <Stack  spacing={3} sx={{
-               width: '100%',
-               
-               
-      '& .MuiTextField-root': {  width: '100%',  },
-      '& label.Mui-focused': {
-        color: 'black',
-        fontSize: '16px'
-        },
-    '& .MuiOutlinedInput-root': {
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "black",
-        borderWidth: '3px',
-        },
-     '&.Mui-focused fieldset':  {
-        borderColor: 'black', 
-        
-      }
-    }
-    }} className='myTextField'>
-
-         <Autocomplete
-
-value={ticketCategory.find((myCategory) => {
-  if (myCategory.title === ticket_category) {
-   return myCategory.title
-  } else {
-    return null
-  }
-})}
-      id="combo-box-demo"
-      options={ticketCategory}
-      sx={{ width: '100%' }}
-      renderInput={(params) => <TextField {...params} label="Category" />}
-      isOptionEqualToValue={(option, value) => option.title === value.title}
-      getOptionLabel={(option) => option.title}
-
-      onChange={(event, newValue) => {
-         setTicketForm((prevData) => {
-           const updatedData = {
-             ...prevData,
-             ticket_category: newValue ? newValue.title : '', 
-           };
-           return updatedData;
-         });
-       }}
-    />
-
-
-<Autocomplete
-
-
-value={status.find((myStatus) => {
-  if (myStatus.ticketStatus === ticketForm.status) {
-   return myStatus.ticketStatus
-  } else {
-    return null
-  }
-})}
-      id="combo-box-demo"
-      options={status}
-      getOptionLabel={(option) => option.ticketStatus}
-      isOptionEqualToValue={(option, value) => option.ticketStatus === value.ticketStatus}
-
-      sx={{ width: '100%' }}
-      renderInput={(params) => <TextField {...params} label="Status" />}
-      onChange={(event, newValue) => {
-        console.log('before update:')
-        setTicketForm((prevData) => {
-          const updatedData = {
-            ...prevData,
-            status: newValue ? newValue.ticketStatus : '', 
-          };
-          return updatedData;
-        });
+    <Dialog
+      fullScreen={fullScreen}
+      open={isOpen}
+      onClose={handleClose}
+      TransitionComponent={Slide}
+      TransitionProps={{ direction: 'up' }}
+      PaperProps={{
+        sx: {
+          bgcolor: 'background.default',
+          backgroundImage: 'none',
+          borderRadius: getBorderRadius(),
+        }
       }}
-    />
+    >
+      <AppBar position="sticky" elevation={0} color="primary"
+      
+      sx={{
+        backgroundColor: 'green',
+      }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleClose}
+            aria-label="close"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Ticket #{ticketNo}
+          </Typography>
+          <Chip 
+            label={status} 
+            color={ticketStatus.find(s => s.ticketStatus === status)?.color || 'default'}
+            size="small"
+            sx={{ mr: 2 }}
+          />
+        </Toolbar>
+      </AppBar>
+
+      <Box 
+        component="form" 
+        onSubmit={handleSubmit}
+        sx={{ 
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Box sx={{ p: 2, flex: 1, overflow: 'auto' }}>
+          <Paper elevation={0} sx={{ p: 2, mb: 2 }}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar 
+                sx={{ 
+                  width: 56, 
+                  height: 56, 
+                  bgcolor: 'primary.main',
+                  fontSize: '1.5rem'
+                }}
+              >
+                {getInitials(customer_name)}
+              </Avatar>
+              <Box flex={1}>
+                <Typography variant="h6">{customer_name}</Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1,
+                    color: 'text.secondary'
+                  }}
+                >
+                  <PhoneIcon fontSize="small" />
+                  {phone}
+                </Typography>
+              </Box>
+            </Stack>
+          </Paper>
+
+          <Paper elevation={0} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              {issue_description}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Last updated: {updatedDate}
+            </Typography>
+          </Paper>
+
+          <List sx={{ p: 0 }}>
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                className='myTextField'
+                sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black',
+                    transition: 'border-color 0.2s ease-in-out'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '& .MuiSelect-icon': {
+                    color: 'green'
+                  },
+                  '& .MuiInputBase-input': {
+                    color: '#333'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      '& .MuiMenuItem-root': {
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.08)'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.16)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 128, 0, 0.24)'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
+                  value={ticket_category}
+                  label="Category"
+                  name="ticket_category"
+                  onChange={handleChange}
+                >
+                  {ticketCategory.map((category, index) => (
+                    <MenuItem key={index} value={category.title}>
+                      <ListItemIcon>
+                        <CategoryIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={category.title} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
+
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Priority</InputLabel>
+                <Select
+                 sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black',
+                    transition: 'border-color 0.2s ease-in-out'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '& .MuiSelect-icon': {
+                    color: 'green'
+                  },
+                  '& .MuiInputBase-input': {
+                    color: '#333'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      '& .MuiMenuItem-root': {
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.08)'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.16)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 128, 0, 0.24)'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
+
+                className='myTextField'
+                  value={priority}
+                  label="Priority"
+                  name="priority"
+                  onChange={handleChange}
+                >
+                  {ticketPriority.map((p, index) => (
+                    <MenuItem key={index} value={p.ticket}>
+                      <ListItemIcon>
+                        <PriorityIcon color={p.color} />
+                      </ListItemIcon>
+                      <ListItemText primary={p.ticket} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
+
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Assign Agent</InputLabel>
+                <Select
+                 sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black',
+                    transition: 'border-color 0.2s ease-in-out'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '& .MuiSelect-icon': {
+                    color: 'green'
+                  },
+                  '& .MuiInputBase-input': {
+                    color: '#333'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      '& .MuiMenuItem-root': {
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.08)'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.16)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 128, 0, 0.24)'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
+
+                className='myTextField'
+                  value={agent}
+                  label="Assign Agent"
+                  name="agent"
+                  onChange={handleChange}
+                >
+                  {agentRole.filter(Boolean).map((a, index) => (
+                    <MenuItem key={index} value={a.name}>
+                      <ListItemIcon>
+                        <AgentIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={a.name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
+
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                 sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black',
+                    transition: 'border-color 0.2s ease-in-out'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'black !important',
+                    borderWidth: '2px'
+                  },
+                  '& .MuiSelect-icon': {
+                    color: 'green'
+                  },
+                  '& .MuiInputBase-input': {
+                    color: '#333'
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      '& .MuiMenuItem-root': {
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.08)'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.16)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 128, 0, 0.24)'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
 
 
-<Autocomplete
+                className='myTextField'
+                  value={status}
+                  label="Status"
+                  name="status"
+                  onChange={handleChange}
+                >
+                  {ticketStatus.map((s, index) => (
+                    <MenuItem key={index} value={s.ticketStatus}>
+                      <ListItemIcon>
+                        <UpdateIcon color={s.color} />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={s.ticketStatus}
+                        secondary={
+                          <Chip 
+                            size="small" 
+                            label={s.ticketStatus}
+                            color={s.color}
+                          />
+                        }
+                      />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
 
-value={ticketPriority.find((myPriority) => {
-  if (myPriority.ticket === priority) {
-   return myPriority.ticket
-  } else {
-    return null
-  }
-})}
-      id="combo-box-demo"
-      sx={{ width: '100%' }}
-      isOptionEqualToValue={(option, value) => option.ticket === value.ticket}
-      getOptionLabel={(option) => option.ticket}
-      options={ticketPriority}
-      renderInput={(params) => <TextField {...params} label="Priority" />}
+            <ListItem>
+              <TextField
+               sx={{
+                width: '100%',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black',
+                  transition: 'border-color 0.2s ease-in-out'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black !important',
+                  borderWidth: '2px'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black !important',
+                  borderWidth: '2px'
+                },
+                '& .MuiSelect-icon': {
+                  color: 'green'
+                },
+                '& .MuiInputBase-input': {
+                  color: '#333'
+                }
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    '& .MuiMenuItem-root': {
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 128, 0, 0.08)'
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: 'rgba(0, 128, 0, 0.16)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 128, 0, 0.24)'
+                        }
+                      }
+                    }
+                  }
+                }
+              }}
 
-      onChange={(event, newValue) => {
-         setTicketForm((prevData) => {
-           const updatedData = {
-             ...prevData,
-             priority: newValue ? newValue.ticket : '', 
-           };
-           return updatedData;
-         });
-       }}
-    />
+              className='myTextField'
+                fullWidth
+                multiline
+                rows={3}
+                label="Agent Note"
+                name="agent_review"
+                value={agent_review}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </ListItem>
+          </List>
+        </Box>
 
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 2, 
+            position: 'sticky', 
+            bottom: 0,
+            borderTop: 1,
+            borderColor: 'divider',
+            zIndex: 1,
+            bgcolor: 'background.paper'
+          }}
+        >
+          <Stack direction="row" spacing={2} justifyContent="space-between"
+          
+          >
+            <Button
+              sx={{
+                borderRadius: getBorderRadius(),
+                backgroundColor: 'green',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'green',
+                  
+                  
+                },
+              }}
+              variant="outlined"
+              startIcon={<NoteIcon />}
+              onClick={() => setActiveNote(!activeNote)}
+            >
+              Add Note
+            </Button>
+            <Button
+            sx={{
+              backgroundColor: 'green',
+              borderRadius: getBorderRadius(),
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'green',
+              },
+            }}
+              variant="contained"
+              type="submit"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+            >
+              Save Changes
+            </Button>
+          </Stack>
+        </Paper>
 
-<Autocomplete
-
-value={agentRole.filter(Boolean).find(agen => agen.user_name === agent) || null}
-
-      id="combo-box-demo"
-      sx={{ width: '100%' }}
-      renderInput={(params) => <TextField {...params} label="Agent" />}
-      getOptionLabel={(option) => option.user_name}
-                isOptionEqualToValue={(option, value) => option.user_name === value.user_name}
-                options={agentRole.filter(Boolean)} 
-
-
-      renderOption={(props, agentRole) => (
-        <Stack
-          direction='row'
-          spacing={2}
-          sx={{
-            width: '100%',
-            padding: 1,
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              display: 'flex',
-              flexDirection: 'start'
+        <SwipeableDrawer
+          anchor="bottom"
+          open={activeNote}
+          onClose={() => setActiveNote(false)}
+          onOpen={() => setActiveNote(true)}
+          disableSwipeToOpen={false}
+          PaperProps={{
+            sx: {
+              height: '50%',
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16
             }
           }}
-          {...props}
         >
-        <MdSupportAgent />
-        
-          <Stack direction='column'>
-          <span>{agentRole.user_name}</span>
-          </Stack>
-        
-        </Stack>
-        
-      )}
+          <Box sx={{ p: 2 , }}>
+            <Typography variant="h6" gutterBottom>
+              Add Note
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder="Type your note here..."
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            <Button
+            sx={{
+              borderRadius: getBorderRadius(),
+            }}
+              fullWidth
+              variant="contained"
+              startIcon={<SaveIcon />}
+              disabled={!noteText.trim()}
+            >
+              Save Note
+            </Button>
+          </Box>
+        </SwipeableDrawer>
+      </Box>
 
-      onChange={(event, newValue) => {
- 
- 
-         setTicketForm((ticketForm) => ({...ticketForm, agent: newValue ? newValue.user_name : ''}))
-       }}
-    />
-
-<TextField  value={agent_review} name='agent_review' onChange={handleChange} label='Agent Note'/>
-
-    </Stack>
-    <div className="flex gap-2 justify-center">
-                <button
-                type='submit'
-                disabled={loading}
-                  className="btn playwrite-de-grund"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={(e) => {
-                      e.preventDefault()
-                    setIsOpen(false)}
-                  }
-                  className="btn-error btn playwrite-de-grund"
-                >
-                  Cancel
-                </button>
-      </div>
-         </form>
-
-         
-      </div>
-      
-      
-     <div className='flex gap-6 p-5'>
-
-      <div className='flex border-2 border-gray-700 rounded-md w-[120px] text-black p-1 gap-2 cursor-pointer'>
-        <FaFileLines />
-        ADD NOTE
-        </div>
-
-
-        <div className='flex border-2 border-gray-700 rounded-md w-[135px]
-         text-black p-1 gap-2 flex-row cursor-pointer'>
-        <FaHandPointRight/>
-        FEED BACK
-        </div>
-     </div>
-         
-      
-<div className='flex gap-4'>
-
-<TextField multiline rows={4} label='note'  sx={{
-               width: '70%',
-               
-               
-      '& .MuiTextField-root': {  width: '100%',  },
-      '& label.Mui-focused': {
-        color: 'black',
-        fontSize: '16px'
-        },
-    '& .MuiOutlinedInput-root': {
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "black",
-        borderWidth: '3px',
-        },
-     '&.Mui-focused fieldset':  {
-        borderColor: 'black', 
-        
-      }
-    }
-    }} className='myTextField'/>
-<button
-                type='submit'
-                  className="btn playwrite-de-grund"
-                >
-                  Send
-                </button>
-                </div>
-
-   </div>
-</div>
-
-
-
-
-
-              
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-
-    </>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Dialog>
   );
 };
 

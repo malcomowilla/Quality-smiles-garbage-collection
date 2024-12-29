@@ -11,102 +11,84 @@ import { motion } from "framer-motion"
 import openAccessDenied from '../access_denied/AccessDenied'
 import { useAuth } from '../settings/AuthSettings'; // Adjust path as needed
 import LoginSuccessAlert from '../Alert/LoginSuccessAlert'
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 
 
 const Admin = () => {
-const {setIsUserLoggedIn} = useAuth()
-const { seeSidebar, setSeeSideBar, setSmsBalance,openLoginSuccess,
-  handleCloseLoginSuccess } = useApplicationSettings()
-
-
-
-
-const getSmsBalance  = useCallback(
-  async () => {
-     try {
-         const response = await fetch('/api/your_sms_balance')
-         const newData = await response.json()
-         if (response.ok) {
-             console.log(newData.message)
-             setSmsBalance(newData.message)
-         } else {
-             console.log('error')
-         }
-     } catch (error) {
-         console.log(error)
-     }
-  },
-   [],
- )
- 
-
-
- useEffect(() => {
-  getSmsBalance() 
-    
- }, [getSmsBalance]);
-
-
-
-
-
-
-
-
-
-
-  const variantDiv = {
-    hidden: {
-     marginLeft: '0px'
-       
-     },
-   
-     visible: {
-      marginLeft: '256px'
-
-     }
-  }
-  return (
-
-    <>
-
-    <LoginSuccessAlert  handleCloseLoginSuccess={handleCloseLoginSuccess}
-      openLoginSuccess={openLoginSuccess}/>
-    <div  className='h-screen bg-black p-4 dark:bg-white  
-     overflow-x-hidden'>
-      
-      <motion.div variants={variantDiv} transition={{duration:0.3,
-       ease: "easeInOut",
-  }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"} >
-      <Header/>
-
-      </motion.div>
-
-      
-<CountDown/>
-
-
-<motion.div  variants={variantDiv} transition={{duration:0.3, ease: "easeInOut",
-  }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"} >
+  const {setIsUserLoggedIn} = useAuth()
+  const { seeSidebar, setSeeSideBar, setSmsBalance, openLoginSuccess,
+    handleCloseLoginSuccess, themeColors } = useApplicationSettings()
   
-           <Outlet/>
- 
-</motion.div>
+  const { settings } = useLayoutSettings();
+  
+  
+  const variantDivSidebarRight = {
+    hidden: {
+      marginRight: '0px'
+    },
+    visible: {
+      marginRight: '256px'
+    }
+  }
+  
+  const variantDivSidebarLeft = {
+    hidden: {
+      marginLeft: '0px'
+    },
+    visible: {
+      marginLeft: '256px'
+    }
+  }
+  
+  return (
+    <>
+      <LoginSuccessAlert handleCloseLoginSuccess={handleCloseLoginSuccess}
+        openLoginSuccess={openLoginSuccess}/>
+      <div className='h-screen bg-black p-4 dark:bg-white overflow-x-hidden'>
+        
+        <motion.div 
+          variants={settings.sidebarPosition === 'right' ? variantDivSidebarRight : variantDivSidebarLeft} 
+          transition={{duration:0.3, ease: "easeInOut"}} 
+          initial='hidden' 
+          animate={seeSidebar ? "hidden" : "visible"}>
+          <Header/>
+        </motion.div>
+  
+        <motion.div 
+                  variants={settings.sidebarPosition === 'right' ? variantDivSidebarRight : variantDivSidebarLeft} 
+                  transition={{duration:0.3, ease: "easeInOut"}} 
+                  initial='hidden' 
+                  animate={seeSidebar ? "hidden" : "visible"}
+        className='timer'>
+          <CountDown/>
+        </motion.div>   
+  
+        <motion.div  
+          variants={settings.sidebarPosition === 'right' ? variantDivSidebarRight : variantDivSidebarLeft} 
+          transition={{duration:0.3, ease: "easeInOut"}} 
+          initial='hidden' 
+          animate={seeSidebar ? "hidden" : "visible"}>
+          <Outlet/>
 
 
-
-
-      <motion.div variants={variantDiv} transition={{duration:0.4, ease: "easeInOut",
-  }} initial='hidden' animate={seeSidebar  ? "hidden" : "visible"} className='flex flex-col p-4 font-mono  overflow-hidden '>
-<Sidebar/>
-
-</motion.div>
-      
+          
+        </motion.div>
+  
+        <motion.div 
+          variants={settings.sidebarPosition === 'right' ? variantDivSidebarRight : variantDivSidebarLeft} 
+          transition={{duration:0.4, ease: "easeInOut"}} 
+          initial='hidden' 
+          animate={seeSidebar ? "hidden" : "visible"} 
+          className={`flex flex-col p-4 font-mono overflow-hidden ${
+            settings.sidebarPosition === 'right' ? 'fixed top-0 right-0' : 'fixed top-0 left-0'
+          }`}>
+          <Sidebar/>
+        </motion.div>
+        
       </div>
-
-      </>
+    </>
   )
-}
-
-export default Admin
+  }
+  
+  export default Admin

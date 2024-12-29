@@ -1,4 +1,3 @@
-
 import MaterialTable, {MTablePagination} from "material-table";
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
@@ -20,6 +19,7 @@ import QuestionMarkAnimation from '../animation/question_mark.json'
 import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
 import { HiOutlineUsers } from "react-icons/hi2";
 import { useDebounce } from 'use-debounce';
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
@@ -42,8 +42,6 @@ const [openUserDeleteAlert, setopenUserDeleteAlert] = useState(false)
 const [search, setSearch] = useState('')
 const [searchInput] = useDebounce(search, 1000)
 
-
-
 const handleCloseDeleteAddAlert = ()=> {
   setopenUserDeleteAlert(false)
 }
@@ -58,7 +56,7 @@ const  handleCloseUpdatedAddAlert = ()=> {
 
 const {
       
-  materialuitheme, adminFormSettings  } = useApplicationSettings()
+  materialuitheme, adminFormSettings , setSnackbar,setBottomNavigation, } = useApplicationSettings()
 
 
   const [permissionAndRoles, setPermissionAndRoles] = useState({
@@ -73,12 +71,18 @@ const {
     payments: { read: false, readWrite: false },
     invoice: { read: false, readWrite: false },
     calendar: { read: false, readWrite: false },
-    sms: {read: false, readWrite: false },
+    sms: {read: false, readWrite: false},
     smsTemplates: {read: false, readWrite: false},
     tickets: {read: false, readWrite: false},
-    
+    individualEmail: {readWrite: false},
+    customerStats: {read: false},
+    serviceProviderStats: {read: false},
+    chat: {read: false, readWrite: false},
+    user: {read: false, readWrite: false},
   });
 
+  // :can_manage_user,
+  // :can_read_user
 
   const [userDetails, setuserDetails] = useState({
     
@@ -209,7 +213,24 @@ const handleRowAdd = (event, rowData)=> {
     tickets: {
       read: rowData.can_read_tickets,
       readWrite: rowData.can_manage_tickets
-    }
+    },
+    individualEmail: {
+      readWrite: rowData.can_manage_individual_email
+    },
+    customerStats:{
+      read: rowData.can_read_customer_stats,
+    },
+    serviceProviderStats:{
+      read: rowData.can_read_service_provider_stats,
+    },
+    chat: {
+      read: rowData.can_read_chats,
+      readWrite: rowData.can_manage_chats
+    },
+    user: {
+      read: rowData.can_read_user,
+      readWrite: rowData.can_manage_user
+    },
   });
 }
 
@@ -237,34 +258,51 @@ useCallback(
       //   setopenopenAccessDenied3(true)
         
       // }
-
+if (response.status === 403) {
+  toaster.error('permision denied to view user management', {
+    duration: 6000, 
+  })
+}
 
       if (response.status === 401) {
         if (adminFormSettings.enable_2fa_for_admin_passkeys) {
          
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
        
           navigate('/signup2fa_passkey')
           // setlogoutmessage(true)
           // localStorage.setItem('logoutMessage', true)
         }else{
-          toast.error(
-            <div>
-              <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                <div> <span className='font-thin flex gap-3'>
+          // toast.error(
+          //   <div>
+          //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+          //       <div> <span className='font-thin flex gap-3'>
              
-                  </span></div></p>
-            </div>,
+          //         </span></div></p>
+          //   </div>,
            
-          );
+          // );
+
+
+          setSnackbar({
+            open: true,
+            message: <p className='text-lg'>Session expired please Login Again</p>,
+            severity: 'error'
+          })
            navigate('/signin')
         // setlogoutmessage(true)
         // localStorage.setItem('logoutMessage', true)
@@ -330,17 +368,26 @@ const handleAddUser = async (e) => {
     if (response.ok) {
       setIsOpen(false);
 
+if (response.status === 403) {
+  toaster.error('permision denied to create or update user', {
+    duration: 6000, 
+  })
+}
+
       if (userPermisions.id) {
         setloading(false);
         setSeeUsernameError(false);
         setSeeUsernameError2(false);
         setSeeStrictEmailError(false);
+        toaster.success('User Updated Successfully', {
+          duration: 5000, // Duration in milliseconds (3 seconds)
+        })
         setIsOpen(false);
         setSeeEmailError(false);
         setUsers(users.map((item) =>
           item.id === userPermisions.id ? newData : item
         ));
-        setopenUserUpdatedAlert(true);
+        // setopenUserUpdatedAlert(true);
         setSeeEmailError(false);
         setSeeEmailError2(false);
       } else {
@@ -350,11 +397,17 @@ const handleAddUser = async (e) => {
         setSeeUsernameError(false);
         setSeeUsernameError2(false);
         setopenUserAddAlert(true);
+        toaster.error('User Update Failed', {
+          duration: 5000, // Duration in milliseconds (3 seconds)
+        })
         setIsOpen(false);
         setUsers([...users, newData]); // Add newly created user to table
         setloading(false);
       }
     } else {
+      toaster.error('User Addition Failed', {
+        duration: 5000, // Duration in milliseconds (3 seconds)
+      })
       setloading(false);
       // Handle server-side validation errors
       if (newData.errors) {
@@ -400,18 +453,33 @@ const handleAddUser = async (e) => {
     method: 'DELETE'
     })
     
+
+if (response.status === 403) {
+  toaster.error('permision denied to delete user', {
+    duration: 6000, 
+  })
+}
     
     if (response.ok) {
       setUsers(users.filter((place)=> place.id !==  id))
       setloading(false)
-      setopenUserDeleteAlert(true)
+      // setopenUserDeleteAlert(true)
+      toaster.success('User Deleted Successfully', {
+        duration: 5000, 
+      })
       setisOpenDelete(false)
     } else {
       console.log('failed to delete')
       setloading(false)
+      toaster.error('Failed To Delete User', {
+        duration: 5000, // Duration in milliseconds (3 seconds)
+      })
     }
     } catch (error) {
       console.log(error)
+      toaster.error('Failed To Delete User Something Went Wrong', {
+        duration: 5000, // Duration in milliseconds (3 seconds)
+      })
       
       setloading(false)
       
@@ -431,6 +499,7 @@ const handleAddUser = async (e) => {
 
 
         const handleAddButton = ()=> {
+          setBottomNavigation(false)
           setIsOpen(true)
           setUserPermisions('')
           setPermissionAndRoles({
@@ -447,7 +516,14 @@ const handleAddUser = async (e) => {
     calendar: { read: false, readWrite: false },
     sms: {read: false, readWrite: false},
     smsTemplates: {read: false, readWrite: false},
-    tickets: {read: false, readWrite: false}
+
+    tickets: {read: false, readWrite: false},
+    individualEmail: {readWrite: false},
+    customerStats: {read: false},
+    serviceProviderStats: {read: false},
+    chat: {read: false, readWrite: false},
+    user: {read: false, readWrite: false},
+
         })
         }
 
@@ -470,8 +546,7 @@ const handleAddUser = async (e) => {
   return (
 
     <>
-
-
+ <Toaster position="top-center" />
     <UserDeleteAlert  openUserDeleteAlert={openUserDeleteAlert} handleCloseDeleteAddAlert={handleCloseDeleteAddAlert}
     />
     <UserAddAlert openUserAddAlert={openUserAddAlert} handleCloseUserAddAlert={handleCloseUserAddAlert}
@@ -485,170 +560,151 @@ const handleAddUser = async (e) => {
     <InvitationForm isOpen={isOpen} setIsOpen={setIsOpen} permissionAndRoles={permissionAndRoles} openLoad={openLoad}
      setPermissionAndRoles={setPermissionAndRoles} userPermisions={userPermisions}  loading={loading} 
      setUserPermisions={setUserPermisions} handleAddUser ={handleAddUser} userDetails={userDetails}
-      setuserDetails={setuserDetails}  emailError={emailError} seeEmailError={seeEmailError}
-      strictEmailError={strictEmailError} seeStrictEmailError={seeStrictEmailError}
-
+      setuserDetails={setuserDetails}  emailError={emailError}
+       seeEmailError={seeEmailError}
+      strictEmailError={strictEmailError} 
+      seeStrictEmailError={seeStrictEmailError}
       emailError2={emailError2} seeEmailError2={seeEmailError2}   usernameError={usernameError}  
       
       usernameError2={usernameError2}  seeUsernameError={seeUsernameError} seeUsernameError2={seeUsernameError2}/>
 
-
-
-<div className="flex items-center max-w-sm mx-auto p-3">   
-    <label htmlFor="simple-search" className="sr-only">Search</label>
-    <div className="relative w-full">
-        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            {/* <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-             xmlns="http://www.w3.org/2000/svg"
-             fill="none" viewBox="0 0 18 20">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                 strokeWidth="2" d="M3 5v10M3 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0V6a3 3 0 0 0-3-3H9m1.5-2-2 2 2 2"/>
-            </svg> */}
+    <ThemeProvider theme={materialuitheme}>
+      <div className="flex items-center max-w-sm mx-auto p-3">   
+        <label htmlFor="simple-search" className="sr-only">Search</label>
+        <div className="relative w-full">
+          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
             <HiOutlineUsers className='text-black font-extrabold'/>
-            
+          </div>
+          <input type="text" value={search} onChange={(e)=> setSearch(e.target.value)}
+           className="bg-gray-50 border border-gray-300 text-gray-900 
+          text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full ps-10 p-2.5 
+            dark:border-gray-600 dark:placeholder-gray-400 dark:text-black
+            dark:focus:ring-green-500 dark:focus:border-green-500" placeholder="search for users..."  />
         </div>
-        <input type="text" value={search} onChange={(e)=> setSearch(e.target.value)}
-         className="bg-gray-50 border border-gray-300 text-gray-900 
-        text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full ps-10 p-2.5 
-          dark:border-gray-600 dark:placeholder-gray-400 dark:text-black
-          dark:focus:ring-green-500 dark:focus:border-green-500" placeholder="search for users..."  />
-    </div>
-    <button type="" className="p-2.5 ms-2 text-sm font-medium text-white bg-green-700 
-    rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none
-     focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <button type="" className="p-2.5 ms-2 text-sm font-medium text-white bg-green-700 
+        rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none
+         focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+          <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
              strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-        </svg>
-        <span className="sr-only">Search</span>
-    </button>
-</div>
+          </svg>
+          <span className="sr-only">Search</span>
+        </button>
+      </div>
 
-    <ThemeProvider theme={materialuitheme}>
-
-
-{/* 
-    ||  rowData.phone_number === '' &&  <Lottie className='relative z-50' options={defaultOptions}
-   height={70} width={70} />   || rowData.phone_number === null &&  <Lottie className='relative z-50'
-    options={defaultOptions}
-   height={70} width={70} /> */}
-    <div style={{ maxWidth: "100%" }}>
-    <MaterialTable
-   
-      columns={[
-        { title: "Name", field: "user_name" },
-        { title: "Phone Number", field: "phone_number", align: 'left',
-
-          render: (rowData)=> 
-            <>
-               {rowData.phone_number === 'null' || rowData.phone_number === ''
-               || rowData.phone_number === null
-               ?  <Lottie className='relative z-50' options={defaultOptions}
-               height={70} width={70} /> : rowData.phone_number
-                
-
-
-}
-
-
-            </>
-        },
-        
+      <div style={{ maxWidth: "100%" }}>
+      <MaterialTable
        
+        columns={[
+          { title: "Name", field: "user_name" },
+          { title: "Phone Number", field: "phone_number", align: 'left',
+
+            render: (rowData)=> 
+              <>
+                 {rowData.phone_number === 'null' || rowData.phone_number === ''
+                 || rowData.phone_number === null
+                 ?  <Lottie className='relative z-50' options={defaultOptions}
+                 height={70} width={70} /> : rowData.phone_number
+                
+      }
+              </>
+          },
+          
+
           {
-            title: "Date Registered",
-            field: "formatted_registered_date",
+            title: "Role",
+            field: "role",
+          },
+         
+            {
+              title: "Date Registered",
+              field: "formatted_registered_date",
+            },
+            {
+          
+              title: "Action",
+              field: "Action",
+              render: (rowData) => 
+                
+                <>
+                <Box sx={{
+                  display: 'flex',
+                  gap: 2
+                }}>
+                                  <EditButton   />
+
+                <DeleteButton   id={rowData.id} />
+                </Box>
+              
+
+                
+                </>
+              
+              
+            }
+        
+
+
+        ]}
+
+
+       data={users}
+
+
+        title="User Management"
+        onRowClick={handleRowAdd}
+
+
+        actions={[
+          {
+            icon: () => <div    className='bg-teal-700 p-2 w-14 rounded-lg' onClick={handleAddButton}><AddIcon
+             style={{color: 'white'}}/></div>,
+            isFreeAction: true, // This makes the action always visible
+            tooltip: 'Invite User',
           },
           {
+            icon: () => <GetAppIcon />,
+            isFreeAction: true, // This makes the action always visible
         
-            title: "Action",
-            field: "Action",
-            render: (rowData) => 
+            tooltip: 'Import',
+          },
+        ]}
 
 
-
-              
-              <>
-              <Box sx={{
-                display: 'flex',
-                gap: 2
-              }}>
-                              <EditButton   />
-
-              <DeleteButton   id={rowData.id} />
-              </Box>
-            
-
-              
-              </>
-            
-            
-          }
-       
-
-      ]}
-
-
-     data={users}
-
-
-      title="User Management"
-      onRowClick={handleRowAdd}
-
-
-      actions={[
-        {
-          icon: () => <div    className='bg-teal-700 p-2 w-14 rounded-lg' onClick={handleAddButton}><AddIcon
-           style={{color: 'white'}}/></div>,
-          isFreeAction: true, // This makes the action always visible
-          tooltip: 'Invite User',
-        },
-        {
-          icon: () => <GetAppIcon />,
-          isFreeAction: true, // This makes the action always visible
-      
-          tooltip: 'Import',
-        },
-      ]}
-
-
-      options={{
-        paging: true,
-       pageSizeOptions:[5, 10, 20, 25, 50, 100],
-       pageSize: 10,
-       search: false,
+        options={{
+          paging: true,
+         pageSizeOptions:[5, 10, 20, 25, 50, 100],
+         pageSize: 10,
+         search: false,
   
 
-showSelectAllCheckbox: false,
-showTextRowsSelected: false,
-hover: true, 
-selection: true,
-paginationType: 'stepped',
+  showSelectAllCheckbox: false,
+  showTextRowsSelected: false,
+  hover: true, 
+  selection: true,
+  paginationType: 'stepped',
 
 
-paginationPosition: 'bottom',
-exportButton: true,
-exportAllData: true,
-exportFileName: 'Location',
+  paginationPosition: 'bottom',
+  exportButton: true,
+  exportAllData: true,
+  exportFileName: 'Location',
 
-headerStyle:{
-fontFamily: 'bold',
-textTransform: 'uppercase'
-} ,
+  headerStyle:{
+  fontFamily: 'bold',
+  textTransform: 'uppercase'
+  } ,
 
 
-fontFamily: 'mono'
+  fontFamily: 'mono'
 
 }} 
-    />
-  </div>
-  </ThemeProvider >
-</>
+      />
+    </div>
+    </ThemeProvider>
+    </>
+
   )
 }
 
 export default ManageUsers
-
-
-
-

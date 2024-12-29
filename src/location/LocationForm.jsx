@@ -6,6 +6,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { ImSpinner9 } from "react-icons/im";
+import { useLayoutSettings } from '../settings/LayoutSettings';
 
 
 
@@ -13,6 +14,8 @@ import { ImSpinner9 } from "react-icons/im";
 const LocationForm = ({isOpen, setIsOpen, addLocation, handleCloseRegistrationForm, loading}) => {
      const { locationForm, setLocationForm} = useApplicationSettings()
 
+
+     const { settings, borderRadiusClasses } = useLayoutSettings();
   const {  location_name,sub_location, location_code
   } = locationForm
 
@@ -70,8 +73,9 @@ const capitalizeForm = capitalizePrefix(value)
           initial={{ scale: 0, rotate: "12.5deg" }}
           animate={{ scale: 1, rotate: "0deg" }}
           exit={{ scale: 0, rotate: "0deg" }}
-          className="bg-white text-black p-6 rounded-lg w-full
-           max-w-lg shadow-xl cursor-default relative overflow-hidden"
+          className={`bg-white text-black p-6  w-full
+           max-w-lg shadow-xl cursor-default relative overflow-hidden
+            ${borderRadiusClasses[settings.borderRadius]}`}
         >
           <div className="relative z-10">
            
@@ -120,8 +124,14 @@ const capitalizeForm = capitalizePrefix(value)
 
 
 <div className="flex gap-8">
-<button  type='submit'  disabled={loading} className="px-6 py-2 font-medium rounded-md bg-green-500 text-white
- w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
+<button  type='submit'  disabled={loading} 
+className={`px-6 py-2 
+  ${borderRadiusClasses[settings.borderRadius]} 
+   flex-1 flex items-center justify-center gap-2 px-6 py-3.5 font-medium 
+                          bg-secondary text-white rounded-2xl transition-all
+                           hover:bg-hover disabled:opacity-50 disabled:cursor-not-allowed
+    `}
+>
    {loading &&  <ImSpinner9 className={` ${loading && 'animate-spin'  }   `} /> } 
         Submit
       </button>
@@ -131,8 +141,11 @@ const capitalizeForm = capitalizePrefix(value)
            
 
             Submit</button> */}
-<button  onClick={handleCloseSubLocationForm} className="px-6 py-2 font-medium bg-red-700 text-white w-fit transition-all shadow-[3px_3px_0px_black]
- hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] rounded-md">
+<button  onClick={handleCloseSubLocationForm} 
+
+className={`flex-1 px-6 py-3.5 font-medium 
+  ${borderRadiusClasses[settings.borderRadius]}       text-gray-700 rounded-2xl transition-all
+             hover:bg-red-500 bg-warn_primary`}>
         Cancel
       </button>
               {/* <button

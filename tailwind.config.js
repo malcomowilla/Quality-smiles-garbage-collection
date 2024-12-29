@@ -1,5 +1,3 @@
-
-
 const flowbite = require("flowbite-react/tailwind");
 
 /** @type {import('tailwindcss').Config} */
@@ -13,6 +11,7 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 3s linear infinite',
       },
       colors: {
         emerald: {
@@ -27,19 +26,48 @@ export default {
           800: '#065f46',
           900: '#064e3b',
         },
+      
+      
+      border_focused_orange: 'var(--color-border-focused-orange)',
+      border_focused_sky: 'var(--color-border-focused-sky)',
+      border_focused_green: 'var(--color-border-focused-green)',
+        primary: 'var(--color-primary)',
+        warn_primary: 'var(--color-warn-primary)',
+        warn_secondary: 'var(--color-warn-secondary)',
+        warn_hover: 'var(--color-warn-hover)',
+        warn_light: 'var(--color-warn-light)',
+        secondary: 'var(--color-secondary)',
+        hover: 'var(--color-hover)',
+        light: 'var(--color-light)',
+      },
+      backgroundColor: {
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        hover: 'var(--color-hover)',
+        light: 'var(--color-light)',
+      },
+      borderColor: {
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        hover: 'var(--color-hover)',
+        light: 'var(--color-light)',
+      },
+      textColor: {
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        hover: 'var(--color-hover)',
+        light: 'var(--color-light)',
       },
     },
   },
 
-  
-  darkMode: 'selector',
+  darkMode: 'class',
 
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/flowbite/**/*.js",
     flowbite.content(),
-
   ],
 
 
@@ -91,9 +119,5 @@ export default {
     require('flowbite/plugin'),
     require('@shrutibalasa/tailwind-grid-auto-fit'),
     flowbite.plugin(),
-
-
   ],
-
-
 }

@@ -1,6 +1,7 @@
 
 import MaterialTable, {MTablePagination} from "material-table";
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import { createTheme, ThemeProvider, CssBaseline,   Snackbar,
+  Alert} from '@mui/material';
 import {useApplicationSettings} from '../settings/ApplicationSettings'
 import { Button, Box } from '@mui/material';
 import AccessDenied from '../access_denied/AccessDenied'
@@ -66,7 +67,8 @@ const [ticketForm, setTicketForm] = useState({
  
 const [search, setSearch] = useState('')
 const [searchInput] = useDebounce(search, 1000)
-
+// const [snackbar, setSnackbar] = useState({ open: false,
+//    message: '', severity: 'success' });
 
 
 console.log('customer phone number',agentRole)
@@ -101,6 +103,7 @@ const defaultOptions = {
 const handleChange = (e)=> {
 const {name,  value} = e.target
 setTicketForm((prev)=> ({...prev, [name]: value}))
+console.log('ticket form', ticketForm)
 } 
 
 
@@ -118,7 +121,7 @@ const CustomTooltip = styled(({ className, ...props }) => (
 
     const {
       
-        materialuitheme, adminFormSettings  } = useApplicationSettings()
+        materialuitheme, adminFormSettings,setSnackbar,snackbar  } = useApplicationSettings()
 
 
 
@@ -148,38 +151,53 @@ useEffect(() => {
 }, [fetchCustomers]);
 
 
+
+// /api/get_service_providers
+// /api/get_admins
+
             const fetchAgents = useCallback(
               async() => {
                 try {
-                  const response = await fetch('/api/get_admins')
+                  const response = await fetch('/api/get_service_providers')
                   const newData = await response.json()
 
                   if (response.status === 401) {
                     if (adminFormSettings.enable_2fa_for_admin_passkeys) {
                      
-                      toast.error(
-                        <div>
-                          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                            <div> <span className='font-thin flex gap-3'>
+                      // toast.error(
+                      //   <div>
+                      //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                      //       <div> <span className='font-thin flex gap-3'>
                          
-                              </span></div></p>
-                        </div>,
+                      //         </span></div></p>
+                      //   </div>,
                        
-                      );
+                      // );
+
+                      setSnackbar({
+                        open: true,
+                        message: <p className='text-lg'>Session expired please Login Again</p>,
+                        severity: 'error'
+                      })
                    
                       navigate('/signup2fa_passkey')
                       // setlogoutmessage(true)
                       // localStorage.setItem('logoutMessage', true)
                     }else{
-                      toast.error(
-                        <div>
-                          <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                            <div> <span className='font-thin flex gap-3'>
+                      // toast.error(
+                      //   <div>
+                      //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                      //       <div> <span className='font-thin flex gap-3'>
                          
-                              </span></div></p>
-                        </div>,
+                      //         </span></div></p>
+                      //   </div>,
                        
-                      );
+                      // );
+                      setSnackbar({
+                        open: true,
+                        message: <p className='text-lg'>Session expired please Login Again</p>,
+                        severity: 'error'
+                      })
                        navigate('/signin')
                     // setlogoutmessage(true)
                     // localStorage.setItem('logoutMessage', true)
@@ -196,7 +214,7 @@ useEffect(() => {
                     })
 
                     console.log('get admins agent', getAgent)
-                    setAgentRole(getAgent)
+                    setAgentRole(newData)
                   } else {
                     console.log('error')
                   }
@@ -236,21 +254,29 @@ useEffect(() => {
                       })
                 
                       const newData = await response.json()
+
+                      if (response.status === 400) {
+                        setSnackbar({ open: true, message: 'empty ticket submited', severity: 'error' });
+
+                      }
                 if (response.ok) {
                   
                   console.log('tickets created:', newData)
               setOpenLoad(false)
                   if (ticketForm.id) {
                     setloading(false)
-                    
+  setSnackbar({ open: true, message: 'Ticket updated successfully!', severity: 'success' });
+
                     setIsOpen(false)
-                    setopenUpdateTicketAlert(true)
+                    // setopenUpdateTicketAlert(true)
                     setTicket(ticket.map(item => (item.id === ticketForm.id ? newData : item)));
                     setIsOpen(false)
                     setIsOpenTicket(false)
                    
               
                   } else {
+  setSnackbar({ open: true, message: 'Ticket added successfully!', severity: 'success' });
+
                     setIsOpen(false)
                     setIsOpenTicket(false)
                     // Add newly created package to tableData
@@ -265,10 +291,30 @@ useEffect(() => {
                   setloading(false)
                   setIsOpen(false)
                   setOpenLoad(false)
-              
+
+                  setSnackbar({ open: true, message: 
+                    newData.error, severity: 'error' ,
+                    vertical: 'top',
+  horizontal: 'center',
+                  });
+                  // setSnackbar({ open: true, message: 'sth went wrong!', severity: 'error' });
+                  if (response.status === 400) {
+        
+                    setSnackbar({ open: true, message: 
+                      'empty ticket submited', severity: 'error' ,
+                    
+                    });
+
+                  }
                 }
               } catch (error) {
+                setSnackbar({ open: true, message: 
+                  'something went wrong, please try again', severity: 'error' ,
+                  vertical: 'top',
+horizontal: 'center',
+                });
                 console.log(error)
+                
                 setOpenLoad(false)
                 setloading(false)
                 setIsOpen(false)
@@ -297,29 +343,40 @@ useEffect(() => {
                     if (response.status === 401) {
                       if (adminFormSettings.enable_2fa_for_admin_passkeys) {
                        
-                        toast.error(
-                          <div>
-                            <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                              <div> <span className='font-thin flex gap-3'>
+                        // toast.error(
+                        //   <div>
+                        //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                        //       <div> <span className='font-thin flex gap-3'>
                            
-                                </span></div></p>
-                          </div>,
+                        //         </span></div></p>
+                        //   </div>,
                          
-                        );
+                        // );
+                        setSnackbar({
+                          open: true,
+                          message: <p className='text-lg'>Session expired please Login Again</p>,
+                          severity: 'error'
+                        })
                      
                         navigate('/signup2fa_passkey')
                         // setlogoutmessage(true)
                         // localStorage.setItem('logoutMessage', true)
                       }else{
-                        toast.error(
-                          <div>
-                            <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
-                              <div> <span className='font-thin flex gap-3'>
+                        // toast.error(
+                        //   <div>
+                        //     <p className='playwrite-de-grund font-extrabold text-xl'>Session expired please Login Again
+                        //       <div> <span className='font-thin flex gap-3'>
                            
-                                </span></div></p>
-                          </div>,
+                        //         </span></div></p>
+                        //   </div>,
                          
-                        );
+                        // );
+
+                        setSnackbar({
+                          open: true,
+                          message: <p className='text-lg'>Session expired please Login Again</p>,
+                          severity: 'error'
+                        })
                          navigate('/signin')
                       // setlogoutmessage(true)
                       // localStorage.setItem('logoutMessage', true)
@@ -422,6 +479,24 @@ useEffect(() => {
   return (
 
     <>
+
+<Snackbar
+ anchorOrigin={{ 
+  vertical: 'top', 
+  horizontal: 'center' 
+}}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
 <TicketDeleteAlert openDeleteTicketAlert={openDeleteTicketAlert} handleCloseDeleteTicketAlert={handleCloseDeleteTicketAlert} />
 

@@ -15,20 +15,32 @@ import {
   import EditProfile from './EditProfile'
   import { LiaEdit } from "react-icons/lia";
   import { CiLogout } from "react-icons/ci";
+  import { TextField, Button, Box, Typography, Paper, Snackbar, Alert } from '@mui/material';
 
   import Avatar from '@mui/material/Avatar';
   import Stack from '@mui/material/Stack';
   import { ToastContainer, toast,Bounce, Slide, Zoom, } from 'react-toastify';
   import { createConsumer } from '@rails/actioncable';
+  import toaster, { Toaster } from 'react-hot-toast';
+  import { useLayoutSettings } from '../settings/LayoutSettings';
+  import { createAvatar } from '@dicebear/core';
+  import { lorelei } from '@dicebear/collection';
+
 
 //   import { IconType } from "react-icons";
 // onClick={() => setOpen((pv) => !pv)}
 
   const Profile = ({open, setOpen}) => {
 const navigate = useNavigate()
-const [isOpenEditProfile, setisOpenEditProfile] = useState(false)
 const [onlineStatus, setOnlineStatus] = useState({});
 const [connectionStatus, setConnectionStatus] = useState('connected');
+const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: '',
+  severity: 'success'
+});
+
+
 
 const {id, imagePreview, setUpdateFormData, updateFormData, setImagePreview, user_name, user,
 setopenLogoutSuccess,
@@ -45,12 +57,14 @@ handleChangePhoneNumberSignin,signedUpPassKey, setSignedUpPassKey,
        handleFormDataChangeForStoreManager,storeManagerSettings, 
        setstoreManagerSettings, setAdminFormSettings, handleFormDataChangeForAdmin,
        settingsTicket,  setsettingsTicket,handleFormDataChangeForTickets,adminFormSettings,
-       setopenLogoutSession
+       setopenLogoutSession,
+       isOpenEditProfile, setisOpenEditProfile
 } = useApplicationSettings()
 
 
 const {enable_2fa_for_admin_passkeys} = adminFormSettings
 
+const { settings, borderRadiusClasses } = useLayoutSettings();
 
 
 
@@ -60,9 +74,27 @@ const {enable_2fa_for_admin_passkeys} = adminFormSettings
 // const enable_2fa_for_admin_passkeys = storedDa.enable_2fa_for_admin_passkeys
 
 
-console.log('enable_2fa_for_admin_passkeys profile=>', enable_2fa_for_admin_passkeys)
+
+function generateAvatar(name) {
+  const avatar = createAvatar(lorelei, {
+    seed: name, // Use the customer's name as the seed
+    // Customize options for the lorelei style
+    backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9'], // Example: random background colors
+    radius: 50, // Rounded corners
+    size: 64, // Size of the avatar
+  });
+
+  // Generate the SVG as a data URL
+  return `data:image/svg+xml;utf8,${encodeURIComponent(avatar.toString())}`;
+}
 
 
+const handleCloseSnackbar = () => {
+  setSnackbar(prev => ({
+      ...prev,
+      open: false
+  }));
+};
 
 
 
@@ -148,7 +180,8 @@ useEffect(() => {
         })
     if (response.ok) {
       // navigate('/signin')
-      if (enable_2fa_for_admin_passkeys === 'true' || enable_2fa_for_admin_passkeys === true) {
+      if (enable_2fa_for_admin_passkeys === 'true' 
+        || enable_2fa_for_admin_passkeys === true) {
         navigate('/signup2fa_passkey')
         
       }else(
@@ -164,15 +197,34 @@ useEffect(() => {
        
       // );
       localStorage.removeItem('acha umbwakni');
-      setopenLogoutSuccess(true)
-      setopenLogoutSession(true)
+      // toaster.success('Logged Out', {
+      //   duration: 9000
+      // })
+      // setopenLogoutSuccess(true)
+      setSnackbar({
+        open: true,
+        message: 'Logged Out',
+        severity: 'success'
+      })
+      // setopenLogoutSession(true)
      
       
     
     } else {
-      console.log('failed to logout')
+    //   setSnackbar({
+    //     open: true,
+    //     message: response?.data?.error || 'Failed to logout something went wrong',
+    //     severity: 'error'
+    // });
+    toaster.error('Failed to logout something went wrong', {
+      duration: 5000, // Duration in milliseconds (3 seconds)
+    })
+
     }
       } catch (error) {
+        toaster.error('Failed to logout something went wrong', {
+          duration: 5000, // Duration in milliseconds (3 seconds)
+        })
         console.log('no internet conection', error)
       }
     } 
@@ -274,93 +326,93 @@ function stringAvatar(name) {
 }
 
 
-useEffect(() => {
-  let heartbeatInterval;
-  let subscription;
+// useEffect(() => {
+//   let heartbeatInterval;
+//   let subscription;
 
-  const setupPresenceChannel = () => {
-    const cable = createConsumer("ws://localhost:4000/cable");
+//   const setupPresenceChannel = () => {
+//     const cable = createConsumer("ws://localhost:4000/cable");
     
-    subscription = cable.subscriptions.create("PresenceChannel", {
-      connected() {
-        console.log("Connected to presence channel!");
-        setConnectionStatus('connected');
+//     subscription = cable.subscriptions.create("PresenceChannel", {
+//       connected() {
+//         console.log("Connected to presence channel!");
+//         setConnectionStatus('connected');
         
-        // Start sending heartbeats
-        heartbeatInterval = setInterval(() => {
-          if (this.connected) {
-            this.perform('heartbeat');
-          }
-        }, 25000); // Send heartbeat every 25 seconds
-      },
+//         // Start sending heartbeats
+//         heartbeatInterval = setInterval(() => {
+//           if (this.connected) {
+//             this.perform('heartbeat');
+//           }
+//         }, 25000); // Send heartbeat every 25 seconds
+//       },
       
-      received(data) {
-        console.log('last seen', data.last_seen)
-        setOnlineStatus(prev => ({
-          ...prev,
-          [data.user_id]: {
-            online: data.online,
-            lastSeen: data.last_seen
-          }
-        }));
-      },
+//       received(data) {
+//         console.log('last seen', data.last_seen)
+//         setOnlineStatus(prev => ({
+//           ...prev,
+//           [data.user_id]: {
+//             online: data.online,
+//             lastSeen: data.last_seen
+//           }
+//         }));
+//       },
       
-      disconnected() {
-        console.log("Disconnected from presence channel!");
-        setConnectionStatus('disconnected');
-        clearInterval(heartbeatInterval);
+//       disconnected() {
+//         console.log("Disconnected from presence channel!");
+//         setConnectionStatus('disconnected');
+//         clearInterval(heartbeatInterval);
         
-        // Update local status to offline
-        setOnlineStatus(prev => ({
-          ...prev,
-          [id]: {
-            online: false,
-            lastSeen: new Date()
-          }
-        }));
-      }
-    });
-  };
+//         // Update local status to offline
+//         setOnlineStatus(prev => ({
+//           ...prev,
+//           [id]: {
+//             online: false,
+//             lastSeen: new Date()
+//           }
+//         }));
+//       }
+//     });
+//   };
 
-  // Setup connection status monitoring
-  const handleOnline = () => {
-    console.log('Browser online');
-    setupPresenceChannel();
-  };
+//   // Setup connection status monitoring
+//   const handleOnline = () => {
+//     console.log('Browser online');
+//     setupPresenceChannel();
+//   };
 
-  const handleOffline = () => {
-    console.log('Browser offline');
-    setConnectionStatus('disconnected');
-    subscription?.unsubscribe();
-    clearInterval(heartbeatInterval);
+//   const handleOffline = () => {
+//     console.log('Browser offline');
+//     setConnectionStatus('disconnected');
+//     subscription?.unsubscribe();
+//     clearInterval(heartbeatInterval);
     
-    // Update local status to offline
-    setOnlineStatus(prev => ({
-      ...prev,
-      [id]: {
-        online: false,
-        lastSeen: new Date()
-      }
-    }));
-  };
+//     // Update local status to offline
+//     setOnlineStatus(prev => ({
+//       ...prev,
+//       [id]: {
+//         online: false,
+//         lastSeen: new Date()
+//       }
+//     }));
+//   };
 
-  window.addEventListener('online', handleOnline);
-  window.addEventListener('offline', handleOffline);
+//   window.addEventListener('online', handleOnline);
+//   window.addEventListener('offline', handleOffline);
 
-  // Initial setup
-  if (navigator.onLine) {
-    setupPresenceChannel();
-  } else {
-    setConnectionStatus('disconnected');
-  }
+//   // Initial setup
+//   if (navigator.onLine) {
+//     setupPresenceChannel();
+//   } else {
+//     setConnectionStatus('disconnected');
+//   }
 
-  return () => {
-    window.removeEventListener('online', handleOnline);
-    window.removeEventListener('offline', handleOffline);
-    subscription?.unsubscribe();
-    clearInterval(heartbeatInterval);
-  };
-}, [id]);
+//   return () => {
+//     window.removeEventListener('online', handleOnline);
+//     window.removeEventListener('offline', handleOffline);
+//     subscription?.unsubscribe();
+//     clearInterval(heartbeatInterval);
+//   };
+// }, [id]);
 
 
 
@@ -399,14 +451,14 @@ const MenuItem = ({ icon, text, onClick }) => {
         }`} />
 
         
-        {isOffline && (
+        {/* {isOffline && (
           <div className="absolute bottom-5 right-0 text-xs text-black">
             {connectionStatus === 'disconnected' 
               ? 'Offline (No connection)' 
               : `Last seen: ${formatLastSeen(status?.lastSeen)}`
             }
           </div>
-        )}
+        )} */}
       </div>
     );
   };
@@ -417,12 +469,32 @@ const MenuItem = ({ icon, text, onClick }) => {
 
     <>
 
+<Toaster position="top-center" />
+
+
+
+<Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={6000} 
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert 
+                    onClose={handleCloseSnackbar} 
+                    severity={snackbar.severity}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+
+            
 <EditProfile 
         isOpenEditProfile={isOpenEditProfile} 
         setisOpenEditProfile={setisOpenEditProfile} 
       />
       
-      <div className="fixed top-0 right-[100px] max-md:right-[150px] p-4 sm:relative sm:p-8 sm:pb-56 
+      <div className="fixed top-0 right-[100px]
+       max-md:right-[150px] p-4 sm:relative sm:p-8 sm:pb-56 
         flex items-center justify-center z-50">
        <motion.div 
   initial={{ opacity: 0, scale: 0.95 }}
@@ -440,24 +512,31 @@ const MenuItem = ({ icon, text, onClick }) => {
           {/* Profile Trigger Button */}
           <motion.div 
             className='flex items-center gap-x-2 bg-white/10 backdrop-blur-lg 
-              rounded-full p-2 cursor-pointer'
+              rounded-full p-2 cursor-pointer profile'
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setOpen((pv) => !pv)}
           >
-            <div className="relative">
+            <div className="relative z-0">
               <motion.div
                 whileHover={{ rotate: 10 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
 
-<Avatar 
+{/* <Avatar 
                   style={{
                     width: 65,
                     height: 65,
                     boxShadow: '0 0 10px rgba(0,0,0,0.1)'
                   }}    
                   {...stringAvatar(user_name)} 
+                /> */}
+
+
+<img
+                  className="w-12 h-12 rounded-full"
+                  src={generateAvatar(user_name.toString())}
+                  alt={`${user_name.toString()}'s avatar`}
                 />
               </motion.div>
               <OnlineIndicator userId={id} />
@@ -469,7 +548,9 @@ const MenuItem = ({ icon, text, onClick }) => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <p className='dark:text-black text-white font-semibold text-sm'>
+          
+              <p className='dark:text-black text-white
+               font-semibold text-xl max-w-max '>
                 {user_name}
               </p>
               <p className='dark:text-black text-white text-xs opacity-75'>
@@ -490,9 +571,9 @@ const MenuItem = ({ icon, text, onClick }) => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="flex flex-col gap-1 p-4 rounded-2xl bg-white shadow-xl 
+                className={`flex flex-col gap-1 p-4  bg-white shadow-xl 
                   absolute top-[120%] right-0 w-64 sm:w-48 overflow-hidden
-                  border border-gray-100"
+                  border border-gray-100 ${borderRadiusClasses[settings.borderRadius]} `}
               >
                 {/* Close Button */}
                 <motion.div 

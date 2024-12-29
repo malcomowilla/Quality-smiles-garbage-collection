@@ -1,125 +1,182 @@
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
+  Typography,
+  Box,
+  CircularProgress,
+  Slide,
+  useTheme,
+  useMediaQuery,
+  Paper
+} from '@mui/material';
+import {
+  Close as CloseIcon,
+  DeleteOutline as DeleteIcon,
+  Warning as WarningIcon
+} from '@mui/icons-material';
+import { forwardRef } from 'react';
 
-import { AnimatePresence, motion } from "framer-motion";
-import { FiAlertCircle } from "react-icons/fi";
-import { useState, useEffect } from "react";
-import {useApplicationSettings} from '../settings/ApplicationSettings'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
-import { ImSpinner9 } from "react-icons/im";
-import { PiSpinner } from "react-icons/pi";
-import { MdCancel } from "react-icons/md";
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
+const DeleteTicket = ({ id, isOpenDelete, setisOpenDelete, isloading, deleteTicket }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const handleDeleteTicket = () => {
+    deleteTicket(id);
+  };
 
-
-const DeleteTicket = ({id, isOpenDelete, setisOpenDelete, isloading, deleteTicket}) => {
-
-
-
-const handleDeleteTicket = () =>{
-
-    deleteTicket(id)
-}
-
-
-
-
-
-  
   return (
-    <AnimatePresence>
-    {isOpenDelete && (
-     <motion.div
-     initial={{ opacity: 0 }}
-     animate={{ opacity: 1 }}
-     exit={{ opacity: 0 }}
-     className="bg-slate-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-scroll 
-     cursor-pointer"
-   >
-     <motion.div
-       initial={{ scale: 0, rotate: "12.5deg" }}
-       animate={{ scale: 1, rotate: "0deg" }}
-       exit={{ scale: 0, rotate: "0deg" }}
-       className="bg-gradient-to-br from-red-600 to-rose-600 text-white p-6 rounded-lg w-full
-        max-w-lg shadow-xl cursor-default relative overflow-hidden"
-     >
-                     <FiAlertCircle className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
+    <Dialog
+      fullScreen={fullScreen}
+      open={isOpenDelete}
+      onClose={() => setisOpenDelete(false)}
+      TransitionComponent={Transition}
+      PaperProps={{
+        elevation: 0,
+        sx: {
+          borderRadius: fullScreen ? 0 : 3,
+          minWidth: { xs: '100%', sm: '400px' },
+          maxWidth: '100%',
+          m: fullScreen ? 0 : 2,
+          position: 'relative',
+          overflow: 'hidden'
+        }
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: -64,
+          left: -64,
+          right: 0,
+          bottom: 0,
+          bgcolor: 'error.main',
+          transform: 'rotate(-12deg) scale(1.5)',
+          transformOrigin: '0 100%',
+          zIndex: 0
+        }}
+      />
+      
+      <DialogTitle
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          color: 'white',
+          pt: 3,
+          pb: 4,
+          textAlign: 'center'
+        }}
+      >
+        <IconButton
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: 'white'
+          }}
+          onClick={() => setisOpenDelete(false)}
+        >
+          <CloseIcon />
+        </IconButton>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <Box
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              bgcolor: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <WarningIcon color="error" sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="h5" component="span" fontWeight="bold">
+            Delete Ticket
+          </Typography>
+        </Box>
+      </DialogTitle>
 
-       <div className="relative z-10">
-       <div  onClick={()=> setisOpenDelete(false)} className='cursor-pointer absolute right-0'>
-                     <MdCancel className='w-8 h-8 '/>
-                     </div>
-       <div className="bg-white w-16 h-16 mb-2 rounded-full text-3xl text-rose-600 grid place-items-center mx-auto">
-             <FiAlertCircle />
-           </div>
-         <h3 className="text-3xl font-extrabold  text-center   playwrite-de-grund mb-2">
-           Delete Ticket
-         </h3>
-        
+      <DialogContent
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          bgcolor: 'background.paper',
+          pt: 3,
+          pb: 2
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          align="center"
+          sx={{ mb: 2, fontWeight: 500 }}
+        >
+          Are you sure you want to delete this ticket?
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+        >
+          This action cannot be undone.
+        </Typography>
+      </DialogContent>
 
-
-<div className="mb-5 p-3 playwrite-de-grund text-xl   font-semibold">
-Are You Sure You Want To Delete This Ticket
-
-</div>
-
-
-
-
-<div className="flex gap-8">
-
-
-<button onClick={()=> setisOpenDelete(false)} className="px-6 py-2 font-medium bg-black rounded-md text-white w-fit 
-transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
-  
-      Cancel
-      </button>
-
-           <button onClick={handleDeleteTicket}   className="px-6 py-2 font-medium text-red-700 bg-white rounded-md 
-            w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
-             
-        Delete
-       {isloading ? (
-        <PiSpinner className={`text-lg ${isloading ? 'animate-spin' : null }   `} />
-       ): null} 
-      </button>
-
-
-
-
-
-           {/* <button
-           disabled={isloading}
-             onClick={handleDeleteTicket}
-             className="btn btn-active "
-           >
-                             {isloading && <ImSpinner9 className={`${isloading && 'animate-spin'}`}/> }
-
-               Delete
-           </button>
-
-
-           <button
-             onClick={()=> setisOpenDelete(false)}
-             className="btn btn-active "
-           >
-               Cancel
-           </button> */}
-         </div>
-
-     
-       </div>
-     </motion.div>
-   </motion.div>
-    )}
-  </AnimatePresence>
-   
+      <DialogActions
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          bgcolor: 'background.paper',
+          px: 2,
+          pb: 2,
+          gap: 1,
+          justifyContent: 'center'
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={() => setisOpenDelete(false)}
+          sx={{
+            minWidth: 100,
+            borderColor: 'grey.300',
+            color: 'text.primary',
+            '&:hover': {
+              borderColor: 'grey.400',
+              bgcolor: 'grey.50'
+            }
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleDeleteTicket}
+          disabled={isloading}
+          sx={{
+            minWidth: 100,
+            '&:hover': {
+              bgcolor: 'error.dark'
+            }
+          }}
+        >
+          {isloading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Delete'
+          )}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
-
-
-
-
 
 export default DeleteTicket;

@@ -9,12 +9,14 @@ import { createConsumer } from '@rails/actioncable';
 import { useDebounce } from 'use-debounce';
 import { BiMessageDots } from "react-icons/bi";
 import { MdClose } from "react-icons/md";
+import {motion} from "framer-motion"
+import { useNavigate } from 'react-router-dom';
 
 
 
 
 const CustomerChat = () => {
-  const { user_name } = useApplicationSettings();
+  const { user_name, customerId } = useApplicationSettings();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +24,9 @@ const CustomerChat = () => {
   const messagesEndRef = useRef(null);
   const [subscription, setSubscription] = useState(null);
   const [error, setError] = useState(null);
+
+
+  const navigate = useNavigate()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,20 +36,30 @@ const CustomerChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Initial fetch of messages and conversation details
+  // allow_get_chat_messages
+  // Initial  fetch of messages and conversation details
   useEffect(() => {
     const fetchConversation = async () => {
       try {
-        const response = await fetch('/api/chat_messages');
+        const response = await fetch(`/api/chat_messages?customer_id=${customerId}`)
         if (response.ok) {
           const data = await response.json();
+          localStorage.setItem('conversation_id_customer', data.conversation_id)
           setMessages([...data.yesterday, ...data.today]);
           setSupportAgent(data.admin); // Get assigned support agent
+          subscribeToConversation()
           
+
+          console.log('data',data.conversation_id)
+         
           // Subscribe to the conversation
-          if (data.conversation_id) {
-            subscribeToConversation(data.conversation_id);
-          }
+          // if (data.conversation_id) {
+          //   localStorage.setItem('conversation_id', data.conversation_id)
+          //   // subscribeToConversation();
+          // }
+        }else{
+          const data = await response.json();
+          setError(data);
         }
       } catch (error) {
         console.error('Error fetching conversation:', error);
@@ -56,31 +71,90 @@ const CustomerChat = () => {
     }
   }, [isOpen]);
 
-  const subscribeToConversation = (conversationId) => {
+  // const subscribeToConversation = () => {
+  //   const conversationId =  parseInt(localStorage.getItem('conversation_id'))
+  //   const cable = createConsumer('ws://localhost:4000/cable');
+  //   // const cable = createConsumer(`ws://localhost:4000/cable?conversation_id=${conversationId}`);
+
+  //   const sub = cable.subscriptions.create(
+
+
+      
+  //     {
+  //       channel: "MessageChannel",
+  //       conversation_id: conversationId
+  //     },
+
+      
+     
+  //     {
+
+  //       connected() {
+  //         console.log("Connected to private chat  WebSocket!");
+  //       },
+
+  //       disconnected() {
+  //         console.log("Disconnected from private chat  WebSocket!");
+  //       },
+  //       received(data) {
+  //         console.log("Message received:", data);
+  //         setMessages(prev => [...prev, data]);
+  //       }
+  //     }
+  //   );
+  //   setSubscription(sub);
+  // }; 
+
+  const conversationIdCustomer = parseInt(localStorage.getItem('conversation_id_customer'));
+  console.log('Subscribing to conversation ID customer:', conversationIdCustomer);
+  const subscribeToConversation = () => {
+    const conversationIdCustomer = parseInt(localStorage.getItem('conversation_id_customer'));
+    if (!conversationIdCustomer) {
+      console.log('Conversation ID is missing');    
+      return;
+    }
     const cable = createConsumer('ws://localhost:4000/cable');
+  
     const sub = cable.subscriptions.create(
       {
-        channel: "MessageChannel",
-        conversation_id: conversationId
+        channel: 'MessageChannel',
+        conversation_id: conversationIdCustomer
       },
       {
+        connected() {
+          console.log('Connected to WebSocket forchat  conversation:', conversationId);
+        },
+        disconnected() {
+          console.log('Disconnected from WebSocket for chat conversation:', conversationId);
+        },
         received(data) {
-          setMessages(prev => [...prev, data]);
-        }
+          console.log('Message received:', data);
+          setMessages((prev) => [...prev, data]);
+        },
       }
     );
     setSubscription(sub);
   };
 
-  
-
-
+// allow_send_chat_message'
   const sendMessage = async () => {
+
+    if (text.trim()) {
+      subscription.perform("receive", { content: text,
+        customer_id: customerId,
+        conversation_id: conversationIdCustomer
+       });
+      setText('');
+    }
     try {
       const response = await fetch('/api/send_chat_message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: text })
+        body: JSON.stringify({ content: text ,
+          customer_id: customerId
+
+
+        })
       });
 
       if (response.status === 503) {
@@ -93,13 +167,23 @@ const CustomerChat = () => {
       console.error('Error:', error);
     }
   };
+  const conversationId = parseInt(localStorage.getItem('conversation_id'))
 
-
+  console.log('conversationId', conversationId)
 
   return (
     <>
       {/* Chat Button */}
-
+      <motion.button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 bg-green-500 text-white p-3 
+                   rounded-full shadow-lg hover:bg-green-600 hover:shadow-xl 
+                   transition-all z-50"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <BiArrowBack className="w-6 h-6" />
+      </motion.button>
 
       {error && (
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
