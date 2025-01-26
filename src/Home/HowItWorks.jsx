@@ -135,7 +135,7 @@ const HowItWorks = () => {
           </p>
           <div className="mt-8 flex justify-center">
             <Link
-              to="/contact-sales"
+              to="/contact-sales-company"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700"
             >
               Contact Sales Team

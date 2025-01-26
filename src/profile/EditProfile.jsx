@@ -126,6 +126,7 @@ const EditProfile = () => {
     setOpenUpdateAdminAlertError(false);
   };
 
+  
   function arrayBufferToBase64Url(buffer) {
     const bytes = new Uint8Array(buffer);
     let binary = '';
@@ -169,9 +170,9 @@ try {
       message: options.error,
       severity: 'error'
     })
-   
-    setRegistrationStatus('error');
     setSeeError(true);
+
+    setRegistrationStatus('error');
     setTimeout(() => {
       setIsRegistering(false)
     }, 3000);
@@ -250,7 +251,7 @@ try {
       if (createResponse.ok) {
         setOpen(true);
         setSeeError(false);
-        setsignupFormData('')
+        // setsignupFormData('')
         setOpenLoad(false);
         setisloading(false);
         setHasPasskey(true);

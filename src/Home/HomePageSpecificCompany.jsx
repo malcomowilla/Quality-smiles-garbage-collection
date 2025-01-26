@@ -27,7 +27,7 @@ const HomePageSpecificCompany = () => {
           </div>
           <div className="flex space-x-4">
             {/* <Link to="/login" className="text-gray-600 hover:text-emerald-600">Login</Link> */}
-            <Link to="/login" className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
+            <Link to="/signin" className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700">
               Sign In
             </Link>
           </div>
@@ -55,7 +55,7 @@ const HomePageSpecificCompany = () => {
                 </p>
                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                   <div className="rounded-md shadow">
-                    <Link to="/contact-sales" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 md:py-4 md:text-lg md:px-10">
+                    <Link to="/contact-sales-company" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 md:py-4 md:text-lg md:px-10">
                       Contact Sales Team
                     </Link>
                   </div>

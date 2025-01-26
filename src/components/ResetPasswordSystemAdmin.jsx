@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Paper } from '@mui/material';
 import { toast, Slide,ToastContainer } from 'react-toastify';
 
-const ResetPassword = () => {
+const ResetPasswordSystemAdmin = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -11,7 +11,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/reset-password', {
+      const response = await fetch('/api/sys_admin_reset_password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const ResetPassword = () => {
           Reset Password
         </Typography>
         <Typography variant="body2" color="textSecondary" align="center" sx={{ mb: 3 }}>
-          Enter your customer's email address and we'll send him a new password
+          Enter your email address and you will get a new password
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -108,4 +108,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ResetPasswordSystemAdmin;

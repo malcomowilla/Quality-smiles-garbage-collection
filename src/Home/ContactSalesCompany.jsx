@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaTruck, FaBuilding, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import { useApplicationSettings } from '../settings/ApplicationSettings'
-import { Link } from 'react-router-dom'
-import { Button } from '@mui/material'
+import { FaWhatsapp } from "react-icons/fa";
 
-const ContactSales = () => {
+
+
+const ContactSalesCompany = () => {
   const { companySettings } = useApplicationSettings()
   const { company_name, contact_info, email_info } = companySettings
 
@@ -38,7 +39,7 @@ const ContactSales = () => {
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
-            Contact AItechs Sales Team
+            Contact {company_name} Sales Team
           </h1>
           {/* <p className="text-xl text-gray-600">
             Choose your business type to get started
@@ -47,8 +48,8 @@ const ContactSales = () => {
 
         {/* Business Type Selection */}
         <motion.div variants={containerVariants} className="mb-12">
-          <div className="flex justify-center ">
-            <motion.div
+          <div className="">
+            {/* <motion.div
               variants={itemVariants}
               className={`p-6 rounded-lg shadow-lg cursor-pointer transition-all ${
                 inquiryType === 'business' ? 'bg-emerald-50 border-2 border-emerald-500' : 'bg-white'
@@ -60,9 +61,9 @@ const ContactSales = () => {
               <p className="text-gray-600">
                 I want to use {company_name}'s platform for my waste management needs
               </p>
-            </motion.div>
+            </motion.div> */}
 
-            {/* <motion.div
+            <motion.div
               variants={itemVariants}
               className={`p-6 rounded-lg shadow-lg cursor-pointer transition-all ${
                 inquiryType === 'provider' ? 'bg-emerald-50 border-2 border-emerald-500' : 'bg-white'
@@ -74,7 +75,7 @@ const ContactSales = () => {
               <p className="text-gray-600">
                 I want to become a waste collection service provider
               </p>
-            </motion.div> */}
+            </motion.div>
           </div>
         </motion.div>
 
@@ -86,21 +87,18 @@ const ContactSales = () => {
               : 'Become a Service Provider'}
           </h2>
           
-          <div className="fllex flex-col gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              {/* <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Requirements for {inquiryType === 'business' ? 'Businesses' : 'Service Providers'}:
-              </h3> */}
+              </h3>
               <ul className="space-y-3 text-gray-600">
                 {inquiryType === 'business' ? (
                   <>
-                    {/* <li>• Valid business registration</li>
+                    <li>• Valid business registration</li>
                     <li>• Physical business address</li>
-                    <li>• Company name must be unique</li>
-                    <li>• Your email</li>
-                    <li>• Your phone number</li>
-                    <li>• Username</li> */}
-                    {/* <li>• Designated waste management coordinator</li> */}
+                    <li>• Minimum 6-month contract</li>
+                    <li>• Designated waste management coordinator</li>
                   </>
                 ) : (
                   <>
@@ -114,33 +112,35 @@ const ContactSales = () => {
               </ul>
             </div>
 
-            <div className=''> 
+            <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Us:</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <FaPhone className="w-5 h-5 text-emerald-600 mr-3" />
                   
-                  <a href="tell:0791568852"><span className='text-black'>0791568852</span></a>
+                  <a href={`tell:${contact_info}`}><span className='text-black'>{contact_info}</span></a>
 
                 </div>
-
-
                 <div className="flex items-center">
                   <FaEnvelope className="w-5 h-5 text-emerald-600 mr-3" />
                   {/* <span>{email_info}</span> */}
-                  <a href="mailto:owillamalcom@gmail.com ">  <span className='text-black'>Email </span></a>
+                  <a href={`mailto:${email_info}`}>  <span className='text-black'>Email </span></a>
                 </div>
 
+
+                <div className='flex items-center'>
+                    <FaWhatsapp className="w-5 h-5 text-emerald-600 mr-3" />
+                    <a href="https://wa.me/254791568852"><span className='text-black'>Whatsapp </span></a>
+                </div>
                 <div className="flex items-center">
                   <FaMapMarkerAlt className="w-5 h-5 text-emerald-600 mr-3" />
                   <span>Visit our office for a demo</span>
                 </div>
-
               </div>
             </div>
           </div>
 
-          {/* <div className="mt-8 border-t pt-8">
+          <div className="mt-8 border-t pt-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Next Steps:</h3>
             <ol className="list-decimal list-inside space-y-2 text-gray-600">
               <li>Contact our sales team via phone or email</li>
@@ -149,19 +149,9 @@ const ContactSales = () => {
               <li>Review and sign service agreement</li>
               <li>Begin onboarding process</li>
             </ol>
-          </div> */}
+          </div>
         </motion.div>
-        <div className="mt-8 text-center">
-          {/* <p className="text-gray-700 mb-4">If the process is too much, use this option:</p> */}
-          <Button 
-            component={Link} 
-            to="/contact-form" // Adjust this path to your form component/path
-            variant="contained" 
-            color="primary"
-          >
-            Book Appointment
-          </Button>
-        </div>
+
         {/* Additional Information */}
         <motion.div variants={containerVariants} className="mt-8 text-center text-gray-600">
           {/* <p>
@@ -176,4 +166,4 @@ const ContactSales = () => {
   )
 }
 
-export default ContactSales
+export default ContactSalesCompany

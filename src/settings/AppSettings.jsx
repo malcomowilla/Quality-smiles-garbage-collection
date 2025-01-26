@@ -4,6 +4,7 @@ const AppSettingsContext = createContext(null);
 
 export const AppSettings = ({ children }) => {
   const [totalHrs, setTotalHrs] = useState(0);
+  const [loginWithPasskey, setLoginWithPasskey] = useState(false);
 
   if (AppSettingsContext === null) {
     console.log("AppSettingsContext is not provided.");
@@ -11,7 +12,7 @@ export const AppSettings = ({ children }) => {
   }
 
   return (
-    <AppSettingsContext.Provider  value={{ totalHrs, setTotalHrs }}>
+    <AppSettingsContext.Provider  value={{ totalHrs, setTotalHrs, loginWithPasskey, setLoginWithPasskey }}>
       {children}
     </AppSettingsContext.Provider>
   );

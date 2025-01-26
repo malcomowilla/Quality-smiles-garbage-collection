@@ -12,6 +12,8 @@ import {useNavigate} from 'react-router-dom'
 import { Lock } from '@mui/icons-material'; // Import an icon from Material-UI or any other icon library
 import { GoPasskeyFill } from "react-icons/go";
 import toaster, { Toaster } from 'react-hot-toast';
+import {useApplicationSettings} from '../settings/ApplicationSettings'
+import {useAppSettings} from '../settings/AppSettings';
 
 
 
@@ -27,6 +29,9 @@ const LoginSytemAdmin = () => {
   const [passkeyCreated, setPasskeyCreated] = useState(false); // Track if passkey is created
   const [emailVerified, setEmailVerified] = useState(false); // Track if passkey is created
 const navigate = useNavigate()
+const {currentSystemAdmin, systemAdminEmail} = useApplicationSettings()
+const {loginWithPasskey, setLoginWithPasskey} = useAppSettings()
+
   // Check if the user already has a passkey
 
 
@@ -34,11 +39,11 @@ const navigate = useNavigate()
   
   useEffect(() => {
     const checkPasskeyStatus = async () => {
-      const response = await fetch('api/check_passkey_status', {
+      const sysEmail =  localStorage.getItem('system_admin_email')
+
+      const response = await fetch(`api/check_passkey_status?email=${sysEmail}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+       
       });
 
       if (response.ok) {
@@ -54,8 +59,9 @@ const navigate = useNavigate()
 
 
   useEffect(() => {
+    const sysEmail =  localStorage.getItem('system_admin_email')
     const checkEmailStatus = async () => {
-      const response = await fetch('api/check_email_already_verified', {
+      const response = await fetch(`api/check_email_already_verified?email=${sysEmail}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -76,6 +82,124 @@ const navigate = useNavigate()
 
 
 
+  
+  async function authenticateWebAuthn(web_auth_email) {
+    setOpenLoad(true);
+      setLoading(true);
+    const response = await fetch('/api/webauthn/authenticate_register_system_admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: web_auth_email})
+    })  
+  
+    const options = await response.json();
+    const challenge = options.challenge;
+  
+  
+  
+    if (response.ok) {
+      setLoading(false);
+      setOpenLoad(false)
+      
+    
+    } else {
+     
+      toast.error(options.error || 'passkey creation failed');
+          setOpenLoad(false)
+          setLoading(false);
+    }
+  
+  
+    // function base64UrlToBase64(base64Url) {
+    //   if (typeof base64Url !== 'string') {
+    //     throw new TypeError('Expected base64Url to be a string');
+    //   }
+    //   return base64Url.replace(/_/g, '/').replace(/-/g, '+');
+    // }
+  
+    function base64UrlToUint8Array(base64Url) {
+      const padding = '='.repeat((4 - base64Url.length % 4) % 4);
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
+      const rawData = atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+  
+  
+  
+    const publicKey = {
+      ...options,
+      challenge: base64UrlToUint8Array(options.challenge),
+      allowCredentials: options.allowCredentials.map(cred => ({
+        ...cred,
+        id: base64UrlToUint8Array(cred.id)
+      }))
+    };
+  
+  
+    try {
+      // const credentialSignin = await navigator.credentials.get({ publicKey: options });
+      const credential = await navigator.credentials.get({ publicKey: publicKey });
+  
+  
+      // Prepare the credential response
+      const credentialJson = {
+        id: credential.id,
+        rawId: arrayBufferToBase64Url(credential.rawId),
+        challenge: challenge,
+        type: credential.type,
+        response: {
+          clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
+          authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
+          signature: arrayBufferToBase64Url(credential.response.signature),
+          userHandle: arrayBufferToBase64Url(credential.response.userHandle)
+        }
+  
+  
+      };
+  
+  
+  
+  
+      const createResponse = await fetch('/api/webauthn/verify_register_system_admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential:credentialJson, email: web_auth_email, 
+        
+            })
+      });
+  
+  const newData = await createResponse.json()
+  
+      if (createResponse.ok) {
+        setLoading(false);
+        setOpenLoad(false)
+        navigate('/system-admin')
+        // setTimeout(() => {
+        //   // setDone(true);
+        //   // setloading(false);
+        //   setTimeout(() => {
+        //     navigate('/admin/location')
+        //   }, 1000);
+        // }, 2500);
+        console.log('message', newData.message)
+      } else {
+        setLoading(false);
+      setOpenLoad(false)
+        toast.error(newData.error || 'passkey creation failed');
+        console.log(`passkey error =>${newData.error}`)
+      }
+    } catch (err) {
+      setLoading(false);
+      setOpenLoad(false)
+      toast.error('An error occurred. Please try again later.');
+      console.error('Error during WebAuthn credential creation:', err);
+    }
+  }
+  
 
 
 
@@ -94,12 +218,17 @@ const navigate = useNavigate()
       });
 
       const data = await response.json();
-
+localStorage.setItem('system_admin_email', email)
       if (response.ok) {
-        toast.success('Email verification sent! Please check your inbox.');
+
+        if (!emailVerified) {
+          toast.success('Email verification sent! Please check your inbox.');
+          setSentEmail(true);
+        }
+        
         setOpenLoad(false);
         setLoading(false);
-        setSentEmail(true);
+        
         setStep(2); // Move to password step
       } else {
         setOpenLoad(false);
@@ -113,6 +242,27 @@ const navigate = useNavigate()
       toast.error('An error occurred. Please try again later.');
     }
   };
+
+
+
+  useEffect(() => {
+    const getLoginWithPasskey = async () => {
+     try {
+       const response = await fetch('/api/get_login_with_passkey');
+       const data = await response.json();
+       if (response.ok) {
+         const { login_with_passkey } = data[0]
+         setLoginWithPasskey(login_with_passkey);
+       }
+     } catch (error) {
+       console.error('Error fetching login with passkey:', error);
+     }
+   };
+   getLoginWithPasskey() 
+    }, []);
+
+
+
 
   // Handle password submission
   const handleLoginPassword = async (e) => {
@@ -132,6 +282,13 @@ const navigate = useNavigate()
 
       if (response.ok) {
         toast.success('Login successful!');
+
+        if (loginWithPasskey === 'true' || loginWithPasskey === true) {
+          authenticateWebAuthn(email)
+        }else{
+          navigate('/system-admin')
+        }
+        
         setOpenLoad(false);
         setLoading(false);
         setStep(3); // Move to passkey step
@@ -267,126 +424,11 @@ const navigate = useNavigate()
 
 
 
+  
 
-  
-  async function authenticateWebAuthn(e) {
-    e.preventDefault();
-    setOpenLoad(true);
-      setLoading(true);
-    const response = await fetch('/api/webauthn/authenticate_register_system_admin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email})
-    })
-  
-    const options = await response.json();
-    const challenge = options.challenge;
-  
-  
-  
-    if (response.ok) {
-      setLoading(false);
-      setOpenLoad(false)
-      
-    
-    } else {
-     
-      toast.error(options.error || 'passkey creation failed');
-          setOpenLoad(false)
-          setLoading(false);
-    }
-  
-  
-    // function base64UrlToBase64(base64Url) {
-    //   if (typeof base64Url !== 'string') {
-    //     throw new TypeError('Expected base64Url to be a string');
-    //   }
-    //   return base64Url.replace(/_/g, '/').replace(/-/g, '+');
-    // }
-  
-    function base64UrlToUint8Array(base64Url) {
-      const padding = '='.repeat((4 - base64Url.length % 4) % 4);
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/') + padding;
-      const rawData = atob(base64);
-      const outputArray = new Uint8Array(rawData.length);
-      for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-      }
-      return outputArray;
-    }
-  
-  
-  
-    const publicKey = {
-      ...options,
-      challenge: base64UrlToUint8Array(options.challenge),
-      allowCredentials: options.allowCredentials.map(cred => ({
-        ...cred,
-        id: base64UrlToUint8Array(cred.id)
-      }))
-    };
-  
-  
-    try {
-      // const credentialSignin = await navigator.credentials.get({ publicKey: options });
-      const credential = await navigator.credentials.get({ publicKey: publicKey });
-  
-  
-      // Prepare the credential response
-      const credentialJson = {
-        id: credential.id,
-        rawId: arrayBufferToBase64Url(credential.rawId),
-        challenge: challenge,
-        type: credential.type,
-        response: {
-          clientDataJSON: arrayBufferToBase64Url(credential.response.clientDataJSON),
-          authenticatorData: arrayBufferToBase64Url(credential.response.authenticatorData),
-          signature: arrayBufferToBase64Url(credential.response.signature),
-          userHandle: arrayBufferToBase64Url(credential.response.userHandle)
-        }
-  
-  
-      };
-  
-  
-  
-  
-      const createResponse = await fetch('/api/webauthn/verify_register_system_admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential:credentialJson, email, 
-        
-            })
-      });
-  
-  const newData = await createResponse.json()
-  
-      if (createResponse.ok) {
-        setLoading(false);
-        setOpenLoad(false)
-        navigate('/system-admin')
-        // setTimeout(() => {
-        //   // setDone(true);
-        //   // setloading(false);
-        //   setTimeout(() => {
-        //     navigate('/admin/location')
-        //   }, 1000);
-        // }, 2500);
-        console.log('message', newData.message)
-      } else {
-        setLoading(false);
-      setOpenLoad(false)
-        toast.error(newData.error || 'passkey creation failed');
-        console.log(`passkey error =>${newData.error}`)
-      }
-    } catch (err) {
-      setLoading(false);
-      setOpenLoad(false)
-      toast.error('An error occurred. Please try again later.');
-      console.error('Error during WebAuthn credential creation:', err);
-    }
-  }
-  
+
+
+
   
   
 
@@ -479,13 +521,12 @@ const navigate = useNavigate()
                       type="button"
                       onClick={handleLoginEmail}
                     >
-                      Send Verification Email
+                      {emailVerified ? 'Login With Email' : 'Send Verification Email'}
                     </button>
                   </div>
                 </>
-              ) : step === 2 ? (
+              ) : step === 2  &&  (
                 <>
-
 <div className="relative z-0 w-full mb-5">
       <div className="flex items-center">
         <Lock className="absolute left-3 top-2.5 text-gray-400" /> {/* Icon positioned inside the input */}
@@ -509,85 +550,6 @@ const navigate = useNavigate()
                       Login
                     </button>
                   </div>
-                </>
-              ) : (
-
-                <>
-                {passkeyCreated ? (
-                  <>
-
-
-
-
-
-
-
-
-
-
-
-<div className="relative z-0 w-full mb-5">
-      <div className="flex items-center">
-        <GoPasskeyFill className="absolute left-3 top-2.5 text-gray-400" /> {/* Icon positioned inside the input */}
-        <input
-           value={email}
-           required
-           onChange={(e) => setPasskey(e.target.value)}
-           placeholder="Enter your passkey"
-          className="pt-3 pb-2 block w-full px-10 mt-0 bg-transparent border-0 border-b-2 
-          appearance-none focus:outline-none focus:ring-0 focus:border-black
-           border-gray-200"
-        />
-      </div>
-    </div>
-                <div className="p-6 pt-0">
-                  <button
-                    className="block w-full select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
-                    onClick={authenticateWebAuthn}
-                  >
-                    Login with Passkey
-                  </button>
-                </div>
-
-                  </>
-
-                ):  
-                <>
-
-
-
-
-
-<div className="relative z-0 w-full mb-5">
-      <div className="flex items-center">
-        <GoPasskeyFill className="absolute left-3 top-2.5 text-gray-400" /> {/* Icon positioned inside the input */}
-        <input
-           value={email}
-           required
-           onChange={(e) => setPasskey(e.target.value)}
-           placeholder="Enter your passkey"
-          className="pt-3 pb-2 block w-full px-10 mt-0 bg-transparent border-0 border-b-2 
-          appearance-none focus:outline-none focus:ring-0 focus:border-black
-           border-gray-200"
-        />
-      </div>
-    </div>
-                <div className="p-6 pt-0">
-                  <button
-                    className="block w-full select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
-                    onClick={signupWithWebAuthn}
-                  >
-                    Create Passkey
-                  </button>
-                </div>
-                </>
-                }
-
-
-
-               
                 </>
               )}
             </div>

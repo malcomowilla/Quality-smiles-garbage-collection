@@ -12,6 +12,10 @@ const HomePage = () => {
   const { scrollY } = useScroll()
   const isHeroInView = useInView(heroRef)
 
+
+  const subdomain = window.location.hostname.split('.')[0]
+  console.log('subdomain', subdomain)
+
   const scrollToElement = () => {
     const {current} =  heroRef
      if (current !== null){

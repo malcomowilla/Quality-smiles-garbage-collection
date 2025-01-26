@@ -493,7 +493,8 @@ useEffect(() => {
     <CustomerUpdatedAlert updatedMessage={updatedMessage}
 handleCloseUpdated={handleCloseUpdated} 
 openUpdated={openUpdated}/>
-<DeleteCustomerConfirmation    id={customerformData.id}   loading={loading}  deleteCustomer={deleteCustomer}   isOpenDelete={isOpenDelete} 
+<DeleteCustomerConfirmation    id={customerformData.id}   loading={loading}  deleteCustomer={deleteCustomer}  
+ isOpenDelete={isOpenDelete} 
 setIsOpenDelete={setIsOpenDelete} />
 <CustomerDeleteAlert  openDeleteAlert={openDeleteAlert} handleCloseDeleteAlert={handleCloseDeleteAlert} />
 <CustomerOfflineAlert openOfflineAlert={openOfflineAlert} handleCloseOfflineAlert={handleCloseOfflineAlert}/>

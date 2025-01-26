@@ -313,7 +313,7 @@ const [currentSystemAdmin, setCurrntSystemAdmin] = useState('')
 const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 const [isOpenEditProfile, setisOpenEditProfile] = useState(false)
 const [bottomNavigation, setBottomNavigation] = useState(true)
-
+const [systemAdminEmail, setsystemAdminEmail] = useState('')
 
 
 const [snackbar, setSnackbar] = useState({
@@ -1134,6 +1134,7 @@ const fectCurrentSystemAdmin = useCallback(
       if (response.ok) {
         console.log('Fetched user data:', data.user.email);
         setCurrntSystemAdmin(data.user)
+        setsystemAdminEmail(data.user.email)
      
         // setUser(data.user);
       } else {
@@ -2315,7 +2316,7 @@ const currentUserName = user_name
      canReadDashboard, setCanReadDashboard,canReadChats, canManageChats,conversationId,
      isOpenEditProfile, setisOpenEditProfile,
      bottomNavigation, setBottomNavigation,
-      canManageUsers,canReadUsers
+      canManageUsers,canReadUsers,systemAdminEmail
 
      
 

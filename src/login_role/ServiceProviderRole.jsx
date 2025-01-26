@@ -13,6 +13,7 @@ import { GoPerson } from "react-icons/go";
 import ServiceProviderLogout from '../Alert/ServiceProviderLogout'
 import ProviderOtpSentEmailAlert from '../Alert/ProviderOtpSentEmailAlert'
 import { motion } from "framer-motion";
+import toast, { Toaster } from 'react-hot-toast';
 
 
 
@@ -176,8 +177,6 @@ const handleCloseProviderInvalidCode = (event, reason) => {
 
 
 
-
-
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setloading(true);
@@ -200,15 +199,27 @@ const handleCloseProviderInvalidCode = (event, reason) => {
         setopenServiceProviderLoginSuccesful(true)
   
       } else {
+        const errorData = await response.json();
+
         console.log('failed')
         setloading(false);
-        setopenProviderInvalidOtp(true)
-
+        // setopenProviderInvalidOtp(true)
+        toast.error(errorData.error || 'invalid provider code', {
+          position: "top-center",
+       duration: 7000,
+          theme: "light",
+        })
   
       }
     } catch (error) {
+      
 console.log(error)  
-setopenProviderLoginAlert(true)
+toast.error('Something went wrong please try again later', {
+  position: "top-center",
+duration: 7000,
+  theme: "light",
+})
+// setopenProviderLoginAlert(true)
     } finally {
       setloading(false);
     }
@@ -273,14 +284,23 @@ setopenProviderLoginAlert(true)
         
     
       } else {
-        console.log('failed')
+        const errorData = await response.json();
         setloading(false)
-        setopenProviderInvalidCode(true)
+        toast.error(errorData.error || 'invalid provider code', {
+          position: "top-center",
+       duration: 7000,
+        })
+        // setopenProviderInvalidCode(true)
       }
     } catch (error) {
       console.log('error', error)
       setloading(false)
-      setopenProviderLoginAlert(true)
+      // setopenProviderLoginAlert(true)
+      toast.error('Something went wrong please try again later', {
+        position: "top-center",
+     duration: 7000,
+        theme: "light",
+      })
     }
     } 
 
@@ -322,6 +342,7 @@ setopenProviderLoginAlert(true)
   return (
 
     <>
+<Toaster />
 
     <ServiceProviderLogout  handleCloseServiceProviderLogoutSuccesful={handleCloseServiceProviderLogoutSuccesful}   
     
@@ -342,7 +363,6 @@ setopenProviderLoginAlert(true)
 
 {enable_2fa_for_service_provider ? (
         <>
-
 
 {otpSent  ? (
   <>

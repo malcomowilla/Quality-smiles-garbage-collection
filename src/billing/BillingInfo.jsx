@@ -171,7 +171,7 @@ const BillingInformation = () => {
               )}
               <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
                 <span className='text-black text-lg'>Monthly Amount</span>
-                <span className="font-bold text-green-600">KES 100,000</span>
+                <span className="font-bold text-green-600">KES {subscription.amount_cents }</span>
               </div>
             </motion.div>
           ) : (

@@ -4,16 +4,78 @@ import { Button, Label, TextInput } from "flowbite-react";
 import { FaHandPointLeft } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import { MdPayments } from "react-icons/md";
+import Lottie from 'react-lottie';
+import LoadingAnimation from '../animation/loading_animation.json'
+import Backdrop from '@mui/material/Backdrop';
+import toast, { Toaster } from 'react-hot-toast';
+
+
+
 
 const CustomerPayment = () => {
   const [activeTab, setActiveTab] = useState('instant');
   const [loading, setLoading] = useState(false);
+  const [openLoad, setopenLoad] = useState(false)
+  const [mpesaPayment, setMpesaPayment] = useState({
+    phone_number: '',
+    amount: '',
+  });
   const navigate = useNavigate();
+
+
+  const   {amount,phone_number } = mpesaPayment 
+  const onChangeMpesaPayment = (e) => {
+    const { name, value } = e.target;
+    setMpesaPayment({ ...mpesaPayment, [name]: value });
+  };
 
   const handleGoBack = (e) => {
     e.preventDefault();
     navigate(-1);
   };
+
+
+
+  const makePayment = async (e) => {
+    try {
+      setopenLoad(true)
+      setLoading(true)
+      e.preventDefault()
+      const response = await fetch('/api/customer_wallet_payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(mpesaPayment)
+      })
+      const newData = await response.json()
+
+      if (response.ok) {
+        setLoading(false)
+        toast.success(newData.message, {
+          duration: 8000,
+          position: "top-center",
+        })
+        setopenLoad(false)
+        
+      }else{
+        setLoading(false)
+        setopenLoad(false)
+        toast.error(newData.error, {
+          duration: 8000,
+          position: "top-center",
+        })
+
+      }
+    } catch (error) {
+      toast.error('Something went wrong!', {
+        duration: 8000,
+        position: "top-center",
+      })
+      setLoading(false)
+      setopenLoad(false)
+    }
+  } 
 
   const paymentMethods = [
     {
@@ -39,7 +101,27 @@ const CustomerPayment = () => {
     { text: 'You will receive notification from M-PESA with a confirmation code' }
   ];
 
+
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true, 
+  animationData: LoadingAnimation,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
+};
   return (
+<>
+
+<Toaster />
+{loading &&    <Backdrop open={openLoad} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+  
+  <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+    
+     </Backdrop>
+  }
+
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -118,16 +200,19 @@ const CustomerPayment = () => {
           <AnimatePresence mode="wait">
             {activeTab === 'instant' ? (
               <motion.form
+                onSubmit={makePayment}
                 key="form"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-6"
-                onSubmit={(e) => e.preventDefault()}
               >
                 <div>
                   <Label htmlFor="amount" className="text-gray-700 playwrite-de-grund">Amount</Label>
                   <TextInput 
+                    name='amount'
+                    value={amount}
+                    onChange={onChangeMpesaPayment}
                     id="amount"
                     type="number"
                     placeholder="Enter amount"
@@ -141,9 +226,12 @@ const CustomerPayment = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone" className="text-gray-700 playwrite-de-grund">Phone Number</Label>
+                  <Label htmlFor="phone_number" className="text-gray-700 playwrite-de-grund">Phone Number</Label>
                   <TextInput 
-                    id="phone"
+                    id="phone_number"
+                    onChange={onChangeMpesaPayment}
+                    value={phone_number}
+                    name='phone_number'
                     type="tel"
                     style={{
                       backgroundColor: 'transparent',
@@ -201,6 +289,8 @@ const CustomerPayment = () => {
         </motion.div>
       </div>
     </motion.div>
+
+    </>
   );
 };
 

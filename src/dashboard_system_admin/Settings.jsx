@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, FormControlLabel, Checkbox, Paper, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
-import SystemAdminEmailSettings from './SystemAdminEmailSettings'
+// import SystemAdminEmailSettings from './SystemAdminEmailSettings'
 
 const Settings = () => {
   const [isLocked, setIsLocked] = useState(false);
@@ -142,7 +142,7 @@ const Settings = () => {
               )}
             </Button>
           </form>
-          <SystemAdminEmailSettings/>
+          {/* <SystemAdminEmailSettings/> */}
 
         </Paper>
       </motion.div>

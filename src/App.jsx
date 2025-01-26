@@ -19,7 +19,7 @@ const HomePage = lazy(() => import ('./Home/HomePage'))
 import SignIn from './Auth/SignIn'
 import TourGuide from './components/TourGuide';
 import MobileExample from './components/MobileExample'
-
+const ContactYou = lazy(() => import ('./Home/ContactYou'))
 // const SignIn = lazy(()=>  import ('./Auth/SignIn'
 // ))
 const HomePageSpecificCompany = lazy(() => import ('./Home/HomePageSpecificCompany.jsx'))
@@ -27,8 +27,9 @@ const HomePageSpecificCompany = lazy(() => import ('./Home/HomePageSpecificCompa
 // import Admin from './Admin/Admin'
 
 const Admin = lazy(()=> import ('./Admin/Admin'))
+// const ContactForm = lazy(() => import ('./Home/ContactForm'))
 import { AnimatePresence } from 'framer-motion';
-
+import {ContactForm} from './Home/ContactForm'
 
 // import Services from './services/Services'
 const Services = lazy(()=> import ('./services/Services'))
@@ -72,7 +73,7 @@ const ServiceProvider = lazy(()=> import('./service_provider/ServiceProvider'))
 // import ManageUsers from './user_management/ManageUsers'
 const ManageUsers = lazy(()=> import('./user_management/ManageUsers'))
 const ServiceProviderAssignedTicket = lazy(()=> import('./form/ServiceProviderAssignedTicket.jsx'))
-
+const ContactSalesCompany = lazy(()=> import('./Home/ContactSalesCompany'))
 // import QrCode from './QrCode/QrCode'
 
 const QrCode = lazy(()=> import('./QrCode/QrCode'))
@@ -141,7 +142,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const ServiceProviderReports = lazy(()=> import('./components/ServiceProvider/ServiceProviderReports'))
 // import ForgotPassword from './Auth/ForgotPassword'
-
+const ContinueLogin = lazy(() => import('./dashboard_system_admin/ContinueLogin.jsx'))
 const ForgotPassword = lazy(()=> import('./Auth/ForgotPassword'))
 // import ResetPassword from './Auth/ResetPassword'
 const ResetPassword = lazy(()=> import('./Auth/ResetPassword'))
@@ -474,6 +475,11 @@ useEffect(() => {
 }, []);
 
 
+const subdomain = window.location.hostname.split('.')[0]
+const domain = window.location.hostname.split('.')[1]
+const anotherDomain = window.location.hostname
+console.log('domain',domain)
+console.log('subdomain',anotherDomain)
 
   return (
     <>
@@ -496,9 +502,9 @@ useEffect(() => {
        </div>}>
 
        </Suspense>
+
+       
        <Routes>
-
-
 {/* 
        <Route  path='/signup'  element={
          <Suspense fallback={<div> 
@@ -534,6 +540,26 @@ useEffect(() => {
 
 
 
+<Route  path='/contact-sales-company'  element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ContactSalesCompany/>
+        </Suspense>
+        }/> 
+
+
+<Route  path='/contact-form'  element={
+      
+        <ContactForm />
+        }/> 
+
 
 <Route  path='/how-it-works'  element={
          <Suspense fallback={<div> 
@@ -548,41 +574,50 @@ useEffect(() => {
         <HowItWorks/>
         </Suspense>
         }/> 
+{subdomain === 'localhost' ?  (
+  <Route  path='/home-page'  element={ 
+    <Suspense fallback={<div> 
 
-<Route  path='/home-page'  element={ 
-         <Suspense fallback={<div> 
+     <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 
-          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-    
-    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-      
-       </Backdrop>
-       
-         </div>}>
-        <HomePageSpecificCompany/>
-        </Suspense>
-        }/>
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+ 
+  </Backdrop>
+  
+    </div>}>
+   <HomePageSpecificCompany/>
+   </Suspense>
+   }/>
 
-
-
-
+): null
 
 
+}
 
 
-<Route index path='/' element={ 
-         <Suspense fallback={<div> 
 
-          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-    
-    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
-      
-       </Backdrop>
-       
-         </div>}>
-         <HomePage/>
-        </Suspense>
-        }/>
+
+
+
+
+
+
+
+{anotherDomain === 'localhost' ?  (
+  <Route index path='/' element={ 
+    <Suspense fallback={<div> 
+
+     <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+
+<Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+ 
+  </Backdrop>
+  
+    </div>}>
+    <HomePage/>
+   </Suspense>
+   }/>
+): null}
 
 
 
@@ -650,6 +685,20 @@ useEffect(() => {
         </Suspense>
         }/>
 
+
+<Route path='/well-be-in-touch' element={
+         <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    
+    <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ContactYou />
+        </Suspense>
+        }/>
 
 
       <Route path='/password-reset-email-sent' element={
@@ -1609,6 +1658,20 @@ useEffect(() => {
         }/>
 
 
+<Route  path='/continue-login' element={
+        <Suspense fallback={<div> 
+
+          <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      
+      <Lottie className='relative z-50' options={defaultOptions} height={400} width={400} />
+      
+       </Backdrop>
+       
+         </div>}>
+        <ContinueLogin
+        />
+        </Suspense>
+        }/>
 {/* <Route path='/native-example' element={<NativeExample/>}/> */}
 
 
@@ -1623,7 +1686,7 @@ useEffect(() => {
     
   </ThemeProvider>
 }/> 
-        </Route> 
+ </Route> 
 
 
 

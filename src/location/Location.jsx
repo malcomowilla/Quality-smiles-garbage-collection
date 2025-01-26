@@ -271,7 +271,16 @@ const response = await fetch(`/api/delete_location/${id}`, {
   
   if (response.ok) {
     setlocations(locations.filter((place)=> place.id !==  id))
-    setopenDeleteLocationAlert(true)
+    // setopenDeleteLocationAlert(true)
+    toaster.success('location deleted successfully', {
+      position: "top-center",
+      autoClose: 7000,
+      hideProgressBar: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    })
     setisOpenDelete(false)
     setloading(false)
   } else {

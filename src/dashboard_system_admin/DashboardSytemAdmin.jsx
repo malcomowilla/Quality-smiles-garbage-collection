@@ -29,8 +29,18 @@ import Settings from './Settings';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ResetPassword from '../components/ResetPassword';
+import ResetPasswordSystemAdmin from '../components/ResetPasswordSystemAdmin'
 import UptimeDisplay from './UptimeDisplay';
 import UptimeStats from './UptimeStats';
+import SystemAdminProfile from './SystemAdminProfile';
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
+import {useApplicationSettings} from '../settings/ApplicationSettings'
+import { FaPerson } from "react-icons/fa6";
+import ClientRequests from '../dashboard_system_admin/ClientRequests'
+
+
+
 
 const DashboardSytemAdmin = () => {
   const [value, setValue] = useState(0);
@@ -38,6 +48,29 @@ const DashboardSytemAdmin = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+const {currentSystemAdmin, systemAdminEmail} = useApplicationSettings()
+
+
+
+
+
+
+  function generateAvatar(name) {
+    const avatar = createAvatar(lorelei, {
+      seed: name, // Use the customer's name as the seed
+      // Customize options for the lorelei style
+      backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9'], // Example: random background colors
+      radius: 50, // Rounded corners
+      size: 64, // Size of the avatar
+    });
+  
+    // Generate the SVG as a data URL
+    return `data:image/svg+xml;utf8,${encodeURIComponent(avatar.toString())}`;
+  }
+
+
+
+
 
   const handleLogout = async () => {
     const response = await fetch('/api/logout_system_admin', {
@@ -55,12 +88,15 @@ const DashboardSytemAdmin = () => {
   };
 
   const getPageTitle = () => {
-    if (showResetPassword) return "Reset Password";
+    if (showResetPassword) return "Reset Password Client";
     switch (value) {
       case 0: return "System Statistics";
       case 1: return "Client Management";
       case 2: return "Settings";
       case 3: return "Invite Client";
+      case 4: return "Profile";
+      case 5: return "Reset Password Admin";
+      case 6: return "Client Requests";
       default: return "Dashboard";
     }
   };
@@ -69,8 +105,13 @@ const DashboardSytemAdmin = () => {
     { label: "Stats", icon: <DashboardIcon />, value: 0 },
     // { label: "Clients", icon: <PeopleIcon />, value: 1 },
     { label: "Settings", icon: <SettingsIcon />, value: 2 },
-    { label: "Reset Password", icon: <LockResetIcon />, value: -1 },
+    { label: "Reset Password Client", icon: <LockResetIcon />, value: -1 },
+
     { label: "Invite Client", icon: <PeopleIcon />, value: 3 },
+    { label: "Profile", icon:(<Avatar className='w-10 h-10 rounded-full' src={generateAvatar(systemAdminEmail)} 
+    alt={`${systemAdminEmail}'s avatar`} />), value: 4 },
+    { label: "Reset Password Admin", icon: <LockResetIcon />, value: 5 },
+    { label: "Client Requests", icon: <FaPerson  className='w-6 h-6 rounded-full'/>, value: 6 },
   ];
 
   const pageTransitionVariants = {
@@ -150,7 +191,7 @@ const DashboardSytemAdmin = () => {
                   button
                   key={item.label}
                   onClick={() => {
-                    if (item.label === "Reset Password") {
+                    if (item.label === "Reset Password Client") {
                       setShowResetPassword(true);
                       setValue(-1);
                     } else {
@@ -219,7 +260,7 @@ const DashboardSytemAdmin = () => {
                     button
                     key={item.label}
                     onClick={() => {
-                      if (item.label === "Reset Password") {
+                      if (item.label === "Reset Password Client") {
                         setShowResetPassword(true);
                         setValue(-1);
                       } else {
@@ -286,8 +327,12 @@ const DashboardSytemAdmin = () => {
                   {value === 1 && <ClientList />}
                   {value === 2 && <Settings />}
                   {value === 3 && <InviteClient />}
+                  {value === 4 && <SystemAdminProfile />}
+                  {value === 5 && <ResetPasswordSystemAdmin />}
+                  {value === 6 && <ClientRequests />}
+
                 </motion.div>
-              )}
+              )}  
             </AnimatePresence>
           </Box>
         </Box>

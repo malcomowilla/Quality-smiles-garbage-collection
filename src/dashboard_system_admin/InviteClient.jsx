@@ -29,6 +29,8 @@ import MaterialTable from "material-table";
 import { IoPeople } from "react-icons/io5";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteClient from './DeleteClient'
+import toaster, { Toaster } from 'react-hot-toast';
 
 
 
@@ -37,7 +39,13 @@ const InviteClient = () => {
     email: '',
     phoneNumber: '',
     userName: '',
-    domainSubdomain: ''
+    domainSubdomain: '',
+    emailApiKey: '',
+    senderEmail: '',
+    smtpPassword: '',
+    smtpHost: '',
+    smtpUsername: ''
+
   });
 
   const [errors, setErrors] = useState({
@@ -50,7 +58,8 @@ const InviteClient = () => {
   const [openLoad, setOpenLoad] = useState(false);
   const [clients, setClients] = useState([]);
   const [fetchingClients, setFetchingClients] = useState(false);
-
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
+const [row_data, setRowData] = useState({})
   const fetchClients = async () => {
     setFetchingClients(true);
     try {
@@ -138,15 +147,39 @@ const InviteClient = () => {
     setOpenLoad(true);
 
     try {
-      const response = await inviteClient({
-        email: formData.email,
-        phone_number: formData.phoneNumber,
-        user_name: formData.userName,
-        company_domain_or_subdomain: formData.domainSubdomain,
+      // const response = await inviteClient({
+      //   email: formData.email,
+      //   phone_number: formData.phoneNumber,
+      //   user_name: formData.userName,
+      //   company_domain_or_subdomain: formData.domainSubdomain,
+      // });
+
+      const response = await fetch('/api/invite_client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          phone_number: formData.phoneNumber,
+          user_name: formData.userName,
+          company_domain_or_subdomain: formData.domainSubdomain,
+          email_api_key: formData.emailApiKey,
+          sender_email: formData.senderEmail,
+          smtp_password: formData.smtpPassword,
+          smtp_host: formData.smtpHost,
+          smtp_port: formData.smtpPort,
+          smtp_username: formData.smtpUsername,
+
+        })
       });
 
       if (response.ok) {
-        toast.success('Client successfully created');
+        // toast.success('Client successfully created');
+        toaster.success('Client added successfully', {
+          duration: 5000,
+          icon: '✅'
+        })
         setFormData({
           email: '',
           phoneNumber: '',
@@ -156,11 +189,31 @@ const InviteClient = () => {
         // Refresh client list after successful invitation
         fetchClients();
       } else {
-        toast.error('Something went wrong, please try again');
+        toaster.error('Something went wrong, please try again', {
+          duration: 5000,
+          position: 'top-center',
+          style: {
+            background: 'linear-gradient(135deg, #FF0000, #36A2EA)',
+            color: '#fff',
+            borderRadius: '5px',
+            padding: '10px',
+            boxShadow: '0 2px 10px 0 rgba(0, 0, 0, 0.1)',
+          },
+        });
       }
     } catch (error) {
       console.error('Error inviting client:', error);
-      toast.error('Something went wrong, please try again');
+      toaster.error('Something went wrong, please try again', {
+        duration: 5000,
+        position: 'top-center',
+        style: {
+          background: 'linear-gradient(135deg, #FF0000, #36A2EA)',
+          color: '#fff',
+          borderRadius: '5px',
+          padding: '10px',
+          boxShadow: '0 2px 10px 0 rgba(0, 0, 0, 0.1)',
+        },
+      });
     } finally {
       setLoading(false);
       setOpenLoad(false);
@@ -176,14 +229,98 @@ const InviteClient = () => {
     },
   };
 
-  const flattenedData = clients.flatMap(client =>
+
+  const flattenedData = clients && clients.flatMap(client =>
     client.admins.map(admin => ({
       ...admin,
       subdomain: client.subdomain, // Include subdomain in each admin record
     }))
-  );
+);
+  // const flattenedData =  clients.map(admin => ({
+  //   ...admin,
+  //   subdomain: admin.subdomain, // Include subdomain in each admin record
+  // }))
+
+  const handleRowClick = (event, rowData) => {
+    setRowData(rowData);
+    console.log('rowData=>', rowData)
+   
+  
+  };
+  
+
+
+  const DeleteButton = ({id}) => (
+    <img src="/images/logo/6217227_bin_fly_garbage_trash_icon.png"  onClick={()=> setIsOpenDelete(true)}  className='w-8 h-8 ' alt="delete" />
+  )
+  
+
+const deleteClient = async (id)=> {
+
+  try {
+    setLoading(true)
+
+const response = await fetch(`/api/delete_client/${id}`, {
+  method: 'DELETE'
+  })
+  
+  if (response.ok) {
+    setIsOpenDelete(false)
+    setClients(flattenedData.filter((client)=> client.id !==  id))
+   
+    setLoading(false)
+    toaster.success('Client deleted successfully', {
+      duration: 5000,
+      icon: '✅'
+    })
+
+  
+  } else {
+    setIsOpenDelete(false)
+    console.log('failed to delete')
+    setLoading(false)
+    toaster.error('Failed to delete client', {
+      duration: 5000,
+      position: 'top-center',
+      style: {
+        background: 'linear-gradient(135deg, #FF0000, #36A2EA)',
+        color: '#fff',
+        borderRadius: '5px',
+        padding: '10px',
+        boxShadow: '0 2px 10px 0 rgba(0, 0, 0, 0.1)',
+      },
+    })
+
+
+    
+  }
+  } catch (error) {
+    console.log(error)
+    setIsOpenDelete(false)
+    toaster.error('Failed to delete client', {
+      duration: 5000,
+      position: 'top-center',
+      style: {
+        background: 'linear-gradient(135deg, #FF0000, #36A2EA)',
+        color: '#fff',
+        borderRadius: '5px',
+        padding: '10px',
+        boxShadow: '0 2px 10px 0 rgba(0, 0, 0, 0.1)',
+      },
+    })
+    setLoading(false)
+
+  }
+  
+}
+
   return (
     <>
+    <Toaster />
+<DeleteClient id={row_data.id}   loading={loading}  deleteClient={deleteClient}  
+ isOpenDelete={isOpenDelete} 
+setIsOpenDelete={setIsOpenDelete} />
+
       <ToastContainer position='top-center' autoClose={3000} hideProgressBar={false} closeOnClick draggable pauseOnHover />
       {loading && (
         <Backdrop open={openLoad} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -266,6 +403,94 @@ const InviteClient = () => {
                   required
                   sx={{ borderRadius: 2 }}
                 />
+
+
+
+
+<TextField
+                  label="email api key"
+                  variant="outlined"
+                  name="emailApiKey"
+                  value={formData.emailApiKey}
+                  onChange={handleChange}
+                  error={!!errors.emailApiKey}
+                  helperText={errors.emailApiKey}
+                  sx={{ borderRadius: 2 }}
+                />
+
+
+
+
+<TextField
+value={formData.senderEmail}
+onChange={handleChange}
+error={!!errors.senderEmail}
+helperText={errors.senderEmail}
+name='senderEmail'
+                  label="sender email"
+                  variant="outlined"
+                
+                  sx={{ borderRadius: 2 }}
+                />
+
+
+
+
+<TextField
+
+                  label="smtp password"
+                  name="smtpPassword"
+                  value={formData.smtpPassword}
+                  onChange={handleChange}
+                  error={!!errors.smtpPassword}
+                  helperText={errors.smtpPassword}
+                
+                  sx={{ borderRadius: 2 }}
+                />
+
+
+
+
+
+<TextField
+value={formData.smtpHost}
+onChange={handleChange}
+error={!!errors.smtpHost}
+helperText={errors.smtpHost}
+name='smtpHost'
+
+                  label="smtp host"
+                  variant="outlined"
+                
+                  sx={{ borderRadius: 2 }}
+                />
+
+
+
+<TextField
+                  label="smtp username"
+                  name="smtpUsername"
+                  value={formData.smtpUsername}
+                  onChange={handleChange}
+                  error={!!errors.smtpUsername}
+                  helperText={errors.smtpUsername}
+                  variant="outlined"
+                
+                  sx={{ borderRadius: 2 }}
+                />
+
+
+
+<TextField
+                  label="subdomain"
+                  name="domainSubdomain"
+                  value={formData.domainSubdomain}
+                  onChange={handleChange}
+                  error={!!errors.domainSubdomain}
+                  helperText={errors.domainSubdomain}
+
+                  sx={{ borderRadius: 2 }}
+                />
                 <Button
                   type='submit'
                   variant="contained"
@@ -280,6 +505,7 @@ const InviteClient = () => {
         </form>
 
         <MaterialTable
+        onRowClick={handleRowClick}
         columns={[
           { title: "SubDomain", field: "subdomain" },
           { title: "User Name", field: "user_name" },
@@ -291,12 +517,19 @@ const InviteClient = () => {
           {
             title: "Action",
             field: "Action",
-            render: rowData => (
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button variant="outlined" color="success">Edit</Button>
-                <Button variant="outlined" color="error">Delete</Button>
-              </Box>
-            )
+            render: (rowData) => 
+              <>
+                <Box sx={{
+                  display: 'flex',
+                  gap: 2
+                }}>
+  
+                <DeleteButton   id={rowData.id}/>
+                </Box>
+              
+  
+                
+                </>
           }
         ]}
         data={flattenedData}

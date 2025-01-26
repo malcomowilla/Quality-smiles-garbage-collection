@@ -29,6 +29,9 @@ import toaster, { Toaster } from 'react-hot-toast';
 
 import ThemeSettings from './ThemeSettings';
 
+
+
+
 // openCreateAlert, handleCloseCreateAlert
 
 const SettingsCheckbox = ({ label, description, checked, onChange, name }) => (
@@ -134,6 +137,7 @@ useEffect(() => {
     },
   }));
 }, [themeColors]);
+
 
 const {company_name, contact_info, email_info, customer_support_email, agent_email,
    customer_support_phone_number} = companySettings
@@ -2483,7 +2487,8 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
     font-medium rtl:text-right text-white  border border-b-0 border-gray-200 focus:ring-4
     hover:dark:text-white hover:text-black
     focus:ring-gray-200 dark:focus:ring-gray-800  dark:border-gray-700 dark:text-gray-900 
-     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
+     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="
+     #accordion-open-body-2" aria-expanded="false" aria-controls="accordion-open-body-2">
       <span className="flex items-center">  <IoSettingsOutline className='p-1 text-3xl'/> 
       Company </span>
       <svg data-accordion-icon className="w-3 h-3 rotate-180 shrink-0 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -2640,6 +2645,10 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       </ThemeProvider>
     </motion.div>
   </form>
+
+
+
+
   <h2 id="accordion-open-heading-2">
     <button type="button"   onClick={()=> setSeeSettings8(!seeSettings8)} className="flex items-center justify-between
      w-full p-5 

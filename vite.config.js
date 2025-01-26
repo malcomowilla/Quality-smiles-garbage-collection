@@ -2,10 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from "path"
 import { VitePWA } from 'vite-plugin-pwa'
-
+// export default defineConfig({
+//   plugins: [react()],
+//   server: {
+//     host: "zogo.aitechs.com",
+//     port: 8000,
+//   },
+// });
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(),
+    
     VitePWA({
       workbox: {
         clientsClaim: true,
@@ -23,8 +30,8 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // Increase to 4 MiB or any size you prefer
       },
       manifest: {
-        name: 'Quality Smiles',
-        short_name: 'Quality Smiles',
+        name: 'Aitechs',
+        short_name: 'Aitechs',
         theme_color: '#ffffff', 
         background_color: '#ffffff',
         start_url: "/signin",
@@ -73,6 +80,7 @@ export default defineConfig({
   },
   base: './',
   server: {
+    // host: 'zogo.aitechs.com',
     mimeTypes: {
       js: 'application/javascript'
     },
@@ -103,5 +111,6 @@ export default defineConfig({
         env: {}
       }
     }
-  }
+  },
+  
 })

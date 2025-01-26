@@ -25,13 +25,61 @@ const [openProviderConfirmationError, setopenProviderConfirmationError] = useSta
 const [isAvailable, setIsAvailable] = useState(false);
 const [showAvailabilityPrompt, setShowAvailabilityPrompt] = useState(false);
 const [Loading, setLoading] = useState(false);
+const [isAssignedTicket, setIsAssignedTicket] = useState(false);
 
 const handleToggleAvailability = () => {
   setShowAvailabilityPrompt(true);
 };
 
-
+// assigned_ticket_status
 console.log('isAvailable', isAvailable)
+
+
+
+
+
+
+
+
+// get_current_status
+useEffect(() => {
+  const getAssignedTicket = async () => {
+    try {
+      const response = await fetch('/api/assigned_ticket_status', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const newData = await response.json();
+      if (response.ok) {
+        // setIsAvailable(newData.status);
+        // setIsAvailable(newData.status === 'available');
+        setIsAssignedTicket(newData.assigned_ticket);
+      }else{
+        toast.error('something went wrong', {
+          position: "top-center",
+          duration: 7000,
+        })
+      }
+    } catch (error) {
+      toast.error('something went wrong', {
+        position: "top-center",
+        duration: 7000,
+      })
+      console.error('Error:', error);
+    }
+  };
+
+  getAssignedTicket()
+  // return () => {
+  //   getCurrentStatus();
+  // };
+}, []);
+
+
+
+
+
+
 // get_current_status
 useEffect(() => {
   const getCurrentStatus = async () => {
@@ -46,6 +94,10 @@ useEffect(() => {
         setIsAvailable(newData.status === 'available');
       }
     } catch (error) {
+      toast.error('something went wrong', {
+        position: "top-center",
+        duration: 7000,
+      })
       console.error('Error:', error);
     }
   };
@@ -322,27 +374,50 @@ useEffect(() => {
 
 
 
+{isAssignedTicket ? (
+  <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-2xl shadow-lg  ">
 
-      <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-2xl shadow-lg  ">
 
-        <div className='flex justify-center items-center text-black p-2 text-2xl'>
-        <p>Assigned Ticket</p>
-        </div>
+    <div className='flex justify-center items-center '>
     <AiOutlineFileText className='w-8 h-8 text-black mb-2' />
-    <a href="#">
-        <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Need a help in Claim?</h5>
-    </a>
-    <p className="mb-3 font-normal text-black">You will see the ticket if you have been assigned one :</p>
-    <Link to='/assigned_ticket' className="inline-flex font-medium items-center text-blue-600 hover:underline">
-        Your Assigned Customer Ticket
-        <svg className="w-3 h-3 ms-2.5 rtl:rotate-[270deg]" aria-hidden="true"
-         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-             d="M15 11v4.833A1.166 1.166 0 0 1 13.833 17H2.167A1.167 1.167 0 0 1 1 15.833V4.167A1.166
-              1.166 0 0 1 2.167 3h4.618m4.447-2H17v5.768M9.111 8.889l7.778-7.778"/>
-        </svg>
-    </Link>
+
+    </div>
+
+  <div className='flex justify-center items-center text-black p-2 text-2xl'>
+  <p>Assigned Ticket</p>
+  </div>
+
+{/* <p className="mb-3 font-normal text-black">You will see the ticket if you have been assigned one :</p> */}
+<Link to='/assigned_ticket' className="inline-flex font-medium items-center text-blue-600 hover:underline">
+  Your Assigned Customer Ticket
+  <svg className="w-3 h-3 ms-2.5 rtl:rotate-[270deg]" aria-hidden="true"
+   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+       d="M15 11v4.833A1.166 1.166 0 0 1 13.833 17H2.167A1.167 1.167 0 0 1 1 15.833V4.167A1.166
+        1.166 0 0 1 2.167 3h4.618m4.447-2H17v5.768M9.111 8.889l7.778-7.778"/>
+  </svg>
+</Link>
 </div>
+) : 
+<a href="" className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow
+ hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 relative">
+
+  <div className=" flex items-center animate-pulse">
+    <svg 
+      className="w-6 h-6 text-red-500" 
+      xmlns="http://www.w3.org/2000/svg" 
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor" 
+      strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m-7-8h8m-4-2v16m-6-3h12m-3 3h-6M3 7h18m0 0v8m0-8l-3-3m3 3-3 3"/>
+    </svg>
+    <span className="ml-2 text-sm font-semibold text-red-500">No ticket assigned</span>
+  </div>
+</a>
+
+}
+    
 
 
 

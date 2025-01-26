@@ -349,6 +349,9 @@ button:disabled {
   input:focus {
     outline: none;
   }
+  :root {
+    --radius: 0.5rem;
+  }
   
 
 }

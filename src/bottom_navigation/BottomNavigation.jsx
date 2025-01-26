@@ -46,7 +46,7 @@ const BottomNavigation = () => {
 
   <div className="border-b border-gray-200 dark:border-gray-700 fixed bottom-0
    dark:bg-black bg-white  z-50">
-      <ul  className="flex flex-wrap -mb-px text-sm font-medium text-center ">
+      <ul  className="flex flex-wrap -mb-px text-sm font-medium text-center">
 
 
           <li className="me-2" onClick={() => {
@@ -61,12 +61,13 @@ const BottomNavigation = () => {
               `}>
   
   
-                  <svg className="w-5 h-5 me-2  hover:dark:text-gray-600 hover:dark:border-gray-300
-                   dark:group-hover:text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 me-2  text-black dark:text-white hover:dark:border-gray-300
+                   dark:group-hover:text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 
                       0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0
                        1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
-                  </svg>Profile
+                  </svg>  <p className='text-black dark:text-white'>Profile</p>  
               </a>
           </li>
 
@@ -83,7 +84,7 @@ const BottomNavigation = () => {
       <a href="#" className={`inline-flex items-center text-lg justify-center p-4 
        hover:border-b-2 rounded-t-lg  ${activeItem === 'Dashboard' && 'dark:text-green-500 border-b-2  text-green-500' } 
          group`} aria-current="page">
-          <svg className="w-5 h-5 me-2 " aria-hidden="true"
+          <svg className="w-5 h-5 me-2 text-black dark:text-white " aria-hidden="true"
            xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
               <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 
               7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857
@@ -93,7 +94,7 @@ const BottomNavigation = () => {
                 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 
                 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857
                  1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
-          </svg>Dashboard
+          </svg>  <p className='text-black dark:text-white'>Dashboard</p>  
       </a>
   </li>
   </Link>
@@ -116,8 +117,8 @@ const BottomNavigation = () => {
               <a href="#" className={`inline-flex items-center justify-center p-4 hover:border-b-2 
                rounded-t-lg  text-xl
                 ${activeItem === 'Settings' && 'dark:text-green-500  border-b-2 text-green-500' } group`}>
-                  <svg className={`w-5 h-5 me-2 text-gray-400 
-                   dark:text-gray-500 
+                  <svg className={`w-5 h-5 me-2 
+                text-black dark:text-white
                    ${activeItem === 'Settings' && 'dark:text-green-500   text-green-500' }
                    `}
                    
@@ -129,7 +130,7 @@ const BottomNavigation = () => {
                         0v-1.424a3.243 3.243 0 0 0 2.25-3.076Zm-6-9A3.243 3.243 0 0 0 11 2.424V1a1 1
                          0 0 0-2 0v1.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0V8.576A3.243
                           3.243 0 0 0 13.25 5.5Z"/>
-                  </svg>Settings
+                  </svg> <p className='text-black dark:text-white'>Settings</p>
               </a>
           </li>
 </Link>
@@ -157,8 +158,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>Tickets</p>
-                    <GrTicket className='w-5 h-5'/>
+                    <p className='text-lg text-black dark:text-white'>Tickets</p>
+                    <GrTicket className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -189,8 +190,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-xl'>Email</p>
-                    <AiOutlineMail className='w-5 h-5'/>
+                    <p className='text-xl text-black dark:text-white'>Email</p>
+                    <AiOutlineMail className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -219,8 +220,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>SMS</p>
-                    <MdOutlineSms className='w-5 h-5'/>
+                    <p className='text-lg text-black dark:text-white'>SMS</p>
+                    <MdOutlineSms className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -250,8 +251,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>Users</p>
-                    < FaRegUser className='w-5 h-5'/>
+                    <p className='text-lg text-black dark:text-white'>Users</p>
+                    < FaRegUser className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -279,8 +280,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>Customer Stats</p>
-                    < FcBullish className='w-5 h-5'/>
+                    <p className='text-lg text-black dark:text-white'>Customer Stats</p>
+                    < FcBullish className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -311,8 +312,8 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>Provider Stats</p>
-                    < FcComboChart className='w-5 h-5'/>
+                    <p className='text-lg text-black dark:text-white'>Provider Stats</p>
+                    < FcComboChart className='w-5 h-5 text-black dark:text-white'/>
                     </div>
               </a>
           </li>
@@ -343,7 +344,7 @@ const BottomNavigation = () => {
 
 
                     <div className='flex items-center gap-2 '>
-                    <p className='text-lg'>Service Provider </p>
+                    <p className='text-lg text-black dark:text-white'>Service Provider </p>
                     < FaPerson className='w-5 h-5 text-yellow-500'/>
                     </div>
               </a>
