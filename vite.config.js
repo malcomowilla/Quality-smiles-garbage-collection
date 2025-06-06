@@ -22,12 +22,16 @@ export default defineConfig({
       devOptions: {
         enabled: true
       },
-      strategies: "injectManifest",
+      // strategies: "injectManifest",
+       mode: 'injectManifest',
       srcDir: "src",
       filename: "sw.js",
       injectManifest: {
-        swDest: "dist/sw.js",
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // Increase to 4 MiB or any size you prefer
+        // swDest: "dist/sw.js",
+        // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // Increase to 4 MiB or any size you prefer
+          globPatterns: ['**/*.{js,css,html}'],
+    globDirectory: 'dist',
+    globIgnores: ['node_modules/**/*', 'sw.js']
       },
       manifest: {
         name: 'Aitechs',
