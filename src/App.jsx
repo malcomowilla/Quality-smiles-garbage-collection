@@ -505,8 +505,8 @@ console.log('subdomain',anotherDomain)
 
        
        <Routes>
-{/* 
-       <Route  path='/signup'  element={
+
+       {/* <Route  path='/signup'  element={
          <Suspense fallback={<div> 
 
           <Backdrop open={true} sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -518,10 +518,10 @@ console.log('subdomain',anotherDomain)
          </div>}>
         <Signup/>
         </Suspense>
-        }/> */}
+        }/> 
 
-
-
+ */}
+c
 
 <Route  path='/contact-sales'  element={
          <Suspense fallback={<div> 

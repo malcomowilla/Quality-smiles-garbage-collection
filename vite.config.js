@@ -87,14 +87,27 @@ export default defineConfig({
     proxy: {
       '/api': {
         // target: 'http://192.168.1.69:4000',
-        target: 'http://localhost:4000',
-        changeOrigin: true,
+        // target: 'http://localhost:4000',
+        // changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq, req, res, options) => {
             proxyReq.setHeader('X-Original-Host', req.headers.host);
           });
         },
+
+          target: (req) => {
+          const host = req.headers.host; // Get the request hostname
+      
+          // Check if the host is "aitechs.co.ke" or any subdomain of it
+          if (host.endsWith('.aitechs.co.ke')) {
+            return `https://${host}`; // Proxy dynamically based on the request domain
+          }
+          return 'http://0.0.0.0:3000'; // Default target if not matching
+        },
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, ''),
+
       },
     },
   },

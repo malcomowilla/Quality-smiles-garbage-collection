@@ -149,7 +149,11 @@ const handleRowAdd = (event, rowData)=> {
     };
     return updatedData;
   });
- 
+
+  
+
+
+  
 
   setUserPermisions(rowData)
   setPermissionAndRoles({
@@ -233,6 +237,9 @@ const handleRowAdd = (event, rowData)=> {
     },
   });
 }
+
+
+
 
 
 

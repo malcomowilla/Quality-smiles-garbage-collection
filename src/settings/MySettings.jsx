@@ -1682,7 +1682,9 @@ sx={{ color:'#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 
           <TextField  name='prefix' 
           
-          label='Customer Code  Prefix' onChange={handleCustomerFormDataChange} value={settingsformData.prefix}></TextField>
+          label='Customer Code  Prefix' onChange={handleCustomerFormDataChange} value={settingsformData.prefix}>
+            
+          </TextField>
 
           <TextField name='minimum_digits' onChange={handleCustomerFormDataChange} value={settingsformData.minimum_digits}  className='myTextField'   
              type='number'  label='Customer Code Minimum Digits(Zeros will be added to the front, eg SUB001 for

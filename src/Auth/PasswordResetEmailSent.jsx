@@ -113,7 +113,7 @@ const navigate = useNavigate()
             </motion.button>
           </Link>
 
-          <button
+          <motion.button
           onClick={() => navigate('/forgot_password')} 
            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -125,7 +125,7 @@ const navigate = useNavigate()
           >
         <span className='text-white font-bold text-lg'>Resend Email</span>
 
-          </button>
+          </motion.button>
         </motion.div>
       </motion.div>
     </motion.div>

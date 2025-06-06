@@ -1204,31 +1204,37 @@ theme="light"
 
               <form onSubmit={handleSignIn} className="space-y-6">
                 {/* Email Input */}
-                <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2 "
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <label className="text-2xl font-medium text-gray-700 dark:text-gray-200">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name='email'
-                      value={email}
-                      onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg 
-                      border text-xl
-                       border-gray-200  text-black
-                        dark:text-white
-                        focus:border-emerald-500 focus:ring-2
-                         focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50
-                         dark:bg-gray-700"
-                      placeholder="Enter your email"
-                    />
-                    <motion.span 
+               
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                   Your Email
+                </label>
+                <div className="relative mt-1">
+                  <input
+                     type="email"
+                     name='email'
+                     value={email}
+                     onChange={handleFormDataChangeSignin}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                      dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      transition-all duration-200"
+                  />
+                  
+                  <motion.span 
                       whileHover={{ scale: 1.1 }}
                       className="absolute right-3 top-[40%]
                       transform -translate-y-1/2"
@@ -1236,45 +1242,48 @@ theme="light"
                       <img src="/images/logo/icons8-gmail-100.png"
                        className="w-6 h-6" alt="email" />
                     </motion.span>
-                  </div>
-                </motion.div>
+                </div>
+              </motion.div>
+
                   {/* Password Input */}
-                  <motion.div 
-                  variants={itemVariants}
-                  className="space-y-2"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <label className="text-2xl font-medium text-gray-700 dark:text-gray-200">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={isSeenPassWord ? 'password' : 'text'}
-                      value={password}
-                      name='password'
-                      onChange={handleFormDataChangeSignin}
-                      className="w-full px-4 py-3 rounded-lg 
-                      border border-gray-200 text-xl
-                        focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 
-                        transition-all duration-200 bg-gray-50 dark:bg-gray-700
-                        text-black dark:text-white"
-                      placeholder="Enter your password"
-                      
-                      />
-                    
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      type="button"
-                      onClick={() => setIsSeenPassword(!isSeenPassWord)}
-                      className="absolute right-3 top-[40%] transform 
-                      -translate-y-1/2"
-                    >
-                         {isSeenPassWord ? 
-                         <BsFillEyeSlashFill className='text-2xl text-white'/>
-                          : <BsFillEyeFill className='text-2xl text-white'/>}
-                    </motion.button>
-                  </div>
-                </motion.div>
+
+
+
+                  <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                   Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    type={isSeenPassWord ? 'text' : 'password'}
+                    value={password}
+                    name='password'
+                    onChange={handleFormDataChangeSignin}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                      dark:border-gray-700 bg-white/50 dark:bg-gray-900/50
+                      focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                      transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsSeenPassword(!isSeenPassWord)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  >
+                    <ion-icon 
+                      name={isSeenPassWord ? "eye-outline" : "eye-off-outline"}
+                      style={{ width: 20, height: 20 }}
+                    />
+                  </button>
+                </div>
+              </motion.div>
+
+
+
+
+
+
+
+                   
                   {/* Login Button */}
                   <motion.button
                   variants={itemVariants}
