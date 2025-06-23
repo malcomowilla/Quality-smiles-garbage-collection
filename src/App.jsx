@@ -574,7 +574,7 @@ c
         <HowItWorks/>
         </Suspense>
         }/> 
-{subdomain === 'localhost' ?  (
+{subdomain === 'quality-smiles.aitechs.co.ke' ?  (
   <Route  path='/home-page'  element={ 
     <Suspense fallback={<div> 
 
@@ -603,7 +603,7 @@ c
 
 
 
-{anotherDomain === 'localhost' ?  (
+{anotherDomain === 'quality-smiles.aitechs.co.ke' ?  (
   <Route index path='/' element={ 
     <Suspense fallback={<div> 
 
@@ -1587,8 +1587,6 @@ c
 
 
 
-
-<Route path='/login-system-admin'  element={<LoginSytemAdmin />}/>
 <Route  path='/admin_verification_login_passwword' element={<ConfirmPassword/>}/>
 
 
@@ -1678,7 +1676,8 @@ c
 
         <Route  element={<ProtectAuthSystemAdmin />}>
         
-        
+        {subdomain === 'systemadmin.aitechs.co.ke' ? (
+
 <Route path='/system-admin'  element={
     <ThemeProvider theme={theme}>
   
@@ -1686,13 +1685,24 @@ c
     
   </ThemeProvider>
 }/> 
+        ): null}
+
+
  </Route> 
 
 
+{/* 
+{subdomain === 'systemadmin.aitechs.co.ke' ? (
+<Route path='/login-system-admin'  element={<LoginSytemAdmin />}/>
+
+): null } */}
 
 
 
- <Route path='/login-system-admin'  element={<LoginSytemAdmin />}/> 
+{subdomain === 'systemadmin.aitechs.co.ke' ? (
+<Route path='/login-system-admin'  element={<LoginSytemAdmin />}/>
+
+): null } 
 
 
 {/* <Route path        ="/dashboard" element={isAuthenticated ? <DashboardSytemAdmin /> : <Navigate to="/login-system-admin" />} />
